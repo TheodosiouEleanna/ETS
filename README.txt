@@ -1,9 +1,3 @@
-Welcome to the Tobii Pro SDK
-============================
-
-You can find all help, examples and documentation on the Tobii Pro SDK webpage: https://developer.tobiipro.com
-
-We hope you will like it!
-
-Sincerely,
-The TobiiProSDK team
+This is the Eye Tracking System (ETS).
+A system that provides translation aid when reading text documents by utilizing real time eye tracking data.
+This will be developped in the context of my Thesis.
