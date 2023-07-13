@@ -1,35 +1,33 @@
 import React, { useRef, useState } from "react";
-
+import { MdDensityMedium } from "react-icons/md";
 export const Menu = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
   const toggleOpen = () => {
-    console.log("click", isOpen);
-
     setIsOpen((prev) => !prev);
   };
 
   return (
-    <div style={{ position: "relative" }}>
+    <div>
       <button
-        className='bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-4 border border-white'
+        className=' hover:bg-gray-400 text-white font-bold py-2 px-4'
         onClick={toggleOpen}
       >
-        Menu
+        <MdDensityMedium className='text-xl' />
       </button>
       {isOpen && (
         <ul
-          className='bg-gray-500  text-white font-bold absolute'
+          className='bg-gray-500 text-white text-lg absolute opacity-80'
           ref={dropdownRef}
           style={{
             position: "absolute",
           }}
         >
-          <li className='hover:bg-gray-400 py-2 px-4 border border-white'>
+          <li className='bg-gray-500 py-2 px-4 hover:underline cursor-pointer border border-gray-200'>
             Settings
           </li>
-          <li className='hover:bg-gray-400 py-2 px-4 border border-white'>
+          <li className='bg-gray-500 py-2 px-4 hover:underline cursor-pointer border border-gray-200'>
             Vocabulary
           </li>
         </ul>

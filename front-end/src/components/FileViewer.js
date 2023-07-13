@@ -1,31 +1,66 @@
-import React, { useContext, useState } from "react";
+import "react-pdf/dist/esm/Page/TextLayer.css";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { pdfjs, Document, Page } from "react-pdf";
 import { Context } from "../context/context";
+import { StyleSheet } from "@react-pdf/renderer";
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.js`;
 
-const FileViewer = () => {
-  const { file, loadFile } = useContext(Context);
-  const [zoom, setZoom] = useState(1);
-  const [numPages, setNumPages] = useState(null);
-  const [pageNumber, setPageNumber] = useState(1);
+const styles = StyleSheet.create({
+  page: {
+    flexDirection: "row",
+    backgroundColor: "#E4E4E4",
+  },
+});
 
-  const onDocumentLoadSuccess = ({ numPages }) => {
-    setNumPages(numPages);
+const FileViewer = () => {
+  const { zoom, file, loading, setLoading, currentPage, setPageCount } =
+    useContext(Context);
+  const [aspectRatio, setAspectRatio] = useState(1);
+  const [elWidth, setElWidth] = useState(0);
+
+  const wrapperStyle = useMemo(
+    () => ({
+      width: "100%",
+      height: `calc(100vw / ${aspectRatio})`,
+      maxHeight: "100vh",
+    }),
+    [aspectRatio]
+  );
+
+  const onDocumentLoadSuccess = async ({ numPages }) => {
+    setPageCount(numPages);
   };
 
+  const onPageLoadSuccess = ({ width, height }) => {
+    setLoading(false);
+    const aspectRatio = width / height;
+    setAspectRatio(aspectRatio);
+  };
+  useEffect(() => {
+    const containerElement = document.getElementById("pdf-container");
+    const { width } = containerElement
+      ? containerElement.getBoundingClientRect()
+      : {};
+    setElWidth(width);
+  }, []);
+
   return (
-    <div className='w-full flex justify-center '>
-      <div className='flex justify-center bg-white w-[60%] border border-gray-300'>
-        <Document
-          className='text-red-600 m-4'
-          file={file}
-          onLoadSuccess={onDocumentLoadSuccess}
-        >
+    <div className='flex justify-center h-[87vh] w-full rounded shadow'>
+      <div
+        className='flex justify-center overflow-auto'
+        id='pdf-container'
+        style={wrapperStyle}
+      >
+        <Document file={file} onLoadSuccess={onDocumentLoadSuccess} loading=''>
           <Page
-            pageNumber={pageNumber}
-            scale={zoom}
-            className='w-full-page'
+            size='A4'
+            style={styles.page}
+            pageNumber={currentPage}
+            scale={zoom * 0.005}
             renderMode='canvas'
+            renderTextLayer={false}
+            width={elWidth}
+            onLoadSuccess={onPageLoadSuccess}
           />
         </Document>
       </div>

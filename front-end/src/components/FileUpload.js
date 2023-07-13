@@ -5,11 +5,10 @@ import { Context } from "../context/context";
 
 function FileUpload() {
   const [pdfFile, setPdfFile] = useState();
-  const { file, loadFile } = useContext(Context);
+  const { file, loading, setLoading, loadFile } = useContext(Context);
 
   const submitFile = (event) => {
     event.preventDefault();
-
     const formData = new FormData();
     formData.append("file", pdfFile);
     axios
@@ -19,8 +18,8 @@ function FileUpload() {
         },
       })
       .then((response) => {
-        console.log({ response });
         alert("File uploaded successfully.");
+        setLoading(true);
         axios
           .get("http://localhost:5000/get_file", {
             params: {
@@ -50,11 +49,8 @@ function FileUpload() {
 
   return (
     <form onSubmit={submitFile}>
-      <label htmlFor='file' className='p-4 text-lg font-bold text-gray-600'>
-        Select file:
-      </label>
       <input
-        className='bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-4 rounded'
+        className='w-96 bg-gray-500 hover:bg-gray-400 text-white py-2 px-4 mr-8 rounded cursor-pointer'
         type='file'
         id='file'
         accept='.pdf'
