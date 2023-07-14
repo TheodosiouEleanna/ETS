@@ -2,6 +2,8 @@ import io
 import os
 import sqlite3
 from flask import Flask, request, jsonify, Response
+from werkzeug.security import generate_password_hash, check_password_hash
+import uuid
 from werkzeug.utils import secure_filename
 from datetime import datetime
 from flask_cors import CORS
@@ -82,6 +84,50 @@ def parse_file():
         return response
     else:
         return "Allowed file type only.", 415
+
+
+@app.route('/create-profile', methods=['POST'])
+def create_profile():
+    data = request.get_json()
+
+    username = data['username']
+    password = generate_password_hash(data['password'], method='sha256')
+
+    conn = sqlite3.connect(sqLiteDatabase)
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("INSERT INTO users (userID, username, password) VALUES (?, ?, ?)",
+                       (str(uuid.uuid4()), username, password))
+        conn.commit()
+    except sqlite3.IntegrityError:
+        return jsonify({'message': 'Username already exists.'}), 400
+
+    return jsonify({'message': 'New user created.'}), 201
+
+
+# User login
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+
+    username = data['username']
+    password = data['password']
+
+    conn = sqlite3.connect(sqLiteDatabase)
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM users WHERE username=?", (username,))
+    user = cursor.fetchone()
+
+    if not user or not check_password_hash(user[2], password):
+        return jsonify({'message': 'Invalid username or password.'}), 401
+
+    return jsonify({
+        'message': 'Logged in successfully.',
+        'username': user[1],
+        'userID': user[0]
+    }), 200
 
 
 if __name__ == '__main__':

@@ -13,9 +13,9 @@ const Footer = () => {
   } = useContext(Context);
 
   return (
-    <footer className='w-full z-10 flex items-center justify-between border border-gray-400 p-4 bg-gray-200'>
+    <footer className='z-10 w-full flex items-center justify-between border border-gray-400 p-4 bg-gray-200'>
       <div className='flex'>
-        <label className='block text-gray-700 text-sm font-bold pr-4 flex items-center'>
+        <label className='block text-gray-700 text-sm  pr-4 flex items-center'>
           Zoom Level
         </label>
         <input
@@ -31,20 +31,20 @@ const Footer = () => {
 
       <div>
         <Button
-          className=''
+          className='bg-blue-500'
           label='Prev'
           onClick={goToPrevPage}
-          disabled={currentPage === 1}
+          disabled={currentPage === 1 || currentPage === 0}
         />
 
-        <span>
+        <span className='mx-4'>
           Page {currentPage} of {pageCount}
         </span>
         <Button
-          className=''
+          className='bg-blue-500'
           label='Next'
           onClick={goToNextPage}
-          disabled={currentPage === pageCount}
+          disabled={currentPage === pageCount || currentPage === 0}
         />
       </div>
     </footer>

@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
 });
 
 const FileViewer = () => {
-  const { zoom, file, loading, setLoading, currentPage, setPageCount } =
+  const { zoom, file, setLoading, currentPage, setPageCount } =
     useContext(Context);
   const [aspectRatio, setAspectRatio] = useState(1);
   const [elWidth, setElWidth] = useState(0);
@@ -22,7 +22,7 @@ const FileViewer = () => {
     () => ({
       width: "100%",
       height: `calc(100vw / ${aspectRatio})`,
-      maxHeight: "100vh",
+      maxHeight: "88.5vh",
     }),
     [aspectRatio]
   );
@@ -45,25 +45,23 @@ const FileViewer = () => {
   }, []);
 
   return (
-    <div className='flex justify-center h-[87vh] w-full rounded shadow'>
-      <div
-        className='flex justify-center overflow-auto'
-        id='pdf-container'
-        style={wrapperStyle}
-      >
-        <Document file={file} onLoadSuccess={onDocumentLoadSuccess} loading=''>
-          <Page
-            size='A4'
-            style={styles.page}
-            pageNumber={currentPage}
-            scale={zoom * 0.005}
-            renderMode='canvas'
-            renderTextLayer={false}
-            width={elWidth}
-            onLoadSuccess={onPageLoadSuccess}
-          />
-        </Document>
-      </div>
+    <div
+      className='flex justify-center overflow-auto'
+      id='pdf-container'
+      style={wrapperStyle}
+    >
+      <Document file={file} onLoadSuccess={onDocumentLoadSuccess} loading=''>
+        <Page
+          size='A4'
+          style={styles.page}
+          pageNumber={currentPage}
+          scale={zoom * 0.005}
+          renderMode='canvas'
+          renderTextLayer={false}
+          width={elWidth}
+          onLoadSuccess={onPageLoadSuccess}
+        />
+      </Document>
     </div>
   );
 };

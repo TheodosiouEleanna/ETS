@@ -2,10 +2,11 @@ import React, { createContext, useEffect, useReducer } from "react";
 
 const initialState = {
   file: { size: 0 },
-  currentPage: 1,
+  currentPage: 0,
   pageCount: 0,
   zoom: 100,
   loading: false,
+  userInfo: JSON.parse(localStorage.getItem("userInfo")),
 };
 
 const reducer = (state, action) => {
@@ -14,6 +15,7 @@ const reducer = (state, action) => {
       return {
         ...state,
         file: action.payload,
+        currentPage: 1,
       };
     case "GO_TO_PREV_PAGE":
       return {
@@ -42,6 +44,19 @@ const reducer = (state, action) => {
         ...state,
         loading: action.payload,
       };
+    case "SET_SESSION":
+      localStorage.setItem("userInfo", JSON.stringify(action.payload));
+      return {
+        ...state,
+        userInfo: action.payload,
+      };
+    case "LOGOUT":
+      localStorage.removeItem("userInfo");
+      return {
+        ...state,
+        userInfo: { isLoggedIn: false },
+      };
+
     default:
       return state;
   }
@@ -51,6 +66,7 @@ export const Context = createContext();
 
 export const ContextProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
+  console.log({ state });
 
   const loadFile = (file) => {
     dispatch({ type: "LOAD_FILE", payload: file });
@@ -76,6 +92,19 @@ export const ContextProvider = ({ children }) => {
     dispatch({ type: "SET_LOADING", payload: loading });
   };
 
+  const setUserInfo = (userInfo) => {
+    dispatch({ type: "SET_SESSION", payload: userInfo });
+  };
+
+  const logout = () => {
+    dispatch({ type: "LOGOUT" });
+  };
+
+  useEffect(() => {
+    if (state.userInfo) {
+    }
+  }, [state.userInfo]);
+
   const contextValue = {
     zoom: state.zoom,
     file: state.file,
@@ -83,8 +112,12 @@ export const ContextProvider = ({ children }) => {
     pageCount: state.pageCount,
     setPageCount,
     loadFile,
+    isLoggedIn: state.isLoggedIn,
+    userInfo: state.userInfo,
+    setUserInfo,
     loading: state.loading,
     setLoading,
+    logout,
     goToNextPage,
     goToPrevPage,
     handleZoomChange,

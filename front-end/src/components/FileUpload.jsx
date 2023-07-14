@@ -5,7 +5,7 @@ import { Context } from "../context/context";
 
 function FileUpload() {
   const [pdfFile, setPdfFile] = useState();
-  const { file, loading, setLoading, loadFile } = useContext(Context);
+  const { setLoading, loadFile } = useContext(Context);
 
   const submitFile = (event) => {
     event.preventDefault();
@@ -23,12 +23,11 @@ function FileUpload() {
         axios
           .get("http://localhost:5000/get_file", {
             params: {
-              docID: response.data.docID, // Replace with the actual document ID you want to retrieve
+              docID: response.data.docID,
             },
-            responseType: "blob", // Important for handling binary data
+            responseType: "blob",
           })
           .then((response) => {
-            // Create a blob from the file data
             const fileBlob = new Blob([response.data], {
               type: response.data.type,
             });
@@ -48,9 +47,9 @@ function FileUpload() {
   };
 
   return (
-    <form onSubmit={submitFile}>
+    <form onSubmit={submitFile} className='flex'>
       <input
-        className='w-96 bg-gray-500 hover:bg-gray-400 text-white py-2 px-4 mr-8 rounded cursor-pointer'
+        className='w-96 bg-gray-500 hover:bg-gray-400 text-white py-1 px-2 mx-2 rounded cursor-pointer'
         type='file'
         id='file'
         accept='.pdf'
@@ -59,7 +58,7 @@ function FileUpload() {
       <Button
         type='submit'
         label='Upload'
-        className='bg-gray-500 hover:bg-gray-400 text-white font-bold py-3 mx-2 px-4 rounded'
+        className='bg-blue-500 hover:bg-gray-400 text-white p-4 mx-2 rounded'
       />
     </form>
   );
