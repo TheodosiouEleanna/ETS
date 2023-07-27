@@ -43,7 +43,7 @@ const FileViewer = () => {
       : {};
     setElWidth(width);
   }, []);
-
+  // TOdo: add the whole document and the ability to scroll and change page with input Field
   return (
     <div
       className='flex justify-center overflow-auto'

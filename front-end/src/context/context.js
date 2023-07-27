@@ -6,7 +6,17 @@ const initialState = {
   pageCount: 0,
   zoom: 100,
   loading: false,
-  userInfo: JSON.parse(localStorage.getItem("userInfo")),
+  userInfo: JSON.parse(localStorage.getItem("userInfo")) || {
+    isLoggedIn: false,
+    userID: null,
+    username: "",
+  },
+  userSettings: JSON.parse(localStorage.getItem("userSettings")) || {
+    language: "English",
+    theme: "dark",
+    zoomLevel: 1,
+  },
+  // Todo: Add all the initial values
 };
 
 const reducer = (state, action) => {
@@ -49,6 +59,12 @@ const reducer = (state, action) => {
       return {
         ...state,
         userInfo: action.payload,
+      };
+    case "SET_USER_SETTINGS":
+      localStorage.setItem("userSettings", JSON.stringify(action.payload));
+      return {
+        ...state,
+        userSettings: action.payload,
       };
     case "LOGOUT":
       localStorage.removeItem("userInfo");
@@ -96,14 +112,13 @@ export const ContextProvider = ({ children }) => {
     dispatch({ type: "SET_SESSION", payload: userInfo });
   };
 
+  const setUserSettings = (userSettings) => {
+    dispatch({ type: "SET_USER_SETTINGS", payload: userSettings });
+  };
+
   const logout = () => {
     dispatch({ type: "LOGOUT" });
   };
-
-  useEffect(() => {
-    if (state.userInfo) {
-    }
-  }, [state.userInfo]);
 
   const contextValue = {
     zoom: state.zoom,
@@ -121,6 +136,8 @@ export const ContextProvider = ({ children }) => {
     goToNextPage,
     goToPrevPage,
     handleZoomChange,
+    userSettings: state.userSettings,
+    setUserSettings,
   };
 
   return <Context.Provider value={contextValue}>{children}</Context.Provider>;

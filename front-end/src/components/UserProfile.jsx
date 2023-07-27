@@ -7,6 +7,17 @@ const UserProfile = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const { setUserInfo } = useContext(Context);
+  const [error, setError] = useState("");
+
+  const handleEnterPress = (event, type) => {
+    if (event.key === "Enter") {
+      if (isLogin) {
+        loginUser();
+      } else {
+        createUser();
+      }
+    }
+  };
 
   const createUser = () => {
     axios
@@ -14,9 +25,18 @@ const UserProfile = () => {
         username,
         password,
       })
-      .then((res) => {})
+      .then((res) => {
+        if (res.status === 200) {
+          setIsLogin(true);
+          setUsername("");
+          setPassword("");
+          setError("");
+        }
+      })
       .catch((err) => {
-        console.error(err);
+        if (err.response.status === 400) {
+          setError(err.response.data.message);
+        }
       });
   };
 
@@ -36,7 +56,10 @@ const UserProfile = () => {
         }
       })
       .catch((err) => {
-        console.error(err);
+        console.error({ err });
+        if (err.response.status === 400) {
+          setError(err.response.data.message);
+        }
       });
   };
 
@@ -55,6 +78,7 @@ const UserProfile = () => {
           type='text'
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+          onKeyDown={handleEnterPress}
           placeholder='Username'
         />
         <input
@@ -62,8 +86,12 @@ const UserProfile = () => {
           type='password'
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          onKeyDown={handleEnterPress}
           placeholder='Password'
         />
+        {error && (
+          <div className='text-red-700 flex justify-center pb-2'>{error}</div>
+        )}
         {isLogin ? (
           <button
             className='w-full px-3 py-2 bg-green-600 text-white rounded-md hover:bg-green-700'

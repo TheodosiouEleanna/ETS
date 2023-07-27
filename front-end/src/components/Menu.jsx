@@ -1,24 +1,30 @@
 import React, { useRef } from "react";
 
-const Menu = ({ onClick }) => {
+const Menu = ({ onItemClick }) => {
   const dropdownRef = useRef(null);
   return (
     <ul
-      className=' w-52 flex flex-col justify-center rounded bg-gray-200 text-white text-lg absolute top-10 left-0 opacity-80'
+      className=' w-52 flex flex-col justify-center rounded bg-slate-200 text-white text-lg absolute top-8 left-0'
       ref={dropdownRef}
     >
       <li
         className='w-full rounded-t text-gray-800 p-2 hover:bg-gray-300 cursor-pointer'
-        onClick={onClick}
+        onClick={() => onItemClick("settings")}
       >
         Settings
       </li>
-      <div className='bg-gray-900 w-full h-px'></div>
-      <li className='w-full rounded-b text-gray-800 p-2 hover:bg-gray-300 cursor-pointer '>
+      <div className='bg-gray-300 w-full h-px'></div>
+      <li
+        className='w-full rounded-b text-gray-800 p-2 hover:bg-gray-300 cursor-pointer '
+        onClick={() => onItemClick("vocabulary")}
+      >
         Vocabulary
       </li>
-      <div className='bg-gray-900 w-full h-px'></div>
-      <li className='w-full text-gray-800 p-2 hover:bg-gray-300 cursor-pointer '>
+      <div className='bg-gray-300 w-full h-px'></div>
+      <li
+        className='w-full text-gray-800 p-2 hover:bg-gray-300 cursor-pointer '
+        onClick={() => onItemClick("documents")}
+      >
         My documents
       </li>
     </ul>

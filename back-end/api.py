@@ -91,19 +91,30 @@ def create_profile():
     data = request.get_json()
 
     username = data['username']
-    password = generate_password_hash(data['password'], method='sha256')
+
+    if len(username) < 6:
+        return jsonify({'message': 'Username should be at least 6 characters.'}), 400
+
+    if len(data['password']) < 6:
+        return jsonify({'message': 'Password should be at least 6 characters.'}), 400
 
     conn = sqlite3.connect(sqLiteDatabase)
     cursor = conn.cursor()
 
-    try:
-        cursor.execute("INSERT INTO users (userID, username, password) VALUES (?, ?, ?)",
-                       (str(uuid.uuid4()), username, password))
-        conn.commit()
-    except sqlite3.IntegrityError:
+    cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
+    user = cursor.fetchone()
+    print(user)
+
+    if user:
         return jsonify({'message': 'Username already exists.'}), 400
 
-    return jsonify({'message': 'New user created.'}), 201
+    password = generate_password_hash(data['password'], method='sha256')
+
+    cursor.execute("INSERT INTO users (userID, username, password) VALUES (?, ?, ?)",
+                   (str(uuid.uuid4()), username, password))
+    conn.commit()
+
+    return jsonify({'message': 'New user created.'}), 200
 
 
 # User login
@@ -120,8 +131,11 @@ def login():
     cursor.execute("SELECT * FROM users WHERE username=?", (username,))
     user = cursor.fetchone()
 
-    if not user or not check_password_hash(user[2], password):
-        return jsonify({'message': 'Invalid username or password.'}), 401
+    if user is None:
+        return jsonify({'message': 'Invalid username and password.'}), 400
+
+    if not check_password_hash(user[2], password):
+        return jsonify({'message': 'Invalid password.'}), 400
 
     return jsonify({
         'message': 'Logged in successfully.',
@@ -129,6 +143,36 @@ def login():
         'userID': user[0]
     }), 200
 
+
+@app.route('/settings', methods=['POST'])
+def update_settings():
+    data = request.get_json()
+
+    userID = data['userID']
+    selected_language = data['language']
+    theme = data['theme']
+    zoomLevel = data['zoomLevel']
+
+    conn = sqlite3.connect(sqLiteDatabase)
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM user_settings WHERE userID = ?", (userID,))
+    user_settings = cursor.fetchone()
+
+    if user_settings:
+        cursor.execute("UPDATE user_settings SET Selected_language = ?, theme = ?, zoomLevel = ? WHERE userID = ?",
+                       (selected_language, theme, zoomLevel, userID))
+    else:
+        cursor.execute("INSERT INTO user_settings (userID, Selected_language, theme, zoomLevel) VALUES (?, ?, ?, ?)",
+                       (userID, selected_language, theme, zoomLevel))
+    conn.commit()
+
+    return jsonify({'message': 'Settings updated.'}), 200
+
+
+# /documents end point to get the documents
+# /search end point to search for eye trackers
+# /connect end point to connect with the selected eye tracker
 
 if __name__ == '__main__':
 

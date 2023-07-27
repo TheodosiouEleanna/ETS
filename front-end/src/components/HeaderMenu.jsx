@@ -17,6 +17,11 @@ export const HeaderMenu = () => {
     setIsOpen((prev) => !prev);
   };
 
+  const onItemClick = (key) => {
+    if (key === "settings") setShowSettings(true);
+    setIsOpen(false);
+  };
+
   const toggleSettings = () => {
     setShowSettings((prev) => !prev);
   };
@@ -38,13 +43,13 @@ export const HeaderMenu = () => {
         >
           <MdDensityMedium className='text-xl' />
         </Button>
-        {isOpen && <Menu onClick={toggleOpen} />}
+        {isOpen && <Menu onItemClick={onItemClick} />}
       </div>
       {showSettings && <Settings onClick={toggleSettings} />}
       <div className='relative'>
         {showProfile && <Profile onClick={onClickLogout} />}
         <Button
-          className='hover:bg-gray-600 text-white  px-4'
+          className='hover:bg-gray-600 text-white px-4'
           onClick={toggleProfile}
         >
           <BsFillPersonFill className='text-xl' />
