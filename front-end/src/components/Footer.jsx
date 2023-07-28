@@ -15,7 +15,7 @@ const Footer = () => {
   return (
     <footer className='z-10 w-full flex items-center justify-between border border-gray-400 p-4 bg-slate-200'>
       <div className='flex'>
-        <label className='block text-gray-700 text-sm  pr-4 flex items-center'>
+        <label className='block text-gray-700 text-sm  pr-4 items-center'>
           Zoom Level
         </label>
         <input

@@ -5,6 +5,7 @@ export const Button = ({
   children,
   disabled,
   type,
+  style,
   onClick,
   className,
 }) => {
@@ -12,8 +13,13 @@ export const Button = ({
     <button
       disabled={disabled}
       type={type}
+      style={style}
       onClick={onClick}
-      className={`${className} hover:bg-gray-400 text-white py-1 px-2 rounded `}
+      className={`${className} ${
+        disabled
+          ? " text-white py-1 px-2 rounded opacity-50"
+          : "hover:opacity-80 text-white py-1 px-2 rounded "
+      } `}
     >
       {label && label}
       {children && children}

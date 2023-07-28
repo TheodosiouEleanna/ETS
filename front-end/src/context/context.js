@@ -72,7 +72,6 @@ const reducer = (state, action) => {
         ...state,
         userInfo: { isLoggedIn: false },
       };
-
     default:
       return state;
   }

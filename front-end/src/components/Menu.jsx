@@ -4,7 +4,7 @@ const Menu = ({ onItemClick }) => {
   const dropdownRef = useRef(null);
   return (
     <ul
-      className=' w-52 flex flex-col justify-center rounded bg-slate-200 text-white text-lg absolute top-8 left-0'
+      className=' w-52 flex flex-col justify-center rounded bg-slate-200 text-white text-lg absolute top-12 left-0'
       ref={dropdownRef}
     >
       <li

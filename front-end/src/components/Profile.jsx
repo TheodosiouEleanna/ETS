@@ -5,7 +5,7 @@ const Profile = ({ onClick }) => {
   const { userInfo } = useContext(Context);
 
   return (
-    <div className=' p-4 absolute rounded bg-slate-200 text-white text-lg top-8 right-1'>
+    <div className=' p-2 absolute rounded bg-slate-200 text-white text-lg top-[2.7rem] right-1'>
       {/* <div>User ID: {userInfo.userID}</div> */}
       <div className='w-44 h-12 text-gray-800 '>
         Logged in as:<span className='text-base'> {userInfo.username}</span>
