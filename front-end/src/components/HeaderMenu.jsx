@@ -22,12 +22,6 @@ export const HeaderMenu = () => {
   const [showConnectionModal, setShowConnectionModal] = useState("");
   const [eyeTrackers, setEyeTrackers] = useState([]);
 
-  const buttonLabel = () => {
-    if (connectionStatus === "searching") return "Searching...";
-    else if (connectionStatus === "selection") return "Eye Tracker Selection";
-    if (connectionStatus === "connected") return "Eye Tracker Connected";
-  };
-
   const buttonStyle = () => ({
     backgroundColor: connectionStatus === "connected" ? "green" : "",
   });
@@ -69,14 +63,11 @@ export const HeaderMenu = () => {
       .post("http://localhost:5000/api/search")
       .then((response) => {
         console.log(response.data);
-        setConnectionStatus("selection");
+        // setConnectionStatus("selection");
         requestEyeTrackers();
       })
       .catch((error) => {
         // setConnectionStatus("error");
-        setTimeout(() => {
-          setConnectionStatus("selection");
-        }, 3000);
         console.error(error);
       });
   }, []);
@@ -86,12 +77,10 @@ export const HeaderMenu = () => {
   };
 
   const handleClick = useCallback(() => {
-    if (connectionStatus === "" || connectionStatus === "error") {
-      setShowConnectionModal(true);
-      setConnectionStatus("searching");
-      toggleEyeTrackerSearch();
-    }
-  }, [connectionStatus, toggleEyeTrackerSearch]);
+    setShowConnectionModal(true);
+    setConnectionStatus("searching");
+    toggleEyeTrackerSearch();
+  }, [toggleEyeTrackerSearch]);
 
   const onClickLogout = () => {
     logout();
@@ -121,20 +110,6 @@ export const HeaderMenu = () => {
         >
           <MdDensityMedium className='text-xl' />
         </Button>
-        {/* {connectionStatus && connectionStatus === "searching" ? (
-          <Button
-            label='Searching...'
-            className='bg-gray-600 hover:bg-gray-500 text-white text-[1rem] px-4 mx-1'
-            onClick={toggleEyeTrackerSearch}
-          ></Button>
-        ) 
-        : (
-          <Button
-            label='Search for eye-tracker'
-            className='bg-gray-600 hover:bg-gray-500 text-white text-[1rem] px-4 mx-1'
-            onClick={toggleEyeTrackerSearch}
-          ></Button>
-        )} */}
         <Button
           label={capitalize(connectionStatus) || "Select Eye Tracker"}
           style={buttonStyle()}

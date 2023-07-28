@@ -4,6 +4,7 @@ import { Context } from "../context/context";
 import { Button } from "./Button";
 import Loader from "./Loader";
 import languageMap from "../consts";
+import ModalWrapper from "./ModalWrapper";
 
 const SettingsModal = ({ onClick }) => {
   const { zoom, userInfo, userSettings, setUserSettings } = useContext(Context);
@@ -45,12 +46,8 @@ const SettingsModal = ({ onClick }) => {
   };
 
   return (
-    <div className='fixed inset-0 w-full flex items-center justify-center z-40'>
-      <div
-        className='absolute inset-0 bg-black opacity-50'
-        onClick={onClick}
-      ></div>
-      <div className='z-50 rounded w-[500px] p-10 m-4 bg-slate-200'>
+    <ModalWrapper className='w-[700px] h-96' onClose={onClick}>
+      <div className='mx-8'>
         <div className='flex justify-center w-full'>
           <h1 className='mb-8 text-xl font-bold text-gray-900'>Settings</h1>
         </div>
@@ -93,13 +90,7 @@ const SettingsModal = ({ onClick }) => {
             ))}
           </select>
         </div>
-        <div className='flex justify-end py-4'>
-          <Button
-            label='Close'
-            className='bg-blue-500 mr-5'
-            onClick={onClick}
-          />
-
+        <div className='flex justify-end py-2'>
           <Button
             label={loading ? "" : "Confirm"}
             className='bg-blue-500 w-24 flex justify-center items-center'
@@ -109,7 +100,7 @@ const SettingsModal = ({ onClick }) => {
           </Button>
         </div>
       </div>
-    </div>
+    </ModalWrapper>
   );
 };
 
