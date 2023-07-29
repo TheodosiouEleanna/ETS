@@ -7,6 +7,7 @@ const ModalWrapper = ({
   style,
   className,
   shouldShowConfirm = true,
+  shouldDisableConfirm = false,
   onConfirm,
   onClose,
 }) => {
@@ -33,6 +34,7 @@ const ModalWrapper = ({
         {shouldShowConfirm && (
           <Button
             label='Confirm'
+            disabled={shouldDisableConfirm}
             className='bg-blue-500 text-slate-200 w-24 flex justify-center items-center text-base absolute right-8 bottom-8'
             onClick={onConfirm}
           >

@@ -55,6 +55,7 @@ function Menu({ onCloseMenu }) {
       className='w-[70%] h-[80vh]'
       title='Menu'
       onConfirm={onConfirm}
+      shouldDisableConfirm={selectedDocumentID === ""}
       onClose={onCloseMenu}
     >
       <div className='flex border-2 border-slate-200 h-[85%]'>
