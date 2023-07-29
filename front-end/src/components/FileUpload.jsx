@@ -5,12 +5,16 @@ import { Context } from "../context/context";
 
 function FileUpload() {
   const [pdfFile, setPdfFile] = useState();
-  const { setLoading, loadFile } = useContext(Context);
+  const { setLoading, loadFile, userInfo } = useContext(Context);
+  const { userID } = userInfo;
+
+  console.log({ userID });
 
   const submitFile = (event) => {
     event.preventDefault();
     const formData = new FormData();
     formData.append("file", pdfFile);
+    formData.append("userID", userID);
     axios
       .post("http://localhost:5000/upload_file", formData, {
         headers: {

@@ -17,8 +17,8 @@ export const Button = ({
       onClick={onClick}
       className={`${className} ${
         disabled
-          ? " text-white py-1 px-2 rounded opacity-50"
-          : "hover:opacity-80 text-white py-1 px-2 rounded "
+          ? "py-1 px-2 rounded opacity-50 "
+          : "hover:opacity-80 py-1 px-2 rounded "
       } `}
     >
       {label && label}

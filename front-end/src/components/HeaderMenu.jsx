@@ -90,13 +90,17 @@ export const HeaderMenu = () => {
     setConnectionStatus(status);
   };
 
-  const onCloseModal = () => {
+  const onCloseConnection = () => {
     if (connectionStatus === "connected") {
       setShowConnectionModal(false);
     } else {
       setConnectionStatus("");
       setShowConnectionModal(false);
     }
+  };
+
+  const onCloseMenu = () => {
+    setIsOpen(false);
   };
 
   console.log({ connectionStatus, showConnectionModal });
@@ -121,12 +125,11 @@ export const HeaderMenu = () => {
             status={connectionStatus}
             connectToEyeTracker={connectToEyeTracker}
             updateStatus={updateStatus}
-            onClose={onCloseModal}
+            onClose={onCloseConnection}
           />
         )}
-        {isOpen && <Menu onItemClick={onItemClick} />}
+        {isOpen && <Menu onCloseMenu={onCloseMenu} />}
       </div>
-      {showSettings && <Settings onClick={toggleSettings} />}
       <div className='relative'>
         {showProfile && <Profile onClick={onClickLogout} />}
         <Button

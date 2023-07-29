@@ -7,6 +7,7 @@ import uuid
 from werkzeug.utils import secure_filename
 from datetime import datetime
 from flask_cors import CORS
+import traceback
 
 app = Flask(__name__)
 CORS(app)
@@ -48,9 +49,7 @@ def upload_file(file, user_id):
     conn = sqlite3.connect(sqLiteDatabase)
     c = conn.cursor()
 
-    c.execute("SELECT MAX(docID) FROM documents")
-    max_id = c.fetchone()[0]
-    new_id = max_id + 1 if max_id else 1
+    new_id = str(uuid.uuid4())
     print('new id', new_id, 'user id', user_id, 'file name',
           filename,  'upload date', upload_date)
     c.execute("""
@@ -72,10 +71,12 @@ def upload_file(file, user_id):
 
 @app.route('/upload_file', methods=['POST'])
 def parse_file():
+    print(request.form)  # Debugging line
+    user_id = request.form.get('userID', default=1)
     if 'file' not in request.files:
         return "No file part", 400
     file = request.files['file']
-    user_id = request.form.get('userID', 1)
+
     if file.filename == '':
         return "No selected file", 400
     if file:
@@ -170,9 +171,27 @@ def update_settings():
     return jsonify({'message': 'Settings updated.'}), 200
 
 
-# /documents end point to get the documents
-# /search end point to search for eye trackers
-# /connect end point to connect with the selected eye tracker
+@app.route('/documents', methods=['GET'])
+def get_documents():
+    try:
+        user_id = request.args.get('userID')
+
+        conn = sqlite3.connect(sqLiteDatabase)
+        conn.row_factory = sqlite3.Row
+        c = conn.cursor()
+
+        c.execute(
+            "SELECT docID, userID, docName, uploadDate, lastReadPage FROM documents WHERE userID=?", (user_id,))
+
+        documents = c.fetchall()
+        print(documents)
+        documents_list = [dict(row) for row in documents]
+        print(documents_list)
+        return jsonify(documents_list)
+    except Exception as e:
+        print(traceback.format_exc())  # This will print the full traceback
+        return jsonify({"error": str(e)}), 500
+
 
 if __name__ == '__main__':
 

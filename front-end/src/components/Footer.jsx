@@ -31,7 +31,7 @@ const Footer = () => {
 
       <div>
         <Button
-          className='bg-blue-500'
+          className='bg-blue-500 text-slate-200'
           label='Prev'
           onClick={goToPrevPage}
           disabled={currentPage === 1 || currentPage === 0}
@@ -41,7 +41,7 @@ const Footer = () => {
           Page {currentPage} of {pageCount}
         </span>
         <Button
-          className='bg-blue-500'
+          className='bg-blue-500 text-slate-200'
           label='Next'
           onClick={goToNextPage}
           disabled={currentPage === pageCount || currentPage === 0}

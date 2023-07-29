@@ -8,7 +8,6 @@ const Connection = ({ status, updateStatus, connectToEyeTracker, onClose }) => {
   const { showConnectionModal } = useContext(Context);
   const [selectedEyeTracker, setSelectedEyeTracker] = useState("");
   const eyeTrackers = ["", "Eye Tracker 1", "Eye Tracker 2"]; // Replace with actual eye tracker names
-  console.log({ showConnectionModal, status });
   const handleEyeTrackerChange = (e) => {
     setSelectedEyeTracker(e.target.value);
   };
@@ -29,8 +28,12 @@ const Connection = ({ status, updateStatus, connectToEyeTracker, onClose }) => {
   };
 
   return (
-    <ModalWrapper className='w-[700px] h-64' onClose={onClose}>
-      <div className='flex justify-center w-full'>
+    <ModalWrapper
+      className='w-[700px] h-64'
+      shouldShowConfirm={false}
+      onClose={onClose}
+    >
+      <div className='flex justify-center items-center w-full h-full'>
         {status === "searching" && (
           <h1 className='text-xl font-bold text-gray-900'>Searching...</h1>
         )}
