@@ -1,6 +1,10 @@
 import io
 import os
+import sys
 import sqlite3
+import socket
+import re
+import json
 from flask import Flask, request, jsonify, Response
 from werkzeug.security import generate_password_hash, check_password_hash
 import uuid
@@ -8,10 +12,72 @@ from werkzeug.utils import secure_filename
 from datetime import datetime
 from flask_cors import CORS
 import traceback
+import tobii_research as tr
+
+# Import the configuration loader from config.py
+from config import load_config
 
 app = Flask(__name__)
 CORS(app)
 sqLiteDatabase = 'ETSsqLiteDB'
+
+# Load the configuration values from appsettings.json
+config_data = load_config()
+listening_port = config_data['ETSUIConfig']['ListeningPort']
+ETSDVM_address = config_data['ETSUIConfig']['ETSDVMport']
+
+
+def get_host_and_port(address):
+    # Keep IPv4 only..
+    hostname = re.search(r'\b(?:\d{1,3}\.){3}\d{1,3}\b|\blocalhost\b', address)
+    port = re.search(r':(\d+)', address)
+    return hostname.group(), int(port.group(1))
+
+
+def send_request(request_data):
+    server_host, server_port = get_host_and_port(ETSDVM_address)
+    # TCP communication
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_address = (server_host, server_port)
+    client_socket.connect(server_address)
+
+    # Send the request_data to ETSDVM
+    client_socket.sendall(request_data.encode())
+    # Waits to receive the response from the server and decode the bytes received
+    response_data = client_socket.recv(1024).decode()
+    # Once the communication is done, the client socket is closed to free up system resources
+    client_socket.close()
+
+    return response_data
+
+
+def upload_file(file, user_id):
+    filename = secure_filename(file.filename)
+    file_data = file.read()
+
+    upload_date = datetime.now()
+
+    conn = sqlite3.connect(sqLiteDatabase)
+    c = conn.cursor()
+
+    new_id = str(uuid.uuid4())
+    print('new id', new_id, 'user id', user_id, 'file name',
+          filename, 'upload date', upload_date)
+    c.execute("""
+        INSERT INTO documents(docID, userID, docName, docFile, uploadDate, lastReadPage)
+        VALUES (?, ?, ?, ?, ?, ?)
+    """, (new_id, user_id, filename, file_data, upload_date, 0))
+    conn.commit()
+    conn.close()
+
+    response = {
+        'message': 'File uploaded and stored successfully.',
+        'docID': new_id,
+        'userID': user_id,
+        'docName': filename,
+        'uploadDate': upload_date.strftime('%Y-%m-%d %H:%M:%S')
+    }
+    return jsonify(response), 200
 
 
 @app.route('/get_file', methods=['GET'])
@@ -36,37 +102,8 @@ def get_file():
     file_object = io.BytesIO(file_data)
     file_name = record[2]
 
-    return Response(file_object, mimetype='application/pdf', headers={"Content-Disposition": f"attachment;filename={file_name}"})
-
-
-def upload_file(file, user_id):
-
-    filename = secure_filename(file.filename)
-    file_data = file.read()
-
-    upload_date = datetime.now()
-
-    conn = sqlite3.connect(sqLiteDatabase)
-    c = conn.cursor()
-
-    new_id = str(uuid.uuid4())
-    print('new id', new_id, 'user id', user_id, 'file name',
-          filename,  'upload date', upload_date)
-    c.execute("""
-        INSERT INTO documents(docID, userID, docName, docFile, uploadDate, lastReadPage)
-        VALUES (?, ?, ?, ?, ?, ?)
-    """, (new_id, user_id, filename, file_data, upload_date, 0))
-    conn.commit()
-    conn.close()
-
-    response = {
-        'message': 'File uploaded and stored successfully.',
-        'docID': new_id,
-        'userID': user_id,
-        'docName': filename,
-        'uploadDate': upload_date.strftime('%Y-%m-%d %H:%M:%S')
-    }
-    return jsonify(response), 200
+    return Response(file_object, mimetype='application/pdf',
+                    headers={"Content-Disposition": f"attachment;filename={file_name}"})
 
 
 @app.route('/upload_file', methods=['POST'])
@@ -193,6 +230,22 @@ def get_documents():
         return jsonify({"error": str(e)}), 500
 
 
-if __name__ == '__main__':
+@app.route('/api/search', methods=['POST'])
+def search_eye_tracker():
+    request_data = "search_eye_tracker"
+    response_data = send_request(request_data)
 
-    app.run(debug=True)
+    # Convert JSON string to Python list. The returned type of response_data must be string
+    return json.loads(response_data)
+
+
+@app.route('/api/get-eye-trackers', methods=['GET'])
+def get_eye_tracker():
+    request_data = "get_eye_tracker"
+    response_data = send_request(request_data)
+    print("This is the response_data from get_eye_tracker", response_data)
+    return response_data
+
+
+if __name__ == '__main__':
+    app.run(port=listening_port, debug=True)
