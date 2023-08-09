@@ -6,7 +6,7 @@ import Loader from "./Loader";
 import languageMap from "../consts";
 import ModalWrapper from "./ModalWrapper";
 
-const SettingsModal = ({ onClick }) => {
+const Settings = ({ onClick }) => {
   const { zoom, userInfo, userSettings, setUserSettings } = useContext(Context);
   const { userID } = userInfo;
   const {
@@ -46,7 +46,7 @@ const SettingsModal = ({ onClick }) => {
   };
 
   return (
-    <div className='flex flex-col w-[500px] m-2'>
+    <div className='flex flex-col w-[500px] m-2 p-4'>
       <h1 className='py-1 mb-8 text-xl font-bold text-gray-900 border-b border-gray-300'>
         Settings
       </h1>
@@ -94,4 +94,4 @@ const SettingsModal = ({ onClick }) => {
   );
 };
 
-export default SettingsModal;
+export default Settings;

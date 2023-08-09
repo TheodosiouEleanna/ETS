@@ -7,8 +7,10 @@ const ModalWrapper = ({
   style,
   className,
   shouldShowConfirm = true,
+  shouldShowUpload = false,
   shouldDisableConfirm = false,
   onConfirm,
+  onClickUpload,
   onClose,
 }) => {
   return (
@@ -16,7 +18,7 @@ const ModalWrapper = ({
       <div className='absolute inset-0 bg-black opacity-50'></div>
       <div
         style={style}
-        className={`${className} z-50 rounded w-[500px] py-4 px-7 m-2 bg-slate-200 relative`}
+        className={`rounded w-[500px] py-4 px-7 m-2 bg-slate-200 relative ${className}`}
       >
         {title && (
           <div className='flex justify-center items-center mt-2 '>
@@ -31,16 +33,27 @@ const ModalWrapper = ({
         </Button>
 
         {children}
-        {shouldShowConfirm && (
-          <Button
-            label='Confirm'
-            disabled={shouldDisableConfirm}
-            className='bg-blue-500 text-slate-200 w-24 flex justify-center items-center text-base absolute right-8 bottom-8'
-            onClick={onConfirm}
-          >
-            {/* {loading && <Loader />} */}
-          </Button>
-        )}
+        <div className='flex'>
+          {shouldShowConfirm && (
+            <Button
+              label='Confirm'
+              disabled={shouldDisableConfirm}
+              className='bg-blue-500 text-slate-200 w-24 flex justify-center items-center text-base absolute right-8 bottom-8'
+              onClick={onConfirm}
+            >
+              {/* {loading && <Loader />} */}
+            </Button>
+          )}
+          {shouldShowUpload && (
+            <Button
+              label='Upload File'
+              className='bg-blue-500 text-slate-200 w-24 flex justify-center items-center text-base absolute right-36 bottom-8'
+              onClick={onClickUpload}
+            >
+              {/* {loading && <Loader />} */}
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );

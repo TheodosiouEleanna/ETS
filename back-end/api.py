@@ -18,13 +18,17 @@ import tobii_research as tr
 from config import load_config
 
 app = Flask(__name__)
-CORS(app)
+# Replace with your frontend's address
+CORS(app, origins=["http://localhost:3000", "http://localhost:3001"])
 sqLiteDatabase = 'ETSsqLiteDB'
 
 # Load the configuration values from appsettings.json
 config_data = load_config()
 listening_port = config_data['ETSUIConfig']['ListeningPort']
 ETSDVM_address = config_data['ETSUIConfig']['ETSDVMport']
+
+# --------------------- FUNCTIONS ---------------------------
+# Maybe move them in a separate file
 
 
 def get_host_and_port(address):
@@ -52,6 +56,7 @@ def send_request(request_data):
 
 
 def upload_file(file, user_id):
+    # Todo: dont insert the file if it already exists
     filename = secure_filename(file.filename)
     file_data = file.read()
 
@@ -80,7 +85,9 @@ def upload_file(file, user_id):
     return jsonify(response), 200
 
 
-@app.route('/get_file', methods=['GET'])
+# ---------------------- API ROUTES ---------------------------------------
+# Files
+@app.route('/api/get_file', methods=['GET'])
 def get_file():
     doc_id = request.args.get('docID')
     if doc_id is None:
@@ -106,7 +113,7 @@ def get_file():
                     headers={"Content-Disposition": f"attachment;filename={file_name}"})
 
 
-@app.route('/upload_file', methods=['POST'])
+@app.route('/api/upload_file', methods=['POST'])
 def parse_file():
     print(request.form)  # Debugging line
     user_id = request.form.get('userID', default=1)
@@ -124,7 +131,65 @@ def parse_file():
         return "Allowed file type only.", 415
 
 
-@app.route('/create-profile', methods=['POST'])
+@app.route('/api/delete_file', methods=['DELETE'])
+def delete_file():
+    doc_id = request.args.get('docID')
+    user_id = request.args.get('userID')
+
+    if not doc_id:
+        return "docID required", 400
+
+    # Assumes remove_file function does the deletion logic
+    response = remove_file(doc_id, user_id)
+    return response
+
+
+def remove_file(doc_id, user_id):
+    # Logic to remove the file metadata from the database based on doc_id and user_id
+    # Logic to delete the actual file from the file system
+
+    response = {
+        'message': 'File deleted successfully.',
+        'docID': doc_id,
+        'userID': user_id
+    }
+    return jsonify(response), 200
+
+
+@app.route('/api/documents', methods=['GET'])
+def get_documents():
+    try:
+        user_id = request.args.get('userID')
+
+        conn = sqlite3.connect(sqLiteDatabase)
+        conn.row_factory = sqlite3.Row
+        c = conn.cursor()
+
+        c.execute(
+            "SELECT docID, userID, docName, uploadDate, lastReadPage FROM documents WHERE userID=?", (user_id,))
+
+        documents = c.fetchall()
+        print(documents)
+        documents_list = [dict(row) for row in documents]
+        print(documents_list)
+        return jsonify(documents_list)
+    except Exception as e:
+        print(traceback.format_exc())  # This will print the full traceback
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/search', methods=['POST'])
+def search_eye_tracker():
+    request_data = "search_eye_tracker"
+    response_data = send_request(request_data)
+
+    # Convert JSON string to Python list. The returned type of response_data must be string
+    return json.loads(response_data)
+
+# User profile
+
+
+@app.route('/api/create-profile', methods=['POST'])
 def create_profile():
     data = request.get_json()
 
@@ -155,8 +220,7 @@ def create_profile():
     return jsonify({'message': 'New user created.'}), 200
 
 
-# User login
-@app.route('/login', methods=['POST'])
+@app.route('/api/login', methods=['POST'])
 def login():
     data = request.get_json()
 
@@ -181,8 +245,10 @@ def login():
         'userID': user[0]
     }), 200
 
+# Settings
 
-@app.route('/settings', methods=['POST'])
+
+@app.route('/api/settings', methods=['POST'])
 def update_settings():
     data = request.get_json()
 
@@ -206,37 +272,6 @@ def update_settings():
     conn.commit()
 
     return jsonify({'message': 'Settings updated.'}), 200
-
-
-@app.route('/documents', methods=['GET'])
-def get_documents():
-    try:
-        user_id = request.args.get('userID')
-
-        conn = sqlite3.connect(sqLiteDatabase)
-        conn.row_factory = sqlite3.Row
-        c = conn.cursor()
-
-        c.execute(
-            "SELECT docID, userID, docName, uploadDate, lastReadPage FROM documents WHERE userID=?", (user_id,))
-
-        documents = c.fetchall()
-        print(documents)
-        documents_list = [dict(row) for row in documents]
-        print(documents_list)
-        return jsonify(documents_list)
-    except Exception as e:
-        print(traceback.format_exc())  # This will print the full traceback
-        return jsonify({"error": str(e)}), 500
-
-
-@app.route('/api/search', methods=['POST'])
-def search_eye_tracker():
-    request_data = "search_eye_tracker"
-    response_data = send_request(request_data)
-
-    # Convert JSON string to Python list. The returned type of response_data must be string
-    return json.loads(response_data)
 
 
 @app.route('/api/get-eye-trackers', methods=['GET'])

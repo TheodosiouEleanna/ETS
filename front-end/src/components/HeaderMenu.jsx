@@ -14,9 +14,8 @@ const capitalize = (str) => {
 };
 
 export const HeaderMenu = () => {
-  const { logout } = useContext(Context);
+  const { file, logout } = useContext(Context);
   const [isOpen, setIsOpen] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState("");
   const [showConnectionModal, setShowConnectionModal] = useState("");
@@ -30,16 +29,6 @@ export const HeaderMenu = () => {
     setIsOpen((prev) => !prev);
   };
 
-  const onItemClick = (key) => {
-    if (key === "settings") setShowSettings(true);
-    setIsOpen(false);
-  };
-
-  debugger;
-  const toggleSettings = () => {
-    setShowSettings((prev) => !prev);
-  };
-
   const toggleProfile = () => {
     setShowProfile((prev) => !prev);
   };
@@ -48,8 +37,6 @@ export const HeaderMenu = () => {
     axios
       .get("http://localhost:5000/api/get-eye-trackers")
       .then((response) => {
-        console.log(response.data);
-
         // Store the eye trackers in state
         setEyeTrackers(response.data);
       })
@@ -103,8 +90,6 @@ export const HeaderMenu = () => {
     setIsOpen(false);
   };
 
-  console.log({ connectionStatus, showConnectionModal });
-
   return (
     <div className='w-full flex justify-between items-center'>
       <div className='flex items-center'>
@@ -114,12 +99,14 @@ export const HeaderMenu = () => {
         >
           <MdDensityMedium className='text-xl' />
         </Button>
-        <Button
-          label={capitalize(connectionStatus) || "Select Eye Tracker"}
-          style={buttonStyle()}
-          className='bg-gray-600 hover:bg-gray-500 text-white text-[1rem] px-4 mx-1'
-          onClick={handleClick}
-        ></Button>
+        {file.size !== 0 && (
+          <Button
+            label={capitalize(connectionStatus) || "Select Eye Tracker"}
+            style={buttonStyle()}
+            className='bg-gray-600 hover:bg-gray-500 text-white text-[1rem] px-4 mx-1'
+            onClick={handleClick}
+          ></Button>
+        )}
         {showConnectionModal && (
           <Connection
             status={connectionStatus}
