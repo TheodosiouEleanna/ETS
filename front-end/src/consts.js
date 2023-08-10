@@ -1,4 +1,4 @@
-const languageMap = {
+export const languageMap = {
   af: "Afrikaans",
   sq: "Albanian",
   am: "Amharic",
@@ -106,4 +106,5 @@ const languageMap = {
   yo: "Yoruba",
   zu: "Zulu",
 };
-export default languageMap;
+
+export const aspectRatio = 0.7097222222222223;

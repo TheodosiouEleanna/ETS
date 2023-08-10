@@ -1,31 +1,34 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { Context } from "../context/context";
-import { FaRegSquare, FaCheckSquare, FaCheck } from "react-icons/fa";
+import { FaRegSquare, FaCheckSquare } from "react-icons/fa";
 import { Button } from "./Button";
-import { RiCloseFill, RiDeleteBin4Fill } from "react-icons/ri";
+import { RiDeleteBin4Fill } from "react-icons/ri";
 import Dialog from "./Dialog";
 
-const Documents = ({ selectedDocumentID, setSelectedDocumentID }) => {
+const Documents = ({ onConfirm }) => {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [error, setError] = useState(null);
-  const { userInfo } = useContext(Context);
+  const { userInfo, selectedDocID, setSelectedDocID } = useContext(Context);
   const { userID } = userInfo;
 
   const handleDocumentClick = (docID) => {
-    setSelectedDocumentID((prev) => {
-      if (prev === docID) {
-        return "";
-      } else {
-        return docID;
-      }
-    });
+    if (selectedDocID === docID) {
+      setSelectedDocID("");
+    } else {
+      setSelectedDocID(docID);
+    }
+  };
+
+  const onDoubleClick = (id) => {
+    setSelectedDocID(id);
+    onConfirm(id);
   };
 
   const onClickDelete = (id) => {
-    setSelectedDocumentID(id);
+    selectedDocID(id);
     setShowDeleteDialog(true);
   };
 
@@ -34,18 +37,20 @@ const Documents = ({ selectedDocumentID, setSelectedDocumentID }) => {
   };
 
   const onDialogConfirm = () => {
+    // loadFile
     axios
       .delete("http://localhost:5000/api/delete_file", {
         params: {
           userID,
-          docID: selectedDocumentID,
+          docID: selectedDocID,
         },
       })
       .then((response) => {
         setShowDeleteDialog(false);
         setDocuments((prev) => {
-          return prev.filter((doc) => doc.docID !== selectedDocumentID);
+          return prev.filter((doc) => doc.docID !== selectedDocID);
         });
+        setSelectedDocID(null);
         alert("File successfully deleted");
       })
       .catch((err) => {
@@ -63,7 +68,6 @@ const Documents = ({ selectedDocumentID, setSelectedDocumentID }) => {
         },
       })
       .then((response) => {
-        console.log(response.data);
         setDocuments(response.data);
         setLoading(false);
       })
@@ -84,6 +88,7 @@ const Documents = ({ selectedDocumentID, setSelectedDocumentID }) => {
   if (error) {
     return <div>Error: {error}</div>;
   }
+  // Todo: Format upload Date
 
   return (
     <>
@@ -113,7 +118,7 @@ const Documents = ({ selectedDocumentID, setSelectedDocumentID }) => {
               onClick={() => handleDocumentClick(doc.docID)}
               className='flex items-center justify-center h-6 w-6 text-gray-500 cursor-pointer m-1'
             >
-              {selectedDocumentID === doc.docID ? (
+              {selectedDocID === doc.docID ? (
                 <FaCheckSquare />
               ) : (
                 <FaRegSquare />
@@ -122,9 +127,9 @@ const Documents = ({ selectedDocumentID, setSelectedDocumentID }) => {
             <div
               key={doc.docID}
               className={`grid grid-cols-7 text-left border-b-2 border-slate-100 top-0 hover:bg-gray-100 transition-colors duration-200 text-sm w-full ${
-                selectedDocumentID === doc.docID ? "bg-gray-100" : ""
+                selectedDocID === doc.docID ? "bg-gray-100" : ""
               }`}
-              onDoubleClick={() => handleDocumentClick(doc.docID)}
+              onDoubleClick={() => onDoubleClick(doc.docID)}
             >
               <div className='flex items-center px-1 py-2 col-span-3 w-96 truncate'>
                 {doc.docName}

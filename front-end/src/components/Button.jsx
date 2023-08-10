@@ -15,11 +15,11 @@ export const Button = ({
       type={type}
       style={style}
       onClick={onClick}
-      className={`${className} ${
+      className={`${
         disabled
           ? "py-1 px-2 rounded opacity-50 "
           : "hover:opacity-80 py-1 px-2 rounded "
-      } `}
+      } ${className} `}
     >
       {label && label}
       {children && children}

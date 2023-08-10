@@ -8,17 +8,16 @@ import Settings from "./Settings";
 import Vocabulary from "./Vocabulary";
 
 function Menu({ onCloseMenu }) {
-  const { loadFile } = useContext(Context);
+  const { loadFile, selectedDocID, setSelectedDocID } = useContext(Context);
   const [selectedOption, setSelectedOption] = useState("settings");
-  const [selectedDocumentID, setSelectedDocumentID] = useState("");
 
-  const onConfirm = () => {
+  const onConfirm = (id) => {
     onCloseMenu();
     if (selectedOption === "documents" || selectedOption === "upload") {
       axios
         .get("http://localhost:5000/api/get_file", {
           params: {
-            docID: selectedDocumentID,
+            docID: id,
           },
           responseType: "blob",
         })
@@ -26,6 +25,7 @@ function Menu({ onCloseMenu }) {
           const fileBlob = new Blob([response.data], {
             type: response.data.type,
           });
+
           loadFile(fileBlob);
         })
         .catch((error) => {
@@ -45,14 +45,9 @@ function Menu({ onCloseMenu }) {
       case "vocabulary":
         return <Vocabulary />;
       case "documents":
-        return (
-          <Documents
-            selectedDocumentID={selectedDocumentID}
-            setSelectedDocumentID={setSelectedDocumentID}
-          />
-        );
+        return <Documents onConfirm={onConfirm} />;
       case "upload":
-        return <FileUpload setDocID={setSelectedDocumentID} />;
+        return <FileUpload />;
       default:
         return <div>Please select an option.</div>;
     }
@@ -67,7 +62,7 @@ function Menu({ onCloseMenu }) {
         onClickUpload={onClickUpload}
         shouldDisableConfirm={
           (selectedOption === "documents" || selectedOption === "upload") &&
-          selectedDocumentID === ""
+          selectedDocID === ""
         }
         shouldShowUpload={selectedOption === "documents"}
         onClose={onCloseMenu}

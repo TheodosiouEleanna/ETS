@@ -3,9 +3,9 @@ import axios from "axios";
 import { Button } from "./Button";
 import { Context } from "../context/context";
 
-function FileUpload({ setDocID }) {
+function FileUpload() {
   const [pdfFile, setPdfFile] = useState();
-  const { file, userInfo } = useContext(Context);
+  const { file, userInfo, setSelectedDocID } = useContext(Context);
   const { userID } = userInfo;
 
   const submitFile = (event) => {
@@ -21,7 +21,7 @@ function FileUpload({ setDocID }) {
       })
       .then((response) => {
         alert("File uploaded successfully.");
-        setDocID(response.data.docID);
+        setSelectedDocID(response.data.docID);
       })
       .catch((error) => {
         alert("Failed to upload file.");

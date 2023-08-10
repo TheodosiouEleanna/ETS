@@ -1,10 +1,10 @@
-import React, { useContext } from "react";
-import FileUpload from "./FileUpload";
+import React, { useContext, useState } from "react";
 import { Context } from "../context/context";
 import FileViewer from "./FileViewer";
 
 const MainContent = () => {
   const { file, loading } = useContext(Context);
+  const [isFirst, setIsFirst] = useState(false);
 
   return (
     <main className='z-0 h-full w-full flex items-center flex-col text-xl text-gray-800 bg-[#525659] '>
@@ -18,12 +18,12 @@ const MainContent = () => {
           </div>
         </div>
       )}
-      {loading && (
+      {loading && file.size === 0 && (
         <div className='h-full flex items-center text-slate-200'>
           Loading Pdf Document...
         </div>
       )}
-      {file.size !== 0 && <FileViewer />}
+      {file.size !== 0 && !loading && <FileViewer />}
     </main>
   );
 };

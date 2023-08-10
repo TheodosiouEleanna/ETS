@@ -1,10 +1,7 @@
 import React, { useContext, useState } from "react";
 import axios from "axios";
 import { Context } from "../context/context";
-import { Button } from "./Button";
-import Loader from "./Loader";
-import languageMap from "../consts";
-import ModalWrapper from "./ModalWrapper";
+import { languageMap } from "../consts";
 
 const Settings = ({ onClick }) => {
   const { zoom, userInfo, userSettings, setUserSettings } = useContext(Context);

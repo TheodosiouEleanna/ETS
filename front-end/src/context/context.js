@@ -1,10 +1,13 @@
 import React, { createContext, useEffect, useReducer } from "react";
+import axios from "axios";
+import { aspectRatio } from "../consts";
 
 const initialState = {
   file: { size: 0 },
+  selectedDocID: localStorage.getItem("selectedDocID") || null,
   currentPage: 0,
   pageCount: 0,
-  zoom: 100,
+  zoom: 0.5,
   loading: false,
   userInfo: JSON.parse(localStorage.getItem("userInfo")) || {
     isLoggedIn: false,
@@ -16,10 +19,19 @@ const initialState = {
     theme: "dark",
     zoomLevel: 1,
   },
+  isInputScroll: false,
+  pdfDimensions: {
+    width: 0,
+    height: 0,
+    aspectRatio: aspectRatio,
+  },
+
   // Todo: Add all the initial values
 };
 
 const reducer = (state, action) => {
+  let container;
+  let scrollTop;
   switch (action.type) {
     case "LOAD_FILE":
       return {
@@ -27,13 +39,25 @@ const reducer = (state, action) => {
         file: action.payload,
         currentPage: 1,
       };
+    case "SET_DOCUMENT_ID":
+      localStorage.setItem("selectedDocID", action.payload);
+      return {
+        ...state,
+        selectedDocID: action.payload,
+      };
     case "GO_TO_PREV_PAGE":
+      container = document.getElementById("pdf-container");
+      scrollTop = (state.currentPage - 2) * state.pdfDimensions.height;
+      container.scrollTop = scrollTop;
       return {
         ...state,
         currentPage: state.currentPage - 1,
       };
 
     case "GO_TO_NEXT_PAGE":
+      container = document.getElementById("pdf-container");
+      scrollTop = state.currentPage * state.pdfDimensions.height;
+      container.scrollTop = scrollTop;
       return {
         ...state,
         currentPage: state.currentPage + 1,
@@ -43,11 +67,15 @@ const reducer = (state, action) => {
         ...state,
         pageCount: action.payload,
       };
-
+    case "SET_CURRENT_PAGE":
+      return {
+        ...state,
+        currentPage: action.payload,
+      };
     case "CHANGE_ZOOM":
       return {
         ...state,
-        zoom: action.payload,
+        zoom: action.payload / 100,
       };
     case "SET_LOADING":
       return {
@@ -65,6 +93,24 @@ const reducer = (state, action) => {
       return {
         ...state,
         userSettings: action.payload,
+      };
+    case "SET_PAGE_INPUT_FOCUS":
+      return {
+        ...state,
+        pageInputFocused: action.payload,
+      };
+    case "SET_PDF_DIMENSIONS":
+      return {
+        ...state,
+        pdfDimensions: {
+          ...state.pdfDimensions,
+          ...action.payload,
+        },
+      };
+    case "SET_INPUT_SCROLL":
+      return {
+        ...state,
+        isInputScroll: action.payload,
       };
     case "LOGOUT":
       localStorage.removeItem("userInfo");
@@ -87,6 +133,10 @@ export const ContextProvider = ({ children }) => {
     dispatch({ type: "LOAD_FILE", payload: file });
   };
 
+  const setSelectedDocID = (id) => {
+    dispatch({ type: "SET_DOCUMENT_ID", payload: id });
+  };
+
   const goToNextPage = (pageNumber) => {
     dispatch({ type: "GO_TO_NEXT_PAGE", payload: parseInt(pageNumber) });
   };
@@ -99,8 +149,12 @@ export const ContextProvider = ({ children }) => {
     dispatch({ type: "SET_PAGE_COUNT", payload: parseInt(pagesCount) });
   };
 
+  const setCurrentPage = (pagesCount) => {
+    dispatch({ type: "SET_CURRENT_PAGE", payload: parseInt(pagesCount) });
+  };
+
   const handleZoomChange = (zoom) => {
-    dispatch({ type: "CHANGE_ZOOM", payload: parseInt(zoom * 100) });
+    dispatch({ type: "CHANGE_ZOOM", payload: parseInt(zoom) });
   };
 
   const setLoading = (loading) => {
@@ -115,14 +169,50 @@ export const ContextProvider = ({ children }) => {
     dispatch({ type: "SET_USER_SETTINGS", payload: userSettings });
   };
 
+  const setPdfDimensions = (dimensions) => {
+    dispatch({ type: "SET_PDF_DIMENSIONS", payload: dimensions });
+  };
+
+  const setInputScroll = (isInputScroll) => {
+    dispatch({ type: "SET_INPUT_SCROLL", payload: isInputScroll });
+  };
   const logout = () => {
     dispatch({ type: "LOGOUT" });
   };
 
+  useEffect(() => {
+    console.log("mpikeee");
+    if (state.file.size === 0 && state.selectedDocID) {
+      setLoading(true);
+      axios
+        .get("http://localhost:5000/api/get_file", {
+          params: {
+            docID: state.selectedDocID,
+          },
+          responseType: "blob",
+        })
+        .then((response) => {
+          const fileBlob = new Blob([response.data], {
+            type: response.data.type,
+          });
+
+          loadFile(fileBlob);
+          setLoading(false);
+        })
+        .catch((error) => {
+          alert("Failed to load file.");
+          setLoading(false);
+        });
+    }
+  }, [state.file.size, state.selectedDocID]);
+
   const contextValue = {
     zoom: state.zoom,
     file: state.file,
+    selectedDocID: state.selectedDocID,
+    setSelectedDocID,
     currentPage: state.currentPage,
+    setCurrentPage,
     pageCount: state.pageCount,
     setPageCount,
     loadFile,
@@ -137,6 +227,11 @@ export const ContextProvider = ({ children }) => {
     handleZoomChange,
     userSettings: state.userSettings,
     setUserSettings,
+    pageInputFocused: state.pageInputFocused,
+    isInputScroll: state.isInputScroll,
+    setInputScroll,
+    pdfDimensions: state.pdfDimensions,
+    setPdfDimensions,
   };
 
   return <Context.Provider value={contextValue}>{children}</Context.Provider>;
