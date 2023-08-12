@@ -4,7 +4,6 @@ import FileViewer from "./FileViewer";
 
 const MainContent = () => {
   const { file, loading } = useContext(Context);
-  const [isFirst, setIsFirst] = useState(false);
 
   return (
     <main className='z-0 h-full w-full flex items-center flex-col text-xl text-gray-800 bg-[#525659] '>

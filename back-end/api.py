@@ -5,7 +5,7 @@ import sqlite3
 import socket
 import re
 import json
-from flask import Flask, request, jsonify, Response
+from flask import Flask, make_response, request, jsonify, Response
 from werkzeug.security import generate_password_hash, check_password_hash
 import uuid
 from werkzeug.utils import secure_filename
@@ -19,7 +19,8 @@ from config import load_config
 
 app = Flask(__name__)
 # Replace with your frontend's address
-CORS(app, origins=["http://localhost:3000", "http://localhost:3001"])
+CORS(app, resources={
+     r"/api/*": {"origins": ["http://localhost:3000", "http://localhost:3001"]}})
 sqLiteDatabase = 'ETSsqLiteDB'
 
 # Load the configuration values from appsettings.json
@@ -36,6 +37,16 @@ def get_host_and_port(address):
     hostname = re.search(r'\b(?:\d{1,3}\.){3}\d{1,3}\b|\blocalhost\b', address)
     port = re.search(r':(\d+)', address)
     return hostname.group(), int(port.group(1))
+
+
+def _build_cors_preflight_response():
+    response = make_response()
+    response.headers.add("Access-Control-Allow-Origin",
+                         "http://localhost:3000")
+    response.headers.add("Access-Control-Allow-Headers",
+                         "Content-Type,Authorization")
+    response.headers.add("Access-Control-Allow-Methods", "POST")
+    return response
 
 
 def send_request(request_data):
@@ -220,8 +231,10 @@ def create_profile():
     return jsonify({'message': 'New user created.'}), 200
 
 
-@app.route('/api/login', methods=['POST'])
+@app.route('/api/login', methods=['POST', 'OPTIONS'])
 def login():
+    if request.method == 'OPTIONS':
+        return _build_cors_preflight_response()
     data = request.get_json()
 
     username = data['username']
@@ -272,6 +285,34 @@ def update_settings():
     conn.commit()
 
     return jsonify({'message': 'Settings updated.'}), 200
+
+
+@app.route('/api/get_settings', methods=['GET'])
+def get_user_settings():
+    userID = request.args.get('userID')
+
+    # Ensure userID is provided
+    if not userID:
+        return jsonify({'message': 'userID is required.'}), 400
+
+    conn = sqlite3.connect(sqLiteDatabase)
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM user_settings WHERE userID = ?", (userID,))
+    user_settings = cursor.fetchone()
+
+    if not user_settings:
+        return jsonify({'message': 'No settings found for this userID.'}), 404
+
+    # Parsing the fetched data into a dictionary
+    settings = {
+        "userID": user_settings[0],
+        "selected_language": user_settings[1],
+        "theme": user_settings[2],
+        "zoomLevel": user_settings[3]
+    }
+
+    return jsonify(settings), 200
 
 
 @app.route('/api/get-eye-trackers', methods=['GET'])

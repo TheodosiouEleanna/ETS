@@ -10,6 +10,7 @@ import { pdfjs, Document, Page } from "react-pdf";
 import { Context } from "../context/context";
 import { StyleSheet } from "@react-pdf/renderer";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
+import { useSnackbar } from "../hooks/useSnackbar";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.js`;
 
@@ -22,19 +23,23 @@ const styles = StyleSheet.create({
 
 const FileViewer = () => {
   const {
-    zoom,
     file,
     setLoading,
-    currentPage,
     setCurrentPage,
     pageCount,
+    isMenuOpen,
+    userSettingsUi,
+    userSettingsApi,
     setPageCount,
     pdfDimensions,
     setPdfDimensions,
-    isInputScroll,
-    setInputScroll,
   } = useContext(Context);
   const [elWidth, setElWidth] = useState({});
+  const [visiblePages, setVisiblePages] = useState([1]);
+  const [observer, setObserver] = useState(null);
+  const { triggerSnackbar } = useSnackbar();
+  const { zoom } = userSettingsUi;
+  const { zoom: savedZoom } = userSettingsApi;
 
   const wrapperStyle = useMemo(
     () => ({
@@ -44,12 +49,17 @@ const FileViewer = () => {
     }),
     [pdfDimensions.aspectRatio]
   );
+  const finalZoom = isMenuOpen ? savedZoom : zoom;
 
   const onDocumentLoadSuccess = async (pdf) => {
     console.log("doc load success");
     setPageCount(pdf.numPages);
     setLoading(false);
-
+    triggerSnackbar({
+      message: "Document loaded successfully!",
+      status: "success",
+      open: true,
+    });
     // Get the first page of the document
     const page = await pdf.getPage(1);
 
@@ -63,12 +73,20 @@ const FileViewer = () => {
 
         const aspectRatio = width / height;
         setPdfDimensions({ aspectRatio, width, height: height + 34 });
-        console.log({ width, height });
       }
     }, 500);
 
     page.cleanup();
   };
+
+  const observePage = useCallback(
+    (node) => {
+      if (observer && node !== null) {
+        observer.observe(node);
+      }
+    },
+    [observer]
+  );
 
   const handleScroll = useCallback(
     (event) => {
@@ -78,33 +96,12 @@ const FileViewer = () => {
       const container = event.target;
       const pageHeight = pdfDimensions.height;
 
-      if (isInputScroll) {
-        setInputScroll(false);
-        return;
-      } else {
-        const scrolledPages =
-          Math.floor(
-            (container.scrollTop + (pageHeight * 1) / 4) / pageHeight
-          ) + 1;
+      const scrolledPages =
+        Math.floor((container.scrollTop + pageHeight / 4) / pageHeight) + 1;
 
-        setCurrentPage(scrolledPages);
-        console.log({
-          aspectRatio: pdfDimensions.aspectRatio,
-          currentPage,
-          scrolledPages,
-          scrollTop: container.scrollTop,
-          pageHeight,
-        });
-      }
+      setCurrentPage(scrolledPages);
     },
-    [
-      currentPage,
-      isInputScroll,
-      pdfDimensions.aspectRatio,
-      pdfDimensions.height,
-      setCurrentPage,
-      setInputScroll,
-    ]
+    [pdfDimensions.height, setCurrentPage]
   );
 
   useEffect(() => {
@@ -115,12 +112,41 @@ const FileViewer = () => {
     setElWidth(width);
   }, []);
 
+  // useEffect(() => {
+  //   const containerElement = document.getElementById("pdf-container");
+
+  //   const handleIntersect = (entries, observer) => {
+  //     const visiblePages = entries
+  //       .filter((entry) => entry.isIntersecting)
+  //       .map((entry) => parseInt(entry.target.dataset.pageNumber, 10));
+
+  //     setVisiblePages(visiblePages);
+
+  //     if (visiblePages.length) {
+  //       setCurrentPage(visiblePages[0]);
+  //     }
+  //   };
+  //   const options = {
+  //     root: containerElement,
+  //     rootMargin: "0px",
+  //     threshold: 0.1,
+  //   };
+
+  //   const obs = new IntersectionObserver(handleIntersect, options);
+  //   setObserver(obs);
+
+  //   return () => {
+  //     if (observer) {
+  //       observer.disconnect();
+  //     }
+  //   };
+  // }, [setVisiblePages]);
   // Todo: Optimize this to load the pages as you scroll
 
   return (
     <div
       className={`${
-        zoom >= 1 ? "justify-start" : "justify-center"
+        savedZoom >= 1 ? "justify-start" : "justify-center"
       } flex overflow-auto`}
       id='pdf-container'
       style={wrapperStyle}
@@ -128,19 +154,35 @@ const FileViewer = () => {
     >
       <Document file={file} onLoadSuccess={onDocumentLoadSuccess} loading=''>
         {Array.from(new Array(pageCount), (el, index) => (
-          <Page
-            loading=''
-            className='mb-8 border border-gray-300 shadow-xl'
-            id='page'
-            key={`page_${index + 1}`}
-            size='A4'
-            style={styles.page}
-            pageNumber={index + 1} // It should render all pages, not just the current page
-            scale={zoom}
-            renderMode='canvas'
-            renderTextLayer={false}
-            width={elWidth}
-          />
+          //    <Page
+          //   visiblePages={visiblePages}
+          //   index={index}
+          //   height={pdfDimensions.height}
+          //   observePage={observePage}
+          //   style={styles.page}
+          //   zoom={finalZoom}
+          //   width={elWidth}
+          // />
+          <div
+            key={`wrapper_${index}`}
+            style={{ height: pdfDimensions.height }}
+            data-page-number={index}
+            ref={(node) => observePage(node, index)}
+          >
+            <Page
+              loading=''
+              className='mb-8 border border-gray-300'
+              id='page'
+              key={`page_${index + 1}`}
+              size='A4'
+              style={styles.page}
+              pageNumber={index + 1}
+              scale={finalZoom}
+              renderMode='canvas'
+              renderTextLayer={false}
+              width={elWidth}
+            />
+          </div>
         ))}
       </Document>
     </div>

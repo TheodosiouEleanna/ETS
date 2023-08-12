@@ -108,3 +108,19 @@ export const languageMap = {
 };
 
 export const aspectRatio = 0.7097222222222223;
+
+export const eyeTrackers = [
+  {
+    model: "Model A",
+    address: "Address A",
+    device_name: "Device A",
+    serial_number: "12345",
+  },
+  {
+    model: "Model B",
+    address: "Address B",
+    device_name: "Device B",
+    serial_number: "67890",
+  },
+  // ... add more if needed
+];

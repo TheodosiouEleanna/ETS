@@ -2,9 +2,9 @@ import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { Context } from "../context/context";
 import { FaRegSquare, FaCheckSquare } from "react-icons/fa";
-import { Button } from "./Button";
+import { Button } from "./ui/Button";
 import { RiDeleteBin4Fill } from "react-icons/ri";
-import Dialog from "./Dialog";
+import Dialog from "./ui/Dialog";
 
 const Documents = ({ onConfirm }) => {
   const [documents, setDocuments] = useState([]);
@@ -37,7 +37,6 @@ const Documents = ({ onConfirm }) => {
   };
 
   const onDialogConfirm = () => {
-    // loadFile
     axios
       .delete("http://localhost:5000/api/delete_file", {
         params: {

@@ -1,13 +1,16 @@
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { Context } from "./context/context";
-import Footer from "./components/Footer";
 import UserProfile from "./components/UserProfile";
 import MainContent from "./components/MainContent";
-import Header from "./components/Header";
+import Footer from "./components/ui/Footer";
+import Header from "./components/ui/Header";
+import { useSnackbar } from "./hooks/useSnackbar";
+import Snackbar from "./components/ui/Snackbar";
 
 const App = () => {
   const { userInfo } = useContext(Context);
   const { isLoggedIn } = userInfo;
+  const { snackbarData } = useSnackbar();
 
   return (
     <>
@@ -18,6 +21,9 @@ const App = () => {
           <MainContent />
           <Footer />
         </div>
+      )}
+      {snackbarData.open && (
+        <Snackbar message={snackbarData.message} status={snackbarData.status} />
       )}
     </>
   );

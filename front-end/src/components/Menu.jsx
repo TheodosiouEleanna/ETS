@@ -1,23 +1,66 @@
 import { useContext, useState } from "react";
-import ModalWrapper from "./ModalWrapper";
+import ModalWrapper from "./ui/ModalWrapper";
 import Documents from "./Documents";
 import { Context } from "../context/context";
 import axios from "axios";
 import FileUpload from "./FileUpload";
 import Settings from "./Settings";
 import Vocabulary from "./Vocabulary";
+import { useSnackbar } from "../hooks/useSnackbar";
 
 function Menu({ onCloseMenu }) {
-  const { loadFile, selectedDocID, setSelectedDocID } = useContext(Context);
+  const {
+    file,
+    loadFile,
+    setLoading,
+    selectedDocID,
+    userInfo,
+    userSettingsUi,
+    setUserSettingsApi,
+  } = useContext(Context);
+  const { zoom, theme, language } = userSettingsUi;
+  const { userID } = userInfo;
   const [selectedOption, setSelectedOption] = useState("settings");
+  const [loadingMenu, setLoadingMenu] = useState(false);
+  const { triggerSnackbar } = useSnackbar();
 
   const onConfirm = (id) => {
     onCloseMenu();
+    setLoadingMenu(true);
+    if (selectedOption === "settings") {
+      setLoading(true);
+      axios
+        .post("http://localhost:5000/api/settings", {
+          userID,
+          zoomLevel: zoom,
+          theme,
+          language,
+        })
+        .then((res) => {
+          setLoadingMenu(false);
+          loadFile(file);
+          setLoading(false);
+          setUserSettingsApi({
+            zoom,
+            theme,
+            language,
+          });
+          triggerSnackbar({
+            message: "Settings saved successfully!",
+            status: "success",
+            open: true,
+          });
+        })
+        .catch((err) => {
+          console.error(err);
+          setLoadingMenu(false);
+        });
+    }
     if (selectedOption === "documents" || selectedOption === "upload") {
       axios
         .get("http://localhost:5000/api/get_file", {
           params: {
-            docID: id,
+            docID: id || selectedDocID,
           },
           responseType: "blob",
         })
@@ -25,7 +68,7 @@ function Menu({ onCloseMenu }) {
           const fileBlob = new Blob([response.data], {
             type: response.data.type,
           });
-
+          setLoadingMenu(false);
           loadFile(fileBlob);
         })
         .catch((error) => {
@@ -41,9 +84,9 @@ function Menu({ onCloseMenu }) {
   const renderContent = () => {
     switch (selectedOption) {
       case "settings":
-        return <Settings />;
+        return <Settings onConfirm={onConfirm} />;
       case "vocabulary":
-        return <Vocabulary />;
+        return <Vocabulary onConfirm={onConfirm} />;
       case "documents":
         return <Documents onConfirm={onConfirm} />;
       case "upload":
@@ -56,6 +99,7 @@ function Menu({ onCloseMenu }) {
   return (
     <>
       <ModalWrapper
+        loading={loadingMenu}
         className='w-[70%] h-[80vh] '
         title='Menu'
         onConfirm={onConfirm}
@@ -101,7 +145,7 @@ function Menu({ onCloseMenu }) {
             </div>
           </div>
           <div className='bg-[#323639] w-full rounded border-2 border-slate-200'>
-            <div className='m-4 bg-slate-200 rounded h-[95%] overflow-y-scroll'>
+            <div className='m-4 bg-slate-200 rounded h-[94.5%] overflow-y-scroll'>
               {renderContent()}
             </div>
           </div>

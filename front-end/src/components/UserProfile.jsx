@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import axios from "axios";
 import { Context } from "../context/context";
+import { useSnackbar } from "../hooks/useSnackbar";
 
 const UserProfile = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -8,6 +9,7 @@ const UserProfile = () => {
   const [password, setPassword] = useState("");
   const { setUserInfo } = useContext(Context);
   const [error, setError] = useState("");
+  const { triggerSnackbar } = useSnackbar();
 
   const handleEnterPress = (event, type) => {
     if (event.key === "Enter") {
@@ -21,7 +23,7 @@ const UserProfile = () => {
 
   const createUser = () => {
     axios
-      .post("http://localhost:5000/create-profile", {
+      .post("http://localhost:5000/api/create-profile", {
         username,
         password,
       })
@@ -31,18 +33,28 @@ const UserProfile = () => {
           setUsername("");
           setPassword("");
           setError("");
+          triggerSnackbar({
+            message: "User created successfully!",
+            status: "success",
+            open: true,
+          });
         }
       })
       .catch((err) => {
         if (err.response.status === 400) {
           setError(err.response.data.message);
+          triggerSnackbar({
+            message: "Failed to create user!",
+            status: "error",
+            open: true,
+          });
         }
       });
   };
 
   const loginUser = () => {
     axios
-      .post("http://localhost:5000/login", {
+      .post("http://localhost:5000/api/login", {
         username,
         password,
       })

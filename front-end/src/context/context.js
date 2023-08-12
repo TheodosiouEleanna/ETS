@@ -7,17 +7,13 @@ const initialState = {
   selectedDocID: localStorage.getItem("selectedDocID") || null,
   currentPage: 0,
   pageCount: 0,
-  zoom: 0.5,
   loading: false,
-  userInfo: JSON.parse(localStorage.getItem("userInfo")) || {
-    isLoggedIn: false,
-    userID: null,
-    username: "",
-  },
-  userSettings: JSON.parse(localStorage.getItem("userSettings")) || {
+  userInfo: JSON.parse(localStorage.getItem("userInfo")),
+  userSettingsApi: {},
+  userSettingsUi: JSON.parse(localStorage.getItem("userSettingsUi")) || {
     language: "English",
     theme: "dark",
-    zoomLevel: 1,
+    zoom: 0.5,
   },
   isInputScroll: false,
   pdfDimensions: {
@@ -25,8 +21,7 @@ const initialState = {
     height: 0,
     aspectRatio: aspectRatio,
   },
-
-  // Todo: Add all the initial values
+  isMenuOpen: false,
 };
 
 const reducer = (state, action) => {
@@ -72,11 +67,6 @@ const reducer = (state, action) => {
         ...state,
         currentPage: action.payload,
       };
-    case "CHANGE_ZOOM":
-      return {
-        ...state,
-        zoom: action.payload / 100,
-      };
     case "SET_LOADING":
       return {
         ...state,
@@ -88,11 +78,19 @@ const reducer = (state, action) => {
         ...state,
         userInfo: action.payload,
       };
-    case "SET_USER_SETTINGS":
-      localStorage.setItem("userSettings", JSON.stringify(action.payload));
+    case "SET_USER_SETTINGS_UI":
+      localStorage.setItem(
+        "userSettingsUi",
+        JSON.stringify({ ...state.userSettingsUi, ...action.payload })
+      );
       return {
         ...state,
-        userSettings: action.payload,
+        userSettingsUi: { ...state.userSettingsUi, ...action.payload },
+      };
+    case "SET_USER_SETTINGS_API":
+      return {
+        ...state,
+        userSettingsApi: { ...state.userSettingsApi, ...action.payload },
       };
     case "SET_PAGE_INPUT_FOCUS":
       return {
@@ -111,6 +109,11 @@ const reducer = (state, action) => {
       return {
         ...state,
         isInputScroll: action.payload,
+      };
+    case "SET_IS_MENU_OPEN":
+      return {
+        ...state,
+        isMenuOpen: action.payload,
       };
     case "LOGOUT":
       localStorage.removeItem("userInfo");
@@ -153,10 +156,6 @@ export const ContextProvider = ({ children }) => {
     dispatch({ type: "SET_CURRENT_PAGE", payload: parseInt(pagesCount) });
   };
 
-  const handleZoomChange = (zoom) => {
-    dispatch({ type: "CHANGE_ZOOM", payload: parseInt(zoom) });
-  };
-
   const setLoading = (loading) => {
     dispatch({ type: "SET_LOADING", payload: loading });
   };
@@ -165,8 +164,11 @@ export const ContextProvider = ({ children }) => {
     dispatch({ type: "SET_SESSION", payload: userInfo });
   };
 
-  const setUserSettings = (userSettings) => {
-    dispatch({ type: "SET_USER_SETTINGS", payload: userSettings });
+  const setUserSettingsUi = (userSettings) => {
+    dispatch({ type: "SET_USER_SETTINGS_UI", payload: userSettings });
+  };
+  const setUserSettingsApi = (userSettings) => {
+    dispatch({ type: "SET_USER_SETTINGS_API", payload: userSettings });
   };
 
   const setPdfDimensions = (dimensions) => {
@@ -176,13 +178,17 @@ export const ContextProvider = ({ children }) => {
   const setInputScroll = (isInputScroll) => {
     dispatch({ type: "SET_INPUT_SCROLL", payload: isInputScroll });
   };
+
+  const setIsMenuOpen = (isOpen) => {
+    dispatch({ type: "SET_IS_MENU_OPEN", payload: isOpen });
+  };
+
   const logout = () => {
     dispatch({ type: "LOGOUT" });
   };
 
   useEffect(() => {
-    console.log("mpikeee");
-    if (state.file.size === 0 && state.selectedDocID) {
+    if (state.file && state.file.size === 0 && state.selectedDocID) {
       setLoading(true);
       axios
         .get("http://localhost:5000/api/get_file", {
@@ -204,7 +210,7 @@ export const ContextProvider = ({ children }) => {
           setLoading(false);
         });
     }
-  }, [state.file.size, state.selectedDocID]);
+  }, [state.file, state.file?.size, state.selectedDocID]);
 
   const contextValue = {
     zoom: state.zoom,
@@ -224,14 +230,17 @@ export const ContextProvider = ({ children }) => {
     logout,
     goToNextPage,
     goToPrevPage,
-    handleZoomChange,
-    userSettings: state.userSettings,
-    setUserSettings,
     pageInputFocused: state.pageInputFocused,
+    userSettingsUi: state.userSettingsUi,
+    setUserSettingsUi,
+    userSettingsApi: state.userSettingsApi,
+    setUserSettingsApi,
     isInputScroll: state.isInputScroll,
     setInputScroll,
     pdfDimensions: state.pdfDimensions,
     setPdfDimensions,
+    isMenuOpen: state.isMenuOpen,
+    setIsMenuOpen,
   };
 
   return <Context.Provider value={contextValue}>{children}</Context.Provider>;

@@ -1,12 +1,14 @@
 import React, { useContext, useState } from "react";
 import axios from "axios";
-import { Button } from "./Button";
+import { Button } from "./ui/Button";
 import { Context } from "../context/context";
+import { useSnackbar } from "../hooks/useSnackbar";
 
 function FileUpload() {
-  const [pdfFile, setPdfFile] = useState();
-  const { file, userInfo, setSelectedDocID } = useContext(Context);
+  const [pdfFile, setPdfFile] = useState(null);
+  const { userInfo, setSelectedDocID } = useContext(Context);
   const { userID } = userInfo;
+  const { triggerSnackbar } = useSnackbar();
 
   const submitFile = (event) => {
     event.preventDefault();
@@ -20,11 +22,19 @@ function FileUpload() {
         },
       })
       .then((response) => {
-        alert("File uploaded successfully.");
+        triggerSnackbar({
+          message: "File uploaded successfully!",
+          status: "success",
+          open: true,
+        });
         setSelectedDocID(response.data.docID);
       })
       .catch((error) => {
-        alert("Failed to upload file.");
+        triggerSnackbar({
+          message: "File upload failed!",
+          status: "error",
+          open: true,
+        });
       });
   };
 
@@ -48,8 +58,8 @@ function FileUpload() {
         <Button
           type='submit'
           label='Upload'
-          disabled={file.size !== 0}
-          className='bg-blue-500 hover:bg-gray-400 text-white p-4 mx-2 rounded text-base'
+          disabled={pdfFile === null}
+          className='bg-blue-500 hover:bg-gray-400 text-white p-4 mx-2 text-base active:scale-95 transform transition focus:outline-none  shadow-lg'
         />
       </form>
     </div>

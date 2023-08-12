@@ -1,46 +1,66 @@
-import React, { useContext, useState } from "react";
-import axios from "axios";
+import React, { useContext, useEffect, useState } from "react";
 import { Context } from "../context/context";
 import { languageMap } from "../consts";
+import axios from "axios";
 
-const Settings = ({ onClick }) => {
-  const { zoom, userInfo, userSettings, setUserSettings } = useContext(Context);
+const Settings = () => {
+  const { userSettingsUi, setUserSettingsUi, setUserSettingsApi, userInfo } =
+    useContext(Context);
   const { userID } = userInfo;
-  const {
-    zoomLevel: savedZoomLevel,
-    theme: savedTheme,
-    language: savedLanguage,
-  } = userSettings;
-
-  const [zoomLevel, setZoomLevel] = useState(savedZoomLevel);
-  const [theme, setTheme] = useState(savedTheme);
-  const [language, setLanguage] = useState(savedLanguage);
+  const { zoom, theme, language } = userSettingsUi;
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const handleZoomChange = (value) => {
-    setZoomLevel(value);
+  const handleSettingsChange = (key, value) => {
+    if (key === "zoom") {
+      value = value / 100;
+    }
+    setUserSettingsUi({ [key]: value });
   };
 
-  const handleConfirm = () => {
+  useEffect(() => {
     setLoading(true);
-    // TOdo: Update the context when request finishes
-    axios
-      .post("http://localhost:5000/settings", {
-        userID,
-        zoomLevel: zoomLevel / 100,
-        theme,
-        language,
-      })
-      .then((res) => {
+    const fetchSettings = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/get_settings`,
+          {
+            params: { userID },
+          }
+        );
+        const settings = response.data;
+        setUserSettingsApi({
+          zoom: settings.zoomLevel,
+          theme: settings.theme,
+          language: settings.selected_language,
+        });
+        setUserSettingsUi({
+          zoom: settings.zoomLevel,
+          theme: settings.theme,
+          language: settings.selected_language,
+        });
+      } catch (err) {
+        setError(err);
+      } finally {
         setLoading(false);
-        onClick();
-        setUserSettings({ language, theme, zoomLevel });
-      })
-      .catch((err) => {
-        console.error(err);
-        setLoading(false);
-      });
-  };
+      }
+    };
+
+    fetchSettings();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userID]);
+
+  if (loading) {
+    return (
+      <div className='flex justify-center items-center w-full h-full'>
+        Loading documents...
+      </div>
+    );
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <div className='flex flex-col w-[500px] m-2 p-4'>
@@ -52,13 +72,17 @@ const Settings = ({ onClick }) => {
         <div className='flex'>
           <input
             type='range'
-            min='50'
+            min='10'
             max='200'
-            value={zoomLevel}
-            onChange={(e) => handleZoomChange(e.target.value)}
+            value={zoom * 100}
+            onChange={(e) =>
+              handleSettingsChange("zoom", Number(e.target.value))
+            }
             className='slider text-gray-900 p-1 h-10 rounded border border-gray-300'
           />
-          <p className='text-base text-gray-900 pl-4'>{zoomLevel}%</p>
+          <p className='text-base text-gray-900 pl-4'>
+            {(zoom * 100).toFixed()}%
+          </p>
         </div>
       </div>
       <div className='mb-4 flex justify-between'>
@@ -66,7 +90,7 @@ const Settings = ({ onClick }) => {
         <select
           className='text-base text-gray-900 p-1 w-48 rounded border border-gray-300'
           value={theme}
-          onChange={(e) => setTheme(e.target.value)}
+          onChange={(e) => handleSettingsChange("theme", e.target.value)}
         >
           <option value='light'>Light</option>
           <option value='dark'>Dark</option>
@@ -77,7 +101,7 @@ const Settings = ({ onClick }) => {
         <select
           value={language}
           className='text-base text-gray-900 p-1 w-48 rounded border border-gray-300'
-          onChange={(e) => setLanguage(e.target.value)}
+          onChange={(e) => handleSettingsChange("language", e.target.value)}
         >
           {Object.entries(languageMap).map(([code, name]) => (
             <option key={code} value={code}>
