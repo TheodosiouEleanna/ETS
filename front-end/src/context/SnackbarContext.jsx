@@ -14,9 +14,8 @@ export const SnackbarProvider = ({ children }) => {
   };
 
   const triggerSnackbar = (newData) => {
-    closeSnackbar(); // close first
+    // closeSnackbar();
     setTimeout(() => {
-      // after a brief delay
       setSnackbarData({ ...newData, open: true });
     }, 100);
   };

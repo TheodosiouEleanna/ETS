@@ -8,6 +8,11 @@ const initialState = {
   currentPage: 0,
   pageCount: 0,
   loading: false,
+  pdfDimensions: {
+    width: 0,
+    height: 0,
+    aspectRatio: aspectRatio,
+  },
   userInfo: JSON.parse(localStorage.getItem("userInfo")) || {
     isLoggedIn: false,
   },
@@ -16,12 +21,6 @@ const initialState = {
     language: "English",
     theme: "dark",
     zoom: 0.5,
-  },
-  isInputScroll: false,
-  pdfDimensions: {
-    width: 0,
-    height: 0,
-    aspectRatio: aspectRatio,
   },
   isMenuOpen: false,
 };
@@ -94,11 +93,6 @@ const reducer = (state, action) => {
         ...state,
         userSettingsApi: { ...state.userSettingsApi, ...action.payload },
       };
-    case "SET_PAGE_INPUT_FOCUS":
-      return {
-        ...state,
-        pageInputFocused: action.payload,
-      };
     case "SET_PDF_DIMENSIONS":
       return {
         ...state,
@@ -106,11 +100,6 @@ const reducer = (state, action) => {
           ...state.pdfDimensions,
           ...action.payload,
         },
-      };
-    case "SET_INPUT_SCROLL":
-      return {
-        ...state,
-        isInputScroll: action.payload,
       };
     case "SET_IS_MENU_OPEN":
       return {
@@ -134,12 +123,17 @@ export const ContextProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   console.log({ state });
 
+  // -------------------- DOCUMENT ACTIONS -----------------------
   const loadFile = (file) => {
     dispatch({ type: "LOAD_FILE", payload: file });
   };
 
   const setSelectedDocID = (id) => {
     dispatch({ type: "SET_DOCUMENT_ID", payload: id });
+  };
+
+  const setPdfDimensions = (dimensions) => {
+    dispatch({ type: "SET_PDF_DIMENSIONS", payload: dimensions });
   };
 
   const goToNextPage = (pageNumber) => {
@@ -158,6 +152,8 @@ export const ContextProvider = ({ children }) => {
     dispatch({ type: "SET_CURRENT_PAGE", payload: parseInt(pagesCount) });
   };
 
+  // -------------------- OTHER ACTIONS -----------------------
+
   const setLoading = (loading) => {
     dispatch({ type: "SET_LOADING", payload: loading });
   };
@@ -171,14 +167,6 @@ export const ContextProvider = ({ children }) => {
   };
   const setUserSettingsApi = (userSettings) => {
     dispatch({ type: "SET_USER_SETTINGS_API", payload: userSettings });
-  };
-
-  const setPdfDimensions = (dimensions) => {
-    dispatch({ type: "SET_PDF_DIMENSIONS", payload: dimensions });
-  };
-
-  const setInputScroll = (isInputScroll) => {
-    dispatch({ type: "SET_INPUT_SCROLL", payload: isInputScroll });
   };
 
   const setIsMenuOpen = (isOpen) => {
@@ -237,8 +225,6 @@ export const ContextProvider = ({ children }) => {
     setUserSettingsUi,
     userSettingsApi: state.userSettingsApi,
     setUserSettingsApi,
-    isInputScroll: state.isInputScroll,
-    setInputScroll,
     pdfDimensions: state.pdfDimensions,
     setPdfDimensions,
     isMenuOpen: state.isMenuOpen,

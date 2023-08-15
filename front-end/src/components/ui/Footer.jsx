@@ -13,7 +13,6 @@ const Footer = () => {
     currentPage,
     setCurrentPage,
     pdfDimensions,
-    setInputScroll,
   } = useContext(Context);
 
   const [inputValue, setInputValue] = useState(0);
@@ -24,7 +23,6 @@ const Footer = () => {
     if (pageNumber > 0 && pageNumber <= pageCount) {
       setInputValue(Number(pageNumber));
       setCurrentPage(pageNumber);
-      setInputScroll(true);
       const container = document.getElementById("pdf-container");
       const scrollTop = (pageNumber - 1) * pdfDimensions.height;
       container.scrollTop = scrollTop;

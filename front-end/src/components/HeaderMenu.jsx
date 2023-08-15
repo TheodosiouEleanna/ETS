@@ -10,6 +10,7 @@ import Connection from "./Connection";
 import { useSnackbar } from "../hooks/useSnackbar";
 import { isEqual } from "lodash";
 import Dialog from "./ui/Dialog";
+import Tooltip from "./ui/Tooltip";
 
 export const HeaderMenu = () => {
   const {
@@ -136,21 +137,24 @@ export const HeaderMenu = () => {
         />
       )}
       <div className='ml-4 flex space-x-8'>
-        <Button
-          className='py-2 px-2 bg-[#323639] text-slate-200 rounded-full hover:scale-110 hover:bg-gray-500 transform transition-transform duration-300 active:scale-95 focus:outline-none  shadow-lg'
-          onClick={toggleOpen}
-        >
-          <MdDensityMedium className='text-xl' />
-        </Button>
-        {file.size !== 0 && (
+        <Tooltip content='Menu' position='right'>
           <Button
-            // label={capitalize(connectionStatus) || "Select Eye Tracker"}
-            style={buttonStyle()}
-            className='py-2 px-2 bg-[#323639] text-slate-200 rounded-full hover:scale-110 hover:bg-gray-500 transform transition-transform duration-300  active:scale-95 focus:outline-none  shadow-lg'
-            onClick={handleClick}
+            className='py-2 px-2 bg-[#323639] text-slate-200 rounded-full hover:scale-110 hover:bg-gray-500 transform transition-transform duration-300 active:scale-95 focus:outline-none  shadow-lg'
+            onClick={toggleOpen}
           >
-            <MdCastConnected className='text-xl' />
+            <MdDensityMedium className='text-xl' />
           </Button>
+        </Tooltip>
+        {file.size !== 0 && (
+          <Tooltip content='Connection' position='right'>
+            <Button
+              style={buttonStyle()}
+              className='py-2 px-2 bg-[#323639] text-slate-200 rounded-full hover:scale-110 hover:bg-gray-500 transform transition-transform duration-300  active:scale-95 focus:outline-none  shadow-lg'
+              onClick={handleClick}
+            >
+              <MdCastConnected className='text-xl' />
+            </Button>
+          </Tooltip>
         )}
         {showConnectionModal && (
           <Connection
@@ -163,14 +167,19 @@ export const HeaderMenu = () => {
         )}
         {isMenuOpen && <Menu onCloseMenu={onCloseMenu} />}
       </div>
+      <div className='ml-[-35px]'>
+        <img src='./logo5.png' alt='' className='h-[2.3rem]' />
+      </div>
       <div className='relative'>
         {showProfile && <Profile onClick={onClickLogout} />}
-        <Button
-          className='py-2 px-2 bg-[#323639] text-slate-200 rounded-full hover:scale-110 hover:bg-gray-500 transform transition-transform duration-300 mr-4  active:scale-95 focus:outline-none  shadow-lg'
-          onClick={toggleProfile}
-        >
-          <BsFillPersonFill className='text-xl' />
-        </Button>
+        <Tooltip content='Profile' position='left'>
+          <Button
+            className='py-2 px-2 bg-[#323639] text-slate-200 rounded-full hover:scale-110 hover:bg-gray-500 transform transition-transform duration-300 mr-4  active:scale-95 focus:outline-none  shadow-lg'
+            onClick={toggleProfile}
+          >
+            <BsFillPersonFill className='text-xl' />
+          </Button>
+        </Tooltip>
       </div>
     </>
   );

@@ -125,10 +125,10 @@ function Menu({ onCloseMenu }) {
         shouldShowUpload={selectedOption === "documents"}
         onClose={onCloseMenu}
       >
-        <div className='flex border-2 border-slate-200 h-[64vh]'>
+        <div className='flex border-2 text-slate-200 border-slate-200 h-[64vh]'>
           <div className='bg-[#323639] border rounded'>
             <div
-              className={`cursor-pointer border-bottom-2 border-slate-200 border-b-0 p-1 w-48 text-base  hover:bg-[#525659] hover:text-blue-500 text-white px-4 py-2 ${
+              className={`cursor-pointer border-bottom-2 border-slate-200 border-b-0 p-1 w-48 text-base  hover:bg-[#525659] hover:text-blue-500 px-4 py-2 ${
                 selectedOption === "settings"
                   ? "text-blue-500 bg-[#525659]"
                   : ""
@@ -138,7 +138,7 @@ function Menu({ onCloseMenu }) {
               Settings
             </div>
             <div
-              className={`cursor-pointer border-y-2 border-slate-200 border-b-0 p-1 w-48 text-base bg-[#323639] hover:bg-[#525659] hover:text-blue-500 text-white px-4 py-2 ${
+              className={`cursor-pointer border-y-2 border-slate-200 border-b-0 p-1 w-48 text-base bg-[#323639] hover:bg-[#525659] hover:text-blue-500  px-4 py-2 ${
                 selectedOption === "documents" || selectedOption === "upload"
                   ? "text-blue-500 bg-[#525659]"
                   : ""
@@ -148,7 +148,7 @@ function Menu({ onCloseMenu }) {
               Documents
             </div>
             <div
-              className={`cursor-pointer border-y-2 border-slate-200 p-1 w-48 text-base bg-[#323639] hover:bg-[#525659] hover:text-blue-500 text-white px-4 py-2  ${
+              className={`cursor-pointer border-y-2 border-slate-200 p-1 w-48 text-base bg-[#323639] hover:bg-[#525659] hover:text-blue-500  px-4 py-2  ${
                 selectedOption === "vocabulary"
                   ? "text-blue-500 bg-[#525659]"
                   : ""

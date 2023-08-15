@@ -98,14 +98,14 @@ const Documents = ({ onConfirm }) => {
           onConfirm={onDialogConfirm}
         />
       )}
-      <div className='text-base  bg-slate-200'>
+      <div className='text-base text-gray-800 bg-slate-200'>
         <div
           id='header'
           className='grid grid-cols-7 text-left border-b-2 sticky top-0 pl-10 pt-2 bg-slate-200 border-slate-100 w-full'
         >
-          <div className='py-2 col-span-3 font-bold'>Document Name</div>
-          <div className='py-2 col-span-1 font-bold'>Last Read Page</div>
-          <div className='py-2 col-span-2 font-bold'>Upload Date</div>
+          <div className='py-2 col-span-3 font-bold'>Document name</div>
+          <div className='py-2 col-span-1 font-bold'>Last read page</div>
+          <div className='py-2 col-span-2 font-bold'>Upload date</div>
           <div className='py-2 px-1 col-span-1 font-bold ml-[-15px]'>
             Actions
           </div>

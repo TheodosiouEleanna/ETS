@@ -27,18 +27,15 @@ const FileViewer = () => {
     setLoading,
     setCurrentPage,
     pageCount,
-    isMenuOpen,
-    userSettingsUi,
     userSettingsApi,
     setPageCount,
     pdfDimensions,
     setPdfDimensions,
   } = useContext(Context);
   const [elWidth, setElWidth] = useState({});
-  const [visiblePages, setVisiblePages] = useState([1]);
-  const [observer, setObserver] = useState(null);
+  // const [visiblePages, setVisiblePages] = useState([1]);
+  // const [observer, setObserver] = useState(null);
   const { triggerSnackbar } = useSnackbar();
-  const { zoom } = userSettingsUi;
   const { zoom: savedZoom } = userSettingsApi;
 
   const wrapperStyle = useMemo(
@@ -49,7 +46,6 @@ const FileViewer = () => {
     }),
     [pdfDimensions.aspectRatio]
   );
-  // const finalZoom = isMenuOpen ? savedZoom : zoom;
 
   const onDocumentLoadSuccess = async (pdf) => {
     console.log("doc load success");
@@ -79,14 +75,14 @@ const FileViewer = () => {
     page.cleanup();
   };
 
-  const observePage = useCallback(
-    (node) => {
-      if (observer && node !== null) {
-        observer.observe(node);
-      }
-    },
-    [observer]
-  );
+  // const observePage = useCallback(
+  //   (node) => {
+  //     if (observer && node !== null) {
+  //       observer.observe(node);
+  //     }
+  //   },
+  //   [observer]
+  // );
 
   const handleScroll = useCallback(
     (event) => {
@@ -141,6 +137,7 @@ const FileViewer = () => {
   //     }
   //   };
   // }, [setVisiblePages]);
+
   // Todo: Optimize this to load the pages as you scroll
 
   return (
@@ -167,7 +164,7 @@ const FileViewer = () => {
             key={`wrapper_${index}`}
             style={{ height: pdfDimensions.height }}
             data-page-number={index}
-            ref={(node) => observePage(node, index)}
+            // ref={(node) => observePage(node, index)}
           >
             <Page
               loading=''

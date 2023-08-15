@@ -80,9 +80,12 @@ const UserProfile = () => {
   };
 
   return (
-    <div className='flex flex-col justify-center items-center h-screen bg-gray-800'>
-      <div className='p-8 bg-white rounded shadow-md w-96'>
-        <h2 className='mb-8 text-3xl text-blue-600 text-center'>
+    <div className='flex flex-col items-center h-screen bg-[#323639]'>
+      <div className='my-20'>
+        <img src='./logo5.png' alt='' className='h-32' />
+      </div>
+      <div className='p-8 bg-white rounded shadow-md w-96 flex flex-col justify-between items-center'>
+        <h2 className='mb-8 text-3xl text-blue-500 text-center'>
           {isLogin ? "Login" : "Create profile"}
         </h2>
         <input
@@ -106,14 +109,14 @@ const UserProfile = () => {
         )}
         {isLogin ? (
           <button
-            className='w-full px-3 py-2 bg-green-600 text-white rounded-md hover:bg-green-700'
+            className='w-full px-3 py-2 bg-green-600 text-slate-200 rounded-md hover:bg-green-700'
             onClick={loginUser}
           >
             Login
           </button>
         ) : (
           <button
-            className='w-full px-3 py-2 bg-green-600 text-white rounded-md hover:bg-green-700'
+            className='w-full px-3 py-2 bg-green-600 text-slate-200 rounded-md hover:bg-green-700'
             onClick={createUser}
           >
             Create Profile

@@ -52,7 +52,7 @@ function FileUpload() {
       </div>
       <form onSubmit={submitFile} className='flex'>
         <input
-          className='w-96 bg-gray-500 hover:bg-gray-400 text-white py-1 px-2 rounded cursor-pointer text-base'
+          className='w-96 bg-gray-500 hover:bg-gray-400 text-slate-200 py-1 px-2 rounded cursor-pointer text-base'
           type='file'
           id='file'
           accept='.pdf'
@@ -63,7 +63,7 @@ function FileUpload() {
             type='submit'
             label='Upload'
             disabled={pdfFile === null}
-            className='bg-blue-500 hover:bg-gray-400 text-white p-4 mx-4 text-base active:scale-95 transform transition focus:outline-none  shadow-lg'
+            className='bg-blue-500 hover:bg-gray-400 text-slate-200 p-4 mx-4 text-base active:scale-95 transform transition focus:outline-none  shadow-lg'
           />
         )}
       </form>

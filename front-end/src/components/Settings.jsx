@@ -1,15 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Context } from "../context/Context";
 import { languageMap } from "../consts";
-import axios from "axios";
 
 const Settings = () => {
-  const { userSettingsUi, setUserSettingsUi, setUserSettingsApi, userInfo } =
+  const { userSettingsUi, setUserSettingsUi, userSettingsApi } =
     useContext(Context);
-  const { userID } = userInfo;
   const { zoom, theme, language } = userSettingsUi;
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   const handleSettingsChange = (key, value) => {
     if (key === "zoom") {
@@ -20,35 +17,10 @@ const Settings = () => {
 
   useEffect(() => {
     setLoading(true);
-    const fetchSettings = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:5000/api/get_settings`,
-          {
-            params: { userID },
-          }
-        );
-        const settings = response.data;
-        setUserSettingsApi({
-          zoom: settings.zoomLevel,
-          theme: settings.theme,
-          language: settings.selected_language,
-        });
-        setUserSettingsUi({
-          zoom: settings.zoomLevel,
-          theme: settings.theme,
-          language: settings.selected_language,
-        });
-      } catch (err) {
-        setError(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSettings();
+    setUserSettingsUi(userSettingsApi);
+    setLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userID]);
+  }, [userSettingsApi]);
 
   if (loading) {
     return (
@@ -56,10 +28,6 @@ const Settings = () => {
         Loading documents...
       </div>
     );
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
   }
 
   return (

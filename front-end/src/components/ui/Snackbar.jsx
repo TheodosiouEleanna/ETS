@@ -32,7 +32,7 @@ const Snackbar = ({ message, status, duration = 2000, onClose }) => {
 
   return (
     <div
-      className={`fixed bottom-20 left-[1.5rem] p-2 rounded shadow-lg text-white ${getStatusStyle(
+      className={`fixed bottom-20 left-[1.5rem] p-2 rounded shadow-lg text-slate-200 ${getStatusStyle(
         status
       )}`}
     >
