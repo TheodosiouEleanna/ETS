@@ -4,7 +4,7 @@ import { BsFillPersonFill } from "react-icons/bs";
 import Profile from "./Profile";
 import { Button } from "./ui/Button";
 import Menu from "./Menu";
-import { Context } from "../context/context";
+import { Context } from "../context/Context";
 import axios from "axios";
 import Connection from "./Connection";
 import { useSnackbar } from "../hooks/useSnackbar";

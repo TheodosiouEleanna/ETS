@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import axios from "axios";
-import { Context } from "../context/context";
+import { Context } from "../context/Context";
 import { useSnackbar } from "../hooks/useSnackbar";
 
 const UserProfile = () => {

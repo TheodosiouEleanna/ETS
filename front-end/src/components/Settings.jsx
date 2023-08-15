@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Context } from "../context/context";
+import { Context } from "../context/Context";
 import { languageMap } from "../consts";
 import axios from "axios";
 

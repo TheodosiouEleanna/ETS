@@ -35,12 +35,12 @@ const ModalWrapper = ({
         </Button>
 
         {children}
-        <div className='flex'>
+        <div className='flex relative'>
           {shouldShowConfirm && (
             <Button
               label='Confirm'
               disabled={shouldDisableConfirm}
-              className='bg-blue-500 text-slate-200 w-24 flex justify-center items-center text-base absolute right-8 bottom-8 rounded  active:scale-95 transform transition focus:outline-none  shadow-lg'
+              className='bg-blue-500 text-slate-200 w-24 flex justify-center items-center text-base absolute right-0 top-3 rounded  active:scale-95 transform transition focus:outline-none  shadow-lg'
               onClick={(e) => onConfirm("")}
             >
               {/* {loading && <Loader />} */}
@@ -49,7 +49,7 @@ const ModalWrapper = ({
           {shouldShowUpload && (
             <Button
               label='Upload File'
-              className='bg-blue-500 text-slate-200 w-24 flex justify-center items-center text-base absolute right-36 bottom-8'
+              className='bg-blue-500 text-slate-200 w-24 flex justify-center items-center text-base absolute right-28 top-3'
               onClick={onClickUpload}
             >
               {/* {loading && <Loader />} */}

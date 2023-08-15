@@ -7,7 +7,7 @@ import React, {
   useState,
 } from "react";
 import { pdfjs, Document, Page } from "react-pdf";
-import { Context } from "../context/context";
+import { Context } from "../context/Context";
 import { StyleSheet } from "@react-pdf/renderer";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 import { useSnackbar } from "../hooks/useSnackbar";

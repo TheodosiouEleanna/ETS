@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Button } from "./Button";
-import { Context } from "../../context/context";
+import { Context } from "../../context/Context";
 import { BiSolidLeftArrow } from "react-icons/bi";
 import { BiSolidRightArrow } from "react-icons/bi";
 

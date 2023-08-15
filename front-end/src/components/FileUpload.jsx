@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import axios from "axios";
 import { Button } from "./ui/Button";
-import { Context } from "../context/context";
+import { Context } from "../context/Context";
 import { useSnackbar } from "../hooks/useSnackbar";
 
 function FileUpload() {

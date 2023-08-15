@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import { Context } from "../context/context";
+import { Context } from "../context/Context";
 import { FaRegSquare, FaCheckSquare } from "react-icons/fa";
 import { Button } from "./ui/Button";
 import { RiDeleteBin4Fill } from "react-icons/ri";

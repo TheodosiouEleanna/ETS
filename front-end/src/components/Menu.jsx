@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import ModalWrapper from "./ui/ModalWrapper";
 import Documents from "./Documents";
-import { Context } from "../context/context";
+import { Context } from "../context/Context";
 import axios from "axios";
 import FileUpload from "./FileUpload";
 import Settings from "./Settings";
@@ -111,10 +111,10 @@ function Menu({ onCloseMenu }) {
         shouldShowUpload={selectedOption === "documents"}
         onClose={onCloseMenu}
       >
-        <div className='flex border-2 border-slate-200 h-[85%]'>
+        <div className='flex border-2 border-slate-200 h-[64vh]'>
           <div className='bg-[#323639] border rounded'>
             <div
-              className={`cursor-pointer border-y-2 border-slate-200 border-b-0 p-1 w-48 text-base  hover:bg-[#525659] hover:text-blue-500 text-white px-4 py-2 ${
+              className={`cursor-pointer border-bottom-2 border-slate-200 border-b-0 p-1 w-48 text-base  hover:bg-[#525659] hover:text-blue-500 text-white px-4 py-2 ${
                 selectedOption === "settings"
                   ? "text-blue-500 bg-[#525659]"
                   : ""
@@ -144,8 +144,8 @@ function Menu({ onCloseMenu }) {
               Vocabulary
             </div>
           </div>
-          <div className='bg-[#323639] w-full rounded border-2 border-slate-200'>
-            <div className='m-4 bg-slate-200 rounded h-[94.5%] overflow-y-scroll'>
+          <div className='bg-[#323639] w-full rounded border-2 h-[63.7vh] border-slate-200 '>
+            <div className='bg-slate-200 h-full w-full rounded overflow-y-scroll  border-[1rem] border-[#323639]'>
               {renderContent()}
             </div>
           </div>

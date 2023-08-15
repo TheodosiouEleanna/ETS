@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Context } from "../context/context";
+import { Context } from "../context/Context";
 
 const Profile = ({ onClick }) => {
   const { userInfo } = useContext(Context);
