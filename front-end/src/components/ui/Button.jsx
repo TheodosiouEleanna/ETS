@@ -21,8 +21,8 @@ export const Button = ({
           : "hover:opacity-80 py-1 px-2 rounded"
       } ${className} `}
     >
-      {label && label}
       {children && children}
+      {label && label}
     </button>
   );
 };

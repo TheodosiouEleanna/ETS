@@ -63,54 +63,60 @@ const Settings = () => {
   }
 
   return (
-    <div className='flex flex-col w-[500px] m-2 p-4'>
-      <h1 className='py-1 mb-8 text-xl font-bold text-gray-900 border-b border-gray-300'>
+    <div className='flex flex-col m-2 p-4'>
+      <h1 className='py-1 mb-4 text-xl font-bold text-gray-900 border-b border-gray-300'>
         Settings
       </h1>
-      <div className='mb-4 flex justify-between'>
-        <label className='text-base text-gray-900'>Zoom Level</label>
-        <div className='flex'>
-          <input
-            type='range'
-            min='10'
-            max='200'
-            value={zoom * 100}
-            onChange={(e) =>
-              handleSettingsChange("zoom", Number(e.target.value))
-            }
-            className='slider text-gray-900 p-1 h-10 rounded border border-gray-300'
-          />
-          <p className='text-base text-gray-900 pl-4'>
-            {(zoom * 100).toFixed()}%
-          </p>
+      <div className='mb-8 text-gray-600'>
+        Adjust the settings to your preferences and click Confirm to apply them
+        to your document.
+      </div>
+      <div className='w-[500px] '>
+        <div className='mb-4 flex justify-between'>
+          <label className='text-base text-gray-900'>Zoom Level</label>
+          <div className='flex'>
+            <input
+              type='range'
+              min='10'
+              max='200'
+              value={zoom * 100}
+              onChange={(e) =>
+                handleSettingsChange("zoom", Number(e.target.value))
+              }
+              className='slider text-gray-900 p-1 h-10 rounded border border-gray-300'
+            />
+            <p className='text-base text-gray-900 pl-4'>
+              {(zoom * 100).toFixed()}%
+            </p>
+          </div>
         </div>
+        <div className='mb-4 flex justify-between'>
+          <label className='text-base text-gray-900'>Theme</label>
+          <select
+            className='text-base text-gray-900 p-1 w-48 rounded border border-gray-300'
+            value={theme}
+            onChange={(e) => handleSettingsChange("theme", e.target.value)}
+          >
+            <option value='light'>Light</option>
+            <option value='dark'>Dark</option>
+          </select>
+        </div>
+        <div className='mb-4 flex justify-between'>
+          <label className='text-base text-gray-900'>Language</label>
+          <select
+            value={language}
+            className='text-base text-gray-900 p-1 w-48 rounded border border-gray-300'
+            onChange={(e) => handleSettingsChange("language", e.target.value)}
+          >
+            {Object.entries(languageMap).map(([code, name]) => (
+              <option key={code} value={code}>
+                {name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className='flex justify-end py-2'></div>
       </div>
-      <div className='mb-4 flex justify-between'>
-        <label className='text-base text-gray-900'>Theme</label>
-        <select
-          className='text-base text-gray-900 p-1 w-48 rounded border border-gray-300'
-          value={theme}
-          onChange={(e) => handleSettingsChange("theme", e.target.value)}
-        >
-          <option value='light'>Light</option>
-          <option value='dark'>Dark</option>
-        </select>
-      </div>
-      <div className='mb-4 flex justify-between'>
-        <label className='text-base text-gray-900'>Language</label>
-        <select
-          value={language}
-          className='text-base text-gray-900 p-1 w-48 rounded border border-gray-300'
-          onChange={(e) => handleSettingsChange("language", e.target.value)}
-        >
-          {Object.entries(languageMap).map(([code, name]) => (
-            <option key={code} value={code}>
-              {name}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div className='flex justify-end py-2'></div>
     </div>
   );
 };

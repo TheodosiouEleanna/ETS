@@ -17,7 +17,7 @@ const MainContent = () => {
           </div>
         </div>
       )}
-      {loading && file.size === 0 && (
+      {loading && (
         <div className='h-full flex items-center text-slate-200'>
           Loading Pdf Document...
         </div>

@@ -49,7 +49,7 @@ const FileViewer = () => {
     }),
     [pdfDimensions.aspectRatio]
   );
-  const finalZoom = isMenuOpen ? savedZoom : zoom;
+  // const finalZoom = isMenuOpen ? savedZoom : zoom;
 
   const onDocumentLoadSuccess = async (pdf) => {
     console.log("doc load success");
@@ -177,7 +177,7 @@ const FileViewer = () => {
               size='A4'
               style={styles.page}
               pageNumber={index + 1}
-              scale={finalZoom}
+              scale={savedZoom}
               renderMode='canvas'
               renderTextLayer={false}
               width={elWidth}

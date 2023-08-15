@@ -87,7 +87,6 @@ const Documents = ({ onConfirm }) => {
   if (error) {
     return <div>Error: {error}</div>;
   }
-  // Todo: Format upload Date
 
   return (
     <>
@@ -137,7 +136,7 @@ const Documents = ({ onConfirm }) => {
                 {doc.lastReadPage}
               </div>
               <div className='flex items-center px-1 py-2 col-span-2'>
-                {doc.uploadDate}
+                {doc.uploadDate.split(".")[0]}
               </div>
               <div className='flex items-center py-2 col-span-1'>
                 <Button

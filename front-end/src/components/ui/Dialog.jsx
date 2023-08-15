@@ -21,7 +21,7 @@ const Dialog = ({ title, content, onClose, onConfirm }) => {
           <RiCloseFill className='text-3xl' />
         </Button>
         <Button
-          className='text-green-800 hover:text-green-700 absolute right-6 bottom-9   active:scale-95 transform transition focus:outline-none  shadow-lg '
+          className='text-green-800 hover:text-green-700 absolute right-6 bottom-9   active:scale-95 transform transition focus:outline-none'
           onClick={onConfirm}
         >
           <FaCheck className='text-xl' />

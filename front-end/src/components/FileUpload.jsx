@@ -8,7 +8,7 @@ function FileUpload() {
   const [pdfFile, setPdfFile] = useState(null);
   const { userInfo, setSelectedDocID } = useContext(Context);
   const { userID } = userInfo;
-  const { triggerSnackbar } = useSnackbar();
+  const { triggerSnackbar, snackbarData } = useSnackbar();
 
   const submitFile = (event) => {
     event.preventDefault();
@@ -43,24 +43,29 @@ function FileUpload() {
   };
 
   return (
-    <div className='flex flex-col w-[500px] m-2 p-4'>
-      <h1 className='py-1 mb-8 text-xl font-bold text-gray-900 border-b border-gray-300'>
+    <div className='flex flex-col m-2 p-4'>
+      <h1 className='py-1 mb-4 text-xl font-bold text-gray-900 border-b border-gray-300'>
         Upload File
       </h1>
+      <div className='mb-6 text-gray-600'>
+        Choose a pdf file to upload and click Confirm to load the document.
+      </div>
       <form onSubmit={submitFile} className='flex'>
         <input
-          className='w-96 bg-gray-500 hover:bg-gray-400 text-white py-1 px-2 mx-2 rounded cursor-pointer text-base'
+          className='w-96 bg-gray-500 hover:bg-gray-400 text-white py-1 px-2 rounded cursor-pointer text-base'
           type='file'
           id='file'
           accept='.pdf'
           onChange={handleFileUpload}
         />
-        <Button
-          type='submit'
-          label='Upload'
-          disabled={pdfFile === null}
-          className='bg-blue-500 hover:bg-gray-400 text-white p-4 mx-2 text-base active:scale-95 transform transition focus:outline-none  shadow-lg'
-        />
+        {snackbarData.status !== "success" && (
+          <Button
+            type='submit'
+            label='Upload'
+            disabled={pdfFile === null}
+            className='bg-blue-500 hover:bg-gray-400 text-white p-4 mx-4 text-base active:scale-95 transform transition focus:outline-none  shadow-lg'
+          />
+        )}
       </form>
     </div>
   );

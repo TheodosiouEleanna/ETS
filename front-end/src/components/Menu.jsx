@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import ModalWrapper from "./ui/ModalWrapper";
 import Documents from "./Documents";
 import { Context } from "../context/Context";
@@ -7,6 +7,9 @@ import FileUpload from "./FileUpload";
 import Settings from "./Settings";
 import Vocabulary from "./Vocabulary";
 import { useSnackbar } from "../hooks/useSnackbar";
+import { Button } from "./ui/Button";
+import { FiArrowLeft } from "react-icons/fi";
+import { isEqual } from "lodash";
 
 function Menu({ onCloseMenu }) {
   const {
@@ -15,7 +18,9 @@ function Menu({ onCloseMenu }) {
     setLoading,
     selectedDocID,
     userInfo,
+    setIsMenuOpen,
     userSettingsUi,
+    userSettingsApi,
     setUserSettingsApi,
   } = useContext(Context);
   const { zoom, theme, language } = userSettingsUi;
@@ -24,37 +29,44 @@ function Menu({ onCloseMenu }) {
   const [loadingMenu, setLoadingMenu] = useState(false);
   const { triggerSnackbar } = useSnackbar();
 
+  const areSettingsEqual = useMemo(
+    () => isEqual(userSettingsUi, userSettingsApi),
+    [userSettingsApi, userSettingsUi]
+  );
+
   const onConfirm = (id) => {
-    onCloseMenu();
     setLoadingMenu(true);
+    setLoading(true);
     if (selectedOption === "settings") {
-      setLoading(true);
-      axios
-        .post("http://localhost:5000/api/settings", {
-          userID,
-          zoomLevel: zoom,
-          theme,
-          language,
-        })
-        .then((res) => {
-          setLoadingMenu(false);
-          loadFile(file);
-          setLoading(false);
-          setUserSettingsApi({
-            zoom,
+      if (areSettingsEqual) {
+      } else {
+        axios
+          .post("http://localhost:5000/api/settings", {
+            userID,
+            zoomLevel: zoom,
             theme,
             language,
+          })
+          .then((res) => {
+            setLoadingMenu(false);
+            loadFile(file);
+            setUserSettingsApi({
+              zoom,
+              theme,
+              language,
+            });
+            triggerSnackbar({
+              message: "Settings saved successfully!",
+              status: "success",
+              open: true,
+            });
+            setLoading(false);
+          })
+          .catch((err) => {
+            console.error(err);
+            setLoadingMenu(false);
           });
-          triggerSnackbar({
-            message: "Settings saved successfully!",
-            status: "success",
-            open: true,
-          });
-        })
-        .catch((err) => {
-          console.error(err);
-          setLoadingMenu(false);
-        });
+      }
     }
     if (selectedOption === "documents" || selectedOption === "upload") {
       axios
@@ -70,11 +82,13 @@ function Menu({ onCloseMenu }) {
           });
           setLoadingMenu(false);
           loadFile(fileBlob);
+          setLoading(false);
         })
         .catch((error) => {
           alert("Failed to load file.");
         });
     }
+    setIsMenuOpen(false);
   };
 
   const onClickUpload = () => {
@@ -145,8 +159,17 @@ function Menu({ onCloseMenu }) {
             </div>
           </div>
           <div className='bg-[#323639] w-full rounded border-2 h-[63.7vh] border-slate-200 '>
-            <div className='bg-slate-200 h-full w-full rounded overflow-y-scroll  border-[1rem] border-[#323639]'>
+            <div className='bg-slate-200 h-full w-full rounded overflow-y-scroll  border-[1rem] border-[#323639] relative'>
               {renderContent()}
+              {selectedOption === "upload" && (
+                <Button
+                  label='Back to Documents'
+                  className='absolute right-4 top-4 text-slate-200 bg-gray-500 flex justify-center items-center p-2'
+                  onClick={() => setSelectedOption("documents")}
+                >
+                  <FiArrowLeft className='text-xl mr-2' />
+                </Button>
+              )}
             </div>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { useCallback, useContext, useState } from "react";
+import { useCallback, useContext, useMemo, useState } from "react";
 import { MdCastConnected, MdDensityMedium } from "react-icons/md";
 import { BsFillPersonFill } from "react-icons/bs";
 import Profile from "./Profile";
@@ -8,15 +8,30 @@ import { Context } from "../context/Context";
 import axios from "axios";
 import Connection from "./Connection";
 import { useSnackbar } from "../hooks/useSnackbar";
+import { isEqual } from "lodash";
+import Dialog from "./ui/Dialog";
 
 export const HeaderMenu = () => {
-  const { file, logout, isMenuOpen, setIsMenuOpen } = useContext(Context);
+  const {
+    file,
+    logout,
+    isMenuOpen,
+    setIsMenuOpen,
+    userSettingsUi,
+    userSettingsApi,
+  } = useContext(Context);
   const [showProfile, setShowProfile] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState("");
   const [showConnectionModal, setShowConnectionModal] = useState("");
   const [eyeTrackers, setEyeTrackers] = useState([]);
   const [error, setError] = useState("");
   const { triggerSnackbar } = useSnackbar();
+  const [showDiscardDialog, setShowDiscardDialog] = useState(false);
+
+  const areSettingsEqual = useMemo(
+    () => isEqual(userSettingsUi, userSettingsApi),
+    [userSettingsApi, userSettingsUi]
+  );
 
   const buttonStyle = () => ({
     backgroundColor: connectionStatus === "connected" ? "green" : "",
@@ -94,11 +109,32 @@ export const HeaderMenu = () => {
   };
 
   const onCloseMenu = () => {
+    if (!areSettingsEqual) {
+      setShowDiscardDialog(true);
+    } else {
+      setIsMenuOpen(false);
+    }
+  };
+
+  const onDialogConfirm = () => {
+    setShowDiscardDialog(false);
     setIsMenuOpen(false);
+  };
+
+  const onDialogClose = () => {
+    setShowDiscardDialog(false);
   };
 
   return (
     <>
+      {showDiscardDialog && (
+        <Dialog
+          title='Discard'
+          content='Are you sure you want to discard your changes?'
+          onClose={onDialogClose}
+          onConfirm={onDialogConfirm}
+        />
+      )}
       <div className='ml-4 flex space-x-8'>
         <Button
           className='py-2 px-2 bg-[#323639] text-slate-200 rounded-full hover:scale-110 hover:bg-gray-500 transform transition-transform duration-300 active:scale-95 focus:outline-none  shadow-lg'

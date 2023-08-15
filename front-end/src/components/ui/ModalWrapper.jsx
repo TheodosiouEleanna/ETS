@@ -20,7 +20,7 @@ const ModalWrapper = ({
       <div className='absolute inset-0 bg-black opacity-50'></div>
       <div
         style={style}
-        className={`rounded w-[500px] py-4 px-7 m-2 bg-slate-200 relative ${className}`}
+        className={`rounded w-[500px] py-6 px-8 m-2 bg-slate-200 relative ${className}`}
       >
         {title && (
           <div className='flex justify-center items-center mt-2 '>

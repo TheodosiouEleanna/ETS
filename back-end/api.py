@@ -67,7 +67,6 @@ def send_request(request_data):
 
 
 def upload_file(file, user_id):
-    # Todo: dont insert the file if it already exists
     filename = secure_filename(file.filename)
     file_data = file.read()
 
@@ -76,9 +75,19 @@ def upload_file(file, user_id):
     conn = sqlite3.connect(sqLiteDatabase)
     c = conn.cursor()
 
+    # Check if file with same name and user_id already exists
+    c.execute("SELECT COUNT(*) FROM documents WHERE userID = ? AND docName = ?",
+              (user_id, filename))
+    if c.fetchone()[0] > 0:
+        conn.close()
+        response = {
+            'message': 'File with the same name already exists.',
+            'userID': user_id,
+            'docName': filename,
+        }
+        return jsonify(response), 400
+
     new_id = str(uuid.uuid4())
-    print('new id', new_id, 'user id', user_id, 'file name',
-          filename, 'upload date', upload_date)
     c.execute("""
         INSERT INTO documents(docID, userID, docName, docFile, uploadDate, lastReadPage)
         VALUES (?, ?, ?, ?, ?, ?)
