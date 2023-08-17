@@ -32,6 +32,8 @@ const FileViewer = () => {
     pdfDimensions,
     setPdfDimensions,
   } = useContext(Context);
+  // const isElectron = window && window.process && window.process.type;
+  const isElectron = /Electron/.test(navigator.userAgent);
   const [elWidth, setElWidth] = useState({});
   // const [visiblePages, setVisiblePages] = useState([1]);
   // const [observer, setObserver] = useState(null);
@@ -42,9 +44,9 @@ const FileViewer = () => {
     () => ({
       width: "100%",
       height: `calc(100vw / ${pdfDimensions.aspectRatio})`,
-      maxHeight: "88.5vh",
+      maxHeight: isElectron ? "89.1vh" : "88.7vh",
     }),
-    [pdfDimensions.aspectRatio]
+    [isElectron, pdfDimensions.aspectRatio]
   );
 
   const onDocumentLoadSuccess = async (pdf) => {

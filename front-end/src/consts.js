@@ -124,3 +124,5 @@ export const eyeTrackers = [
   },
   // ... add more if needed
 ];
+
+export const apiURL = "http://localhost:5000/api";

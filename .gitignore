@@ -27,3 +27,9 @@
 
 # back-end
 /back-end/ETSsqLiteDB
+
+# docker
+docker-compose.yml
+
+/front-end/Dockerfile
+/back-end/Dockerfile
