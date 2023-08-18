@@ -5,15 +5,8 @@ import { BiSolidLeftArrow } from "react-icons/bi";
 import { BiSolidRightArrow } from "react-icons/bi";
 
 const Footer = () => {
-  const {
-    loading,
-    goToPrevPage,
-    goToNextPage,
-    pageCount,
-    currentPage,
-    setCurrentPage,
-    pdfDimensions,
-  } = useContext(Context);
+  const { loading, goToPrevPage, goToNextPage, pageCount, currentPage, setCurrentPage, pdfDimensions } =
+    useContext(Context);
 
   const [inputValue, setInputValue] = useState(0);
 
@@ -55,7 +48,7 @@ const Footer = () => {
         <span className='mx-2 text-sm'>
           Page
           <input
-            className='slider text-gray-900 p-1 h-7 rounded border border-gray-300 w-10 my-3 mx-1 active:scale-95 transform transition focus:outline-none  shadow-lg'
+            className='slider text-gray-900 p-1 h-7 rounded border border-gray-300 w-10 my-3 mx-1 active:scale-95 transform transition focus:outline-none'
             type='number'
             min='1'
             max={pageCount}
