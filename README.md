@@ -14,40 +14,54 @@ Run python app.py in back-end
 
 - ADD DOCKERFILES in the front-end and back-end directories
 
-# Back-end Dockerfile:
+Back-end Dockerfile:
 
----
-
+```
 FROM python:3.10.11
+
 RUN apt-get update && apt-get install -y libavahi-client3 && rm -rf /var/lib/apt/lists/\*
+
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+
 ENV PATH="/Users/Administrator/.cargo/bin:${PATH}"
+
 WORKDIR /app
+
 COPY requirements.txt requirements.txt
+
 RUN pip install --no-cache-dir -r requirements.txt
+
 COPY . .
+
 EXPOSE 5000
+
 CMD ["python", "app.py"]
+```
 
-
-# Front-end Dockerfile:
+Front-end Dockerfile:
 
 ---
-
+```
 FROM node:18.16.0
+
 WORKDIR /app
+
 COPY package\*.json ./
+
 RUN npm install
+
 COPY . ./
+
 EXPOSE 3000
+
 CMD ["npm", "start"]
 
+```
 
 
-# ADD docker-compose.yml in the root directory of ETS
+ADD docker-compose.yml in the root directory of ETS
 
----
-
+```
 version: "3"
 services:
 localhost:
@@ -66,6 +80,7 @@ depends_on: - localhost
 networks:
 default:
 driver: bridge
+```
 
 - RUN docker-compose up --build
 
