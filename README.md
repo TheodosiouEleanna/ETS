@@ -14,31 +14,23 @@ Run python app.py in back-end
 
 - ADD DOCKERFILES in the front-end and back-end directories
 
-- Back-end Dockerfile:
+# Back-end Dockerfile:
 
 ---
 
 FROM python:3.10.11
-
 RUN apt-get update && apt-get install -y libavahi-client3 && rm -rf /var/lib/apt/lists/\*
-
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 ENV PATH="/Users/Administrator/.cargo/bin:${PATH}"
-
 WORKDIR /app
-
 COPY requirements.txt requirements.txt
-
 RUN pip install --no-cache-dir -r requirements.txt
-
 COPY . .
-
 EXPOSE 5000
-
 CMD ["python", "app.py"]
 
 
-- Front-end Dockerfile:
+# Front-end Dockerfile:
 
 ---
 
@@ -52,7 +44,7 @@ CMD ["npm", "start"]
 
 
 
-- ADD docker-compose.yml in the root directory of ETS
+# ADD docker-compose.yml in the root directory of ETS
 
 ---
 
@@ -82,13 +74,9 @@ driver: bridge
 * Flask dependency issues:
 We need to resolve what dependencies are needed for the back-end
 
-# pywin32==305
-
-# pywinpty==2.0.10
-
-# torchaudio==0.13.1+cu117
-
-# torchvision==0.14.1+cu117
-
+pywin32==305
+pywinpty==2.0.10
+torchaudio==0.13.1+cu117
+torchvision==0.14.1+cu117
 torchaudio==0.13.1
 torchvision==0.14.1
