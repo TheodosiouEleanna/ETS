@@ -40,7 +40,6 @@ CMD ["python", "app.py"]
 
 Front-end Dockerfile:
 
----
 ```
 FROM node:18.16.0
 
@@ -86,7 +85,7 @@ driver: bridge
 
 --------------------------------||------------------------------------
 
-* Flask dependency issues:
+# Flask dependency issues:
 We need to resolve what dependencies are needed for the back-end
 
 - pywin32==305
