@@ -2,7 +2,7 @@ This is the app to be used in the Eye Tracking System (ETS).
 A system that provides translation aid when reading text documents by utilizing real time eye tracking data.
 It is being developed in the context of my Diploma Thesis.
 
-# To run ETS locally: 
+# To run ETS in terminal: 
 
 Run npm start in front-end 
 Run python app.py in back-end
@@ -12,7 +12,7 @@ Run python app.py in back-end
 
  # To run ETS with docker :
 
-- ADD DOCKERFILES in the front-end and back-end directories
+1. ADD DOCKERFILES in the front-end and back-end directories
 
 Back-end Dockerfile:
 
@@ -59,7 +59,7 @@ CMD ["npm", "start"]
 ```
 
 
-ADD docker-compose.yml in the root directory of ETS
+2. ADD docker-compose.yml in the root directory of ETS
 
 ```
 version: "3"
@@ -82,16 +82,21 @@ default:
 driver: bridge
 ```
 
-- RUN docker-compose up --build
+3. RUN docker-compose up --build
 
 --------------------------------||------------------------------------
 
 * Flask dependency issues:
 We need to resolve what dependencies are needed for the back-end
 
-pywin32==305
-pywinpty==2.0.10
-torchaudio==0.13.1+cu117
-torchvision==0.14.1+cu117
-torchaudio==0.13.1
-torchvision==0.14.1
+- pywin32==305
+
+- pywinpty==2.0.10
+
+- torchaudio==0.13.1+cu117
+
+- torchvision==0.14.1+cu117
+
+- torchaudio==0.13.1
+
+- torchvision==0.14.1
