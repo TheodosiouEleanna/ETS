@@ -1,22 +1,45 @@
 import React, { useContext } from "react";
 import { Context } from "../context/Context";
+import {
+  darkBg_primary,
+  darkBg_secondary,
+  lightBg_primary,
+  lightBg_secondary,
+} from "../consts";
+import { Button } from "./ui/Button";
 
 const Profile = ({ onClick }) => {
-  const { userInfo } = useContext(Context);
+  const { userInfo, userSettingsApi } = useContext(Context);
+  const isDarkTheme = userSettingsApi.theme === "dark";
 
   return (
-    <div className=' p-2 absolute rounded bg-slate-200 text-slate-200 text-lg top-[2.7rem] right-1'>
+    <div
+      className={`p-2 absolute rounded text-lg top-[2.5rem] right-1 shadow-lg`}
+      style={
+        isDarkTheme
+          ? {
+              backgroundColor: darkBg_secondary,
+            }
+          : {
+              backgroundColor: lightBg_primary,
+            }
+      }
+    >
       {/* <div>User ID: {userInfo.userID}</div> */}
-      <div className='w-44 h-12 text-gray-800 '>
+      <div
+        className='w-44 h-12 '
+        style={
+          isDarkTheme
+            ? { color: lightBg_secondary }
+            : { color: darkBg_secondary }
+        }
+      >
         Logged in as:<span className='text-base'> {userInfo.username}</span>
       </div>
       <div className='flex w-full justify-end'>
-        <button
-          className=' rounded bg-blue-500 hover:bg-gray-400 text-slate-200  py-1 px-2'
-          onClick={onClick}
-        >
+        <Button className={` rounded bg-blue-500 py-1 px-2`} onClick={onClick}>
           Logout
-        </button>
+        </Button>
       </div>
     </div>
   );

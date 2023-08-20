@@ -1,12 +1,19 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Context } from "../context/Context";
-import { languageMap } from "../consts";
+import {
+  darkBg_primary,
+  darkBg_secondary,
+  languageMap,
+  lightBg_primary,
+  lightBg_secondary,
+} from "../consts";
 
 const Settings = () => {
   const { userSettingsUi, setUserSettingsUi, userSettingsApi } =
     useContext(Context);
   const { zoom, theme, language } = userSettingsUi;
   const [loading, setLoading] = useState(false);
+  const isDarkTheme = userSettingsApi.theme === "dark";
 
   const handleSettingsChange = (key, value) => {
     if (key === "zoom") {
@@ -24,7 +31,14 @@ const Settings = () => {
 
   if (loading) {
     return (
-      <div className='flex justify-center items-center w-full h-full'>
+      <div
+        className='flex justify-center items-center w-full h-full'
+        style={
+          isDarkTheme
+            ? { color: lightBg_secondary }
+            : { color: darkBg_secondary }
+        }
+      >
         Loading documents...
       </div>
     );
@@ -32,17 +46,47 @@ const Settings = () => {
 
   return (
     <div className='flex flex-col m-2 p-4'>
-      <h1 className='py-1 mb-4 text-xl font-bold text-gray-900 border-b border-gray-300'>
+      <h1
+        className='py-1 mb-4 text-xl font-bold text-gray-900 border-b border-gray-300'
+        style={
+          isDarkTheme
+            ? { color: lightBg_secondary }
+            : { color: darkBg_secondary }
+        }
+      >
         Settings
       </h1>
-      <div className='mb-8 text-gray-600'>
+      <div
+        className='mb-8 text-gray-600'
+        style={
+          isDarkTheme
+            ? { color: lightBg_secondary }
+            : { color: darkBg_secondary }
+        }
+      >
         Adjust the settings to your preferences and click Confirm to apply them
         to your document.
       </div>
-      <div className='w-[500px] '>
-        <div className='mb-4 flex justify-between'>
-          <label className='text-base text-gray-900'>Zoom Level</label>
-          <div className='flex'>
+      <div className='w-[500px]'>
+        <div className='mb-4 flex justify-between '>
+          <label
+            className='text-base'
+            style={
+              isDarkTheme
+                ? { color: lightBg_secondary }
+                : { color: darkBg_secondary }
+            }
+          >
+            Zoom Level
+          </label>
+          <div
+            className='flex '
+            style={
+              isDarkTheme
+                ? { color: lightBg_secondary }
+                : { color: darkBg_secondary }
+            }
+          >
             <input
               type='range'
               min='10'
@@ -53,15 +97,42 @@ const Settings = () => {
               }
               className='slider text-gray-900 p-1 h-10 rounded border border-gray-300'
             />
-            <p className='text-base text-gray-900 pl-4'>
+            <p
+              className='text-base pl-4 align-middle'
+              style={
+                isDarkTheme
+                  ? { color: lightBg_secondary }
+                  : { color: darkBg_secondary }
+              }
+            >
               {(zoom * 100).toFixed()}%
             </p>
           </div>
         </div>
         <div className='mb-4 flex justify-between'>
-          <label className='text-base text-gray-900'>Theme</label>
+          <label
+            className='text-base'
+            style={
+              isDarkTheme
+                ? { color: lightBg_secondary }
+                : { color: darkBg_secondary }
+            }
+          >
+            Theme
+          </label>
           <select
-            className='text-base text-gray-900 p-1 w-48 rounded border border-gray-300'
+            className='text-base  p-1 w-48 rounded border border-gray-300'
+            style={
+              isDarkTheme
+                ? {
+                    backgroundColor: darkBg_secondary,
+                    color: lightBg_secondary,
+                  }
+                : {
+                    backgroundColor: lightBg_primary,
+                    color: darkBg_primary,
+                  }
+            }
             value={theme}
             onChange={(e) => handleSettingsChange("theme", e.target.value)}
           >
@@ -70,10 +141,30 @@ const Settings = () => {
           </select>
         </div>
         <div className='mb-4 flex justify-between'>
-          <label className='text-base text-gray-900'>Language</label>
+          <label
+            className='text-base'
+            style={
+              isDarkTheme
+                ? { color: lightBg_secondary }
+                : { color: darkBg_secondary }
+            }
+          >
+            Language
+          </label>
           <select
             value={language}
-            className='text-base text-gray-900 p-1 w-48 rounded border border-gray-300'
+            style={
+              isDarkTheme
+                ? {
+                    backgroundColor: darkBg_secondary,
+                    color: lightBg_secondary,
+                  }
+                : {
+                    backgroundColor: lightBg_primary,
+                    color: darkBg_primary,
+                  }
+            }
+            className='text-base p-1 w-48 rounded border border-gray-300'
             onChange={(e) => handleSettingsChange("language", e.target.value)}
           >
             {Object.entries(languageMap).map(([code, name]) => (

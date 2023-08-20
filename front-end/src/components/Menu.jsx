@@ -10,6 +10,13 @@ import { useSnackbar } from "../hooks/useSnackbar";
 import { Button } from "./ui/Button";
 import { FiArrowLeft } from "react-icons/fi";
 import { isEqual } from "lodash";
+import {
+  apiURL,
+  darkBg_primary,
+  darkBg_secondary,
+  lightBg_primary,
+  lightBg_secondary,
+} from "../consts";
 
 function Menu({ onCloseMenu }) {
   const {
@@ -29,6 +36,8 @@ function Menu({ onCloseMenu }) {
   const [loadingMenu, setLoadingMenu] = useState(false);
   const { triggerSnackbar } = useSnackbar();
 
+  const isDarkTheme = userSettingsApi.theme === "dark";
+  console.log({ isDarkTheme, userSettingsApi });
   const areSettingsEqual = useMemo(
     () => isEqual(userSettingsUi, userSettingsApi),
     [userSettingsApi, userSettingsUi]
@@ -41,7 +50,7 @@ function Menu({ onCloseMenu }) {
       if (areSettingsEqual) {
       } else {
         axios
-          .post("http://localhost:5000/api/settings", {
+          .post(`${apiURL}/settings`, {
             userID,
             zoomLevel: zoom,
             theme,
@@ -70,7 +79,7 @@ function Menu({ onCloseMenu }) {
     }
     if (selectedOption === "documents" || selectedOption === "upload") {
       axios
-        .get("http://localhost:5000/api/get_file", {
+        .get(`${apiURL}/get_file`, {
           params: {
             docID: id || selectedDocID,
           },
@@ -125,46 +134,93 @@ function Menu({ onCloseMenu }) {
         shouldShowUpload={selectedOption === "documents"}
         onClose={onCloseMenu}
       >
-        <div className='flex border-2 text-slate-200 border-slate-200 h-[64vh]'>
-          <div className='bg-[#323639] border rounded'>
+        <div
+          className={`flex h-[64vh]`}
+          style={
+            isDarkTheme ? { color: lightBg_primary } : { color: darkBg_primary }
+          }
+        >
+          <div
+            className={`rounded`}
+            style={
+              isDarkTheme
+                ? {
+                    border: `2px solid ${darkBg_primary}`,
+                    backgroundColor: darkBg_primary,
+                  }
+                : {
+                    border: `2px solid ${lightBg_primary}`,
+                    backgroundColor: lightBg_primary,
+                  }
+            }
+          >
             <div
-              className={`cursor-pointer border-bottom-2 border-slate-200 border-b-0 p-1 w-48 text-base  hover:bg-[#525659] hover:text-blue-500 px-4 py-2 ${
+              className={`cursor-pointer p-1 w-48 text-base hover:text-blue-500 px-4 py-2`}
+              style={
                 selectedOption === "settings"
-                  ? "text-blue-500 bg-[#525659]"
-                  : ""
-              }`}
+                  ? {
+                      backgroundColor: isDarkTheme
+                        ? darkBg_secondary
+                        : lightBg_secondary,
+                      color: "rgb(59 130 246)",
+                    }
+                  : {}
+              }
               onClick={() => setSelectedOption("settings")}
             >
               Settings
             </div>
             <div
-              className={`cursor-pointer border-y-2 border-slate-200 border-b-0 p-1 w-48 text-base bg-[#323639] hover:bg-[#525659] hover:text-blue-500  px-4 py-2 ${
+              className={`cursor-pointer p-1 w-48 text-base hover:text-blue-500 px-4 py-2`}
+              style={
                 selectedOption === "documents" || selectedOption === "upload"
-                  ? "text-blue-500 bg-[#525659]"
-                  : ""
-              }`}
+                  ? {
+                      backgroundColor: isDarkTheme
+                        ? darkBg_secondary
+                        : lightBg_secondary,
+                      color: "rgb(59 130 246)",
+                    }
+                  : {}
+              }
               onClick={() => setSelectedOption("documents")}
             >
               Documents
             </div>
             <div
-              className={`cursor-pointer border-y-2 border-slate-200 p-1 w-48 text-base bg-[#323639] hover:bg-[#525659] hover:text-blue-500  px-4 py-2  ${
+              className={`cursor-pointer p-1 w-48 text-base hover:text-blue-500 px-4 py-2`}
+              style={
                 selectedOption === "vocabulary"
-                  ? "text-blue-500 bg-[#525659]"
-                  : ""
-              }`}
+                  ? {
+                      backgroundColor: isDarkTheme
+                        ? darkBg_secondary
+                        : lightBg_secondary,
+                      color: "rgb(59 130 246)",
+                    }
+                  : {}
+              }
               onClick={() => setSelectedOption("vocabulary")}
             >
               Vocabulary
             </div>
           </div>
-          <div className='bg-[#323639] w-full rounded border-2 h-[63.7vh] border-slate-200 '>
-            <div className='bg-slate-200 h-full w-full rounded overflow-y-scroll  border-[1rem] border-[#323639] relative'>
+          <div className={`w-full rounded h-[64vh]`}>
+            <div
+              className={`h-full w-full rounded overflow-y-scroll border-[1rem] relative`}
+              style={
+                isDarkTheme
+                  ? {
+                      borderColor: darkBg_primary,
+                    }
+                  : {
+                      borderColor: lightBg_primary,
+                    }
+              }
+            >
               {renderContent()}
               {selectedOption === "upload" && (
                 <Button
                   label='Back to Documents'
-                  className='absolute right-4 top-4 text-slate-200 bg-gray-500 flex justify-center items-center p-2'
+                  className={`absolute right-4 top-4 flex justify-center items-center p-2`}
                   onClick={() => setSelectedOption("documents")}
                 >
                   <FiArrowLeft className='text-xl mr-2' />

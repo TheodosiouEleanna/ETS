@@ -1,6 +1,6 @@
 import React, { createContext, useEffect, useReducer } from "react";
 import axios from "axios";
-import { aspectRatio } from "../consts";
+import { apiURL, aspectRatio } from "../consts";
 
 const initialState = {
   file: { size: 0 },
@@ -19,7 +19,7 @@ const initialState = {
   userSettingsApi: {},
   userSettingsUi: JSON.parse(localStorage.getItem("userSettingsUi")) || {
     language: "English",
-    theme: "dark",
+    theme: "light",
     zoom: 0.5,
   },
   isMenuOpen: false,
@@ -181,7 +181,7 @@ export const ContextProvider = ({ children }) => {
     if (state.file && state.file.size === 0 && state.selectedDocID) {
       setLoading(true);
       axios
-        .get("http://localhost:5000/api/get_file", {
+        .get(`${apiURL}/get_file`, {
           params: {
             docID: state.selectedDocID,
           },

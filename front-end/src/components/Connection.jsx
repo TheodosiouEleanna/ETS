@@ -1,10 +1,17 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Button } from "./ui/Button";
 import ModalWrapper from "./ui/ModalWrapper";
 import axios from "axios";
-import { eyeTrackers } from "../consts";
+import {
+  darkBg_primary,
+  darkBg_secondary,
+  eyeTrackers,
+  lightBg_primary,
+  lightBg_secondary,
+} from "../consts";
 import EyeTrackerInfo from "./EyeTrackerInfo";
 import { useSnackbar } from "../hooks/useSnackbar";
+import { Context } from "../context/Context";
 
 const Connection = ({
   status,
@@ -13,6 +20,9 @@ const Connection = ({
   connectToEyeTracker,
   onClose,
 }) => {
+  const { userSettingsApi } = useContext(Context);
+  const isDarkTheme = userSettingsApi.theme === "dark";
+
   const [selectedEyeTracker, setSelectedEyeTracker] = useState(
     eyeTrackers[0] || {}
   );
@@ -58,7 +68,16 @@ const Connection = ({
     >
       <div className='flex flex-col w-full h-full'>
         {status === "searching" && (
-          <h1 className='text-xl text-gray-900'>Searching...</h1>
+          <h1
+            className='text-xl'
+            style={
+              isDarkTheme
+                ? { color: lightBg_secondary }
+                : { color: darkBg_secondary }
+            }
+          >
+            Searching...
+          </h1>
         )}
         {status === "selection" && (
           <div className='flex flex-col w-full'>
@@ -66,14 +85,47 @@ const Connection = ({
               Found {eyeTrackers.length} eye trackers.
             </h1>
             <div className='flex w-full items-center text-lg'>
-              <div className='mr-4'>Select:</div>
+              <div
+                className='mr-4'
+                style={
+                  isDarkTheme
+                    ? {
+                        color: lightBg_secondary,
+                      }
+                    : {
+                        color: darkBg_primary,
+                      }
+                }
+              >
+                Select:
+              </div>
               <select
+                style={
+                  isDarkTheme
+                    ? {
+                        backgroundColor: darkBg_secondary,
+                        color: lightBg_secondary,
+                      }
+                    : {
+                        backgroundColor: lightBg_primary,
+                        color: darkBg_primary,
+                      }
+                }
                 value={selectedEyeTracker.device_name || ""}
-                className='text-gray-800 text-base p-2 w-[26rem] rounded border border-gray-300 '
+                className='text-gray-800 text-base p-2 w-[26rem] rounded border border-gray-300'
                 onChange={handleEyeTrackerChange}
               >
                 {eyeTrackers.map((tracker, index) => (
                   <option
+                    style={
+                      isDarkTheme
+                        ? {
+                            color: lightBg_secondary,
+                          }
+                        : {
+                            color: darkBg_primary,
+                          }
+                    }
                     className='text-gray-800 p-2 border border-gray-300 '
                     key={index}
                     value={tracker.device_name}
@@ -84,7 +136,7 @@ const Connection = ({
               </select>
               <Button
                 label='Connect'
-                className='bg-blue-500 w-24 h-10 flex justify-center items-center text-slate-200 mx-8 text-base  active:scale-95 transform transition focus:outline-none  shadow-lg'
+                className={`bg-blue-500 w-24 h-10 flex justify-center items-center mx-8 text-base  active:scale-95 transform transition focus:outline-none  shadow-lg`}
                 onClick={handleConnect}
                 disabled={!selectedEyeTracker}
               />

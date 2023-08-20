@@ -44,7 +44,7 @@ const FileViewer = () => {
     () => ({
       width: "100%",
       height: `calc(100vw / ${pdfDimensions.aspectRatio})`,
-      maxHeight: isElectron ? "89.1vh" : "88.7vh",
+      maxHeight: isElectron ? "89.1vh" : "88.9vh",
     }),
     [isElectron, pdfDimensions.aspectRatio]
   );

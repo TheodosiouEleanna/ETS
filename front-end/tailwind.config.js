@@ -3,6 +3,14 @@ module.exports = {
   content: ["./src/**/*.{js,jsx}", "./public/index.html"],
   theme: {
     extend: {
+      backgroundColor: {
+        lightBg_primary: "#F3F4F6",
+        darkBg_primary: "#323639",
+        darkBg_secondary: "#525659",
+        lightBg_secondary: "#E5E7EB",
+        darkHoverColor: "#525659",
+        lightHoverColor: "#F3F4F6",
+      },
       colors: {
         primary: "#1B73E8",
       },

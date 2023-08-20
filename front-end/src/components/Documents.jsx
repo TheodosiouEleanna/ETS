@@ -5,14 +5,17 @@ import { FaRegSquare, FaCheckSquare } from "react-icons/fa";
 import { Button } from "./ui/Button";
 import { RiDeleteBin4Fill } from "react-icons/ri";
 import Dialog from "./ui/Dialog";
+import { apiURL, darkBg_secondary, lightBg_secondary } from "../consts";
 
 const Documents = ({ onConfirm }) => {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [error, setError] = useState(null);
-  const { userInfo, selectedDocID, setSelectedDocID } = useContext(Context);
+  const { userInfo, selectedDocID, setSelectedDocID, userSettingsApi } =
+    useContext(Context);
   const { userID } = userInfo;
+  const isDarkTheme = userSettingsApi.theme === "dark";
 
   const handleDocumentClick = (docID) => {
     if (selectedDocID === docID) {
@@ -38,7 +41,7 @@ const Documents = ({ onConfirm }) => {
 
   const onDialogConfirm = () => {
     axios
-      .delete("http://localhost:5000/api/delete_file", {
+      .delete(`${apiURL}/delete_file`, {
         params: {
           userID,
           docID: selectedDocID,
@@ -61,7 +64,7 @@ const Documents = ({ onConfirm }) => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get("http://localhost:5000/api/documents", {
+      .get(`${apiURL}/documents`, {
         params: {
           userID,
         },
@@ -98,10 +101,19 @@ const Documents = ({ onConfirm }) => {
           onConfirm={onDialogConfirm}
         />
       )}
-      <div className='text-base text-gray-800 bg-slate-200'>
+      <div
+        className={`text-base text-gray-800 `}
+        style={{
+          backgroundColor: isDarkTheme ? darkBg_secondary : lightBg_secondary,
+        }}
+      >
         <div
           id='header'
-          className='grid grid-cols-7 text-left border-b-2 sticky top-0 pl-10 pt-2 bg-slate-200 border-slate-100 w-full'
+          className={`grid grid-cols-7 text-left border-b-2 sticky top-0 pl-10 pt-2 border-slate-100 w-full`}
+          style={{
+            color: isDarkTheme ? lightBg_secondary : darkBg_secondary,
+            backgroundColor: isDarkTheme ? darkBg_secondary : lightBg_secondary,
+          }}
         >
           <div className='py-2 col-span-3 font-bold'>Document name</div>
           <div className='py-2 col-span-1 font-bold'>Last read page</div>
@@ -111,10 +123,22 @@ const Documents = ({ onConfirm }) => {
           </div>
         </div>
         {documents.map((doc) => (
-          <div className='flex items-center px-4'>
+          <div
+            className='flex items-center px-4'
+            style={
+              isDarkTheme
+                ? { color: lightBg_secondary }
+                : { color: darkBg_secondary }
+            }
+          >
             <div
               onClick={() => handleDocumentClick(doc.docID)}
-              className='flex items-center justify-center h-6 w-6 text-gray-500 cursor-pointer m-1'
+              className='flex items-center justify-center h-6 w-6  cursor-pointer m-1'
+              style={
+                isDarkTheme
+                  ? { color: lightBg_secondary }
+                  : { color: darkBg_secondary }
+              }
             >
               {selectedDocID === doc.docID ? (
                 <FaCheckSquare />
@@ -124,9 +148,13 @@ const Documents = ({ onConfirm }) => {
             </div>
             <div
               key={doc.docID}
-              className={`grid grid-cols-7 text-left border-b-2 border-slate-100 top-0 hover:bg-gray-100 transition-colors duration-200 text-sm w-full ${
-                selectedDocID === doc.docID ? "bg-gray-100" : ""
-              }`}
+              className={`grid grid-cols-7 text-left border-b-2 border-slate-100 top-0 hover:bg-[${
+                isDarkTheme ? darkBg_secondary : lightBg_secondary
+              }] transition-colors duration-200 text-sm w-full bg-[${
+                selectedDocID === doc.docID
+                  ? `${isDarkTheme ? darkBg_secondary : lightBg_secondary}`
+                  : ""
+              }]`}
               onDoubleClick={() => onDoubleClick(doc.docID)}
             >
               <div className='flex items-center px-1 py-2 col-span-3 w-96 truncate'>

@@ -2,14 +2,23 @@ import React, { useContext, useState } from "react";
 import axios from "axios";
 import { Context } from "../context/Context";
 import { useSnackbar } from "../hooks/useSnackbar";
+import {
+  apiURL,
+  darkBg_primary,
+  darkBg_secondary,
+  lightBg_primary,
+  lightBg_secondary,
+} from "../consts";
+import { Button } from "./ui/Button";
 
 const UserProfile = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const { setUserInfo } = useContext(Context);
+  const { setUserInfo, userSettingsApi } = useContext(Context);
   const [error, setError] = useState("");
   const { triggerSnackbar } = useSnackbar();
+  const isDarkTheme = userSettingsApi.theme === "dark";
 
   const handleEnterPress = (event, type) => {
     if (event.key === "Enter") {
@@ -23,7 +32,7 @@ const UserProfile = () => {
 
   const createUser = () => {
     axios
-      .post("http://localhost:5000/api/create-profile", {
+      .post(`${apiURL}/create-profile`, {
         username,
         password,
       })
@@ -54,7 +63,7 @@ const UserProfile = () => {
 
   const loginUser = () => {
     axios
-      .post("http://localhost:5000/api/login", {
+      .post(`${apiURL}/login`, {
         username,
         password,
       })
@@ -80,11 +89,37 @@ const UserProfile = () => {
   };
 
   return (
-    <div className='flex flex-col items-center h-screen bg-[#323639]'>
+    <div
+      className={`flex flex-col items-center h-screen`}
+      style={
+        isDarkTheme
+          ? {
+              backgroundColor: darkBg_primary,
+            }
+          : {
+              backgroundColor: lightBg_secondary,
+            }
+      }
+    >
       <div className='my-20'>
-        <img src='./logo5.png' alt='' className='h-32' />
+        <img
+          src={isDarkTheme ? "./logo5.png" : "./logo_light.png"}
+          alt=''
+          className='h-32'
+        />
       </div>
-      <div className='p-8 bg-white rounded shadow-md w-96 flex flex-col justify-between items-center'>
+      <div
+        className='p-8  rounded shadow-md w-96 flex flex-col justify-between items-center'
+        style={
+          isDarkTheme
+            ? {
+                backgroundColor: darkBg_secondary,
+              }
+            : {
+                backgroundColor: lightBg_primary,
+              }
+        }
+      >
         <h2 className='mb-8 text-3xl text-blue-500 text-center'>
           {isLogin ? "Login" : "Create profile"}
         </h2>
@@ -108,39 +143,73 @@ const UserProfile = () => {
           <div className='text-red-700 flex justify-center pb-2'>{error}</div>
         )}
         {isLogin ? (
-          <button
-            className='w-full px-3 py-2 bg-green-600 text-slate-200 rounded-md hover:bg-green-700'
+          <Button
+            className={`w-full px-3 py-2 bg-green-600  rounded-md hover:bg-green-700`}
+            style={
+              isDarkTheme
+                ? { color: lightBg_secondary }
+                : { color: darkBg_secondary }
+            }
             onClick={loginUser}
           >
             Login
-          </button>
+          </Button>
         ) : (
-          <button
-            className='w-full px-3 py-2 bg-green-600 text-slate-200 rounded-md hover:bg-green-700'
+          <Button
+            className={`w-full px-3 py-2 bg-green-600 rounded-md hover:bg-green-700`}
+            style={
+              isDarkTheme
+                ? { color: lightBg_secondary }
+                : { color: darkBg_secondary }
+            }
             onClick={createUser}
           >
             Create Profile
-          </button>
+          </Button>
         )}
         {isLogin ? (
-          <div className='my-4'>
+          <div
+            className='my-4'
+            style={
+              isDarkTheme
+                ? { color: lightBg_secondary }
+                : { color: darkBg_secondary }
+            }
+          >
             Don't have a profile?
-            <button
+            <Button
               className='ml-2 text-gray-800 hover:text-blue-600'
+              style={
+                isDarkTheme
+                  ? { color: lightBg_secondary }
+                  : { color: darkBg_secondary }
+              }
               onClick={toggleLogin}
             >
               Create Profile
-            </button>
+            </Button>
           </div>
         ) : (
-          <div className='my-4'>
+          <div
+            className='my-4'
+            style={
+              isDarkTheme
+                ? { color: lightBg_secondary }
+                : { color: darkBg_secondary }
+            }
+          >
             Already have a profile?
-            <button
-              className='ml-2 text-gray-800 hover:text-blue-600'
+            <Button
+              className='ml-2 hover:text-blue-600'
+              style={
+                isDarkTheme
+                  ? { color: lightBg_secondary }
+                  : { color: darkBg_secondary }
+              }
               onClick={toggleLogin}
             >
               Login
-            </button>
+            </Button>
           </div>
         )}
       </div>

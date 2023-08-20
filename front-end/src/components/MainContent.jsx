@@ -2,20 +2,26 @@ import React, { useContext, useEffect, useState } from "react";
 import { Context } from "../context/Context";
 import FileViewer from "./FileViewer";
 import axios from "axios";
+import {
+  apiURL,
+  darkBg_primary,
+  darkBg_secondary,
+  lightBg_primary,
+  lightBg_secondary,
+} from "../consts";
 
 const MainContent = () => {
-  const { file, loading, setUserSettingsApi, userInfo } = useContext(Context);
+  const { file, loading, userSettingsApi, setUserSettingsApi, userInfo } =
+    useContext(Context);
   const { userID } = userInfo;
+  const isDarkTheme = userSettingsApi.theme === "dark";
 
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:5000/api/get_settings`,
-          {
-            params: { userID },
-          }
-        );
+        const response = await axios.get(`${apiURL}/get_settings`, {
+          params: { userID },
+        });
         const settings = response.data;
         setUserSettingsApi({
           zoom: settings.zoomLevel,
@@ -32,16 +38,39 @@ const MainContent = () => {
   }, [userID]);
 
   return (
-    <main className='z-0 h-full w-full flex items-center flex-col text-xl text-gray-800 bg-[#525659] '>
+    <main
+      className={`z-0 h-full w-full flex items-center flex-col text-xl text-gray-800`}
+      style={
+        isDarkTheme
+          ? {
+              backgroundColor: darkBg_secondary,
+            }
+          : {
+              backgroundColor: lightBg_secondary,
+            }
+      }
+    >
       {loading && (
-        <div className='h-full flex items-center text-slate-200'>
+        <div
+          className={`h-full flex items-center`}
+          style={
+            isDarkTheme
+              ? { color: lightBg_secondary }
+              : { color: darkBg_secondary }
+          }
+        >
           Loading Pdf Document...
         </div>
       )}
       {file.size !== 0 && !loading && <FileViewer />}
       {file.size === 0 && !loading && (
         <div className='flex flex-col items-center w-[40%] h-full mt-10'>
-          <div className='flex flex-col pt-20 items-center bg-slate-200  w-full h-full border border-gray-500 shadow rounded '>
+          <div
+            className={`flex flex-col pt-20 items-center w-full h-full border border-[${lightBg_secondary}] shadow rounded`}
+            style={{
+              backgroundColor: lightBg_primary,
+            }}
+          >
             <div className='font-bold mb-8'>
               Welcome to the Eye Tracking System
             </div>

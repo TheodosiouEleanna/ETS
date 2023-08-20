@@ -1,4 +1,5 @@
 import React from "react";
+import { lightBg_secondary } from "../../consts";
 
 export const Button = ({
   label,
@@ -13,7 +14,7 @@ export const Button = ({
     <button
       disabled={disabled}
       type={type}
-      style={style}
+      style={{ color: lightBg_secondary, ...style }}
       onClick={onClick}
       className={`${
         disabled

@@ -126,3 +126,8 @@ export const eyeTrackers = [
 ];
 
 export const apiURL = "http://localhost:5000/api";
+
+export const darkBg_primary = "#323639";
+export const darkBg_secondary = "#525659";
+export const lightBg_primary = "#F3F4F6";
+export const lightBg_secondary = "#E5E7EB";

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 const getSize = () => {
   const element = document.getElementById("tooltip");
@@ -20,19 +20,10 @@ const Tooltip = ({ children, content, position = "right", color }) => {
   const handleMouseMove = (event) => {
     const tooltipPosition = {};
     switch (position) {
-      // case "top":
-      //   tooltipPosition.top =
-      //     event.clientY - getSize().height / 3 - tooltipOffset;
-      //   tooltipPosition.left = event.clientX + tooltipOffset;
-      //   break;
       case "left":
         tooltipPosition.top = event.clientY + tooltipOffset;
         tooltipPosition.left = event.clientX - getSize().width - tooltipOffset;
         break;
-      // case "bottom":
-      //   tooltipPosition.top = event.clientY + tooltipOffset;
-      //   tooltipPosition.left = event.clientX + tooltipOffset;
-      //   break;
       case "right":
       default:
         tooltipPosition.top = event.clientY + tooltipOffset;
@@ -47,7 +38,7 @@ const Tooltip = ({ children, content, position = "right", color }) => {
     top: tooltipPosition.top + "px",
     left: tooltipPosition.left + "px",
     zIndex: 10,
-    color: color || "white",
+    color: color,
     fontSize: "0.8rem",
     padding: "0px 8px 0px 8px",
   };
