@@ -8,8 +8,6 @@ import { Context } from "../../context/Context";
 
 const Snackbar = ({ message, status, duration = 2000, onClose }) => {
   const [visible, setVisible] = useState(!!message);
-  const { userSettingsApi } = useContext(Context);
-  const isDarkTheme = userSettingsApi.theme === "dark";
 
   useEffect(() => {
     if (message && visible) {

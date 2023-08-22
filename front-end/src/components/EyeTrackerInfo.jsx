@@ -7,7 +7,17 @@ import {
 } from "../consts";
 import { Context } from "../context/Context";
 
-function EyeTrackerInfo({ tracker }) {
+// export interface IEyeTracker {
+//   address: string;
+//   device_capabilities: string[];
+//   device_name: string;
+//   firmware_version: string;
+//   model: string;
+//   runtime_version: string;
+//   serial_number: string;
+// }
+
+const EyeTrackerInfo = ({ tracker }) => {
   const { userSettingsApi } = useContext(Context);
   const isDarkTheme = userSettingsApi.theme === "dark";
   return (
@@ -84,7 +94,7 @@ function EyeTrackerInfo({ tracker }) {
         >
           Name:
         </span>{" "}
-        {tracker.device_name || "It's  OK if this is empty"}
+        {tracker.device_name}
       </p>
       <p
         className='mb-2 text-base'
@@ -106,8 +116,28 @@ function EyeTrackerInfo({ tracker }) {
         </span>{" "}
         {tracker.serial_number}
       </p>
+      <p
+        className='mb-2 text-base'
+        style={
+          isDarkTheme
+            ? { color: lightBg_secondary }
+            : { color: darkBg_secondary }
+        }
+      >
+        <span
+          className='font-semibold'
+          style={
+            isDarkTheme
+              ? { color: lightBg_secondary }
+              : { color: darkBg_secondary }
+          }
+        >
+          Firmware version:
+        </span>{" "}
+        {tracker.firmware_version}
+      </p>
     </div>
   );
-}
+};
 
 export default EyeTrackerInfo;

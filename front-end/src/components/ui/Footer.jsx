@@ -50,14 +50,16 @@ const Footer = () => {
 
   return (
     <footer
-      className={`z-10 w-full flex items-center justify-center py-[2px] px-4 shadow-xl`}
+      className={`z-10 w-full flex items-center justify-center py-[2px] px-4 `}
       style={
         isDarkTheme
           ? {
               backgroundColor: darkBg_primary,
+              boxShadow: "0 -4px 6px -2px rgba(0, 0, 0, 0.2)",
             }
           : {
               backgroundColor: lightBg_secondary,
+              boxShadow: "0 -2px 3px -2px rgba(0, 0, 0, 0.2)",
             }
       }
     >

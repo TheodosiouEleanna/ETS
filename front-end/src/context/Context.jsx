@@ -23,6 +23,8 @@ const initialState = {
     zoom: 0.5,
   },
   isMenuOpen: false,
+  selectedEyeTracker: localStorage.getItem("eyeTracker") || { device_name: "" },
+  isEyeTrackerConnected: false,
 };
 
 const reducer = (state, action) => {
@@ -106,6 +108,17 @@ const reducer = (state, action) => {
         ...state,
         isMenuOpen: action.payload,
       };
+    case "SET_SELECTED_EYE_TRACKER":
+      localStorage.setItem("eyeTracker", JSON.stringify(action.payload));
+      return {
+        ...state,
+        selectedEyeTracker: action.payload,
+      };
+    case "SET_IS_EYE_TRACKER_CONNECTED":
+      return {
+        ...state,
+        isEyeTrackerConnected: true,
+      };
     case "LOGOUT":
       localStorage.removeItem("userInfo");
       return {
@@ -121,7 +134,7 @@ export const Context = createContext();
 
 export const ContextProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  console.log({ state });
+  // console.log({ state });
 
   // -------------------- DOCUMENT ACTIONS -----------------------
   const loadFile = (file) => {
@@ -171,6 +184,14 @@ export const ContextProvider = ({ children }) => {
 
   const setIsMenuOpen = (isOpen) => {
     dispatch({ type: "SET_IS_MENU_OPEN", payload: isOpen });
+  };
+
+  const setSelectedEyeTracker = (eyeTracker) => {
+    dispatch({ type: "SET_SELECTED_EYE_TRACKER", payload: eyeTracker });
+  };
+
+  const setIsEyeTrackerConnected = (isConnected) => {
+    dispatch({ type: "SET_IS_EYE_TRACKER_CONNECTED", payload: isConnected });
   };
 
   const logout = () => {
@@ -229,6 +250,10 @@ export const ContextProvider = ({ children }) => {
     setPdfDimensions,
     isMenuOpen: state.isMenuOpen,
     setIsMenuOpen,
+    selectedEyeTracker: state.selectedEyeTracker,
+    setSelectedEyeTracker,
+    isEyeTrackerConnected: state.isEyeTrackerConnected,
+    setIsEyeTrackerConnected,
   };
 
   return <Context.Provider value={contextValue}>{children}</Context.Provider>;

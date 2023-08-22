@@ -5,7 +5,6 @@ import axios from "axios";
 import {
   darkBg_primary,
   darkBg_secondary,
-  eyeTrackers,
   lightBg_primary,
   lightBg_secondary,
 } from "../consts";
@@ -16,42 +15,47 @@ import { Context } from "../context/Context";
 const Connection = ({
   status,
   error,
-  updateStatus,
-  connectToEyeTracker,
+  setConnectionStatus,
+  eyeTrackers,
   onClose,
 }) => {
-  const { userSettingsApi } = useContext(Context);
+  const {
+    userSettingsApi,
+    selectedEyeTracker,
+    setSelectedEyeTracker,
+    setIsEyeTrackerConnected,
+  } = useContext(Context);
   const isDarkTheme = userSettingsApi.theme === "dark";
 
-  const [selectedEyeTracker, setSelectedEyeTracker] = useState(
-    eyeTrackers[0] || {}
-  );
   const { triggerSnackbar } = useSnackbar();
 
   const handleEyeTrackerChange = (e) => {
     const selected = eyeTrackers.find(
       (eye) => eye.device_name === e.target.value
     );
+    console.log({ selected });
     setSelectedEyeTracker(selected);
   };
 
   const handleConnect = () => {
-    // Handle connect event here
-    connectToEyeTracker();
-    console.log(`Connecting to ${selectedEyeTracker}`);
+    console.log(`Connecting to ${selectedEyeTracker.device_name}`);
     axios
-      .post("http://localhost:5000/connect")
-      .then((res) => {
-        updateStatus("connected");
+      .post("http://localhost:5000/api/connect", {
+        address: selectedEyeTracker.address,
+      })
+      .then((response) => {
+        setConnectionStatus("connected");
+        setIsEyeTrackerConnected(true);
         triggerSnackbar({
-          message: "Connected successfully!",
+          message: JSON.parse(response.data.message),
           status: "success",
           open: true,
         });
+        console.log(JSON.parse(response.data.message));
       })
       .catch((err) => {
         console.error(err);
-        updateStatus("error");
+        setConnectionStatus("error");
         triggerSnackbar({
           message: "Connection failed!",
           status: "error",
@@ -77,6 +81,18 @@ const Connection = ({
             }
           >
             Searching...
+          </h1>
+        )}
+        {status === "connected" && (
+          <h1
+            className='text-xl'
+            style={
+              isDarkTheme
+                ? { color: lightBg_secondary }
+                : { color: darkBg_secondary }
+            }
+          >
+            Connected !
           </h1>
         )}
         {status === "selection" && (
@@ -111,11 +127,11 @@ const Connection = ({
                         color: darkBg_primary,
                       }
                 }
-                value={selectedEyeTracker.device_name || ""}
+                value={selectedEyeTracker?.device_name || ""}
                 className='text-gray-800 text-base p-2 w-[26rem] rounded border border-gray-300'
                 onChange={handleEyeTrackerChange}
               >
-                {eyeTrackers.map((tracker, index) => (
+                {[{ device_name: "" }, ...eyeTrackers].map((tracker, index) => (
                   <option
                     style={
                       isDarkTheme
@@ -128,9 +144,9 @@ const Connection = ({
                     }
                     className='text-gray-800 p-2 border border-gray-300 '
                     key={index}
-                    value={tracker.device_name}
+                    // value={`${tracker.device_name}/${tracker.address}`}
                   >
-                    {tracker.device_name}
+                    {`${tracker.device_name}`}
                   </option>
                 ))}
               </select>
@@ -138,7 +154,7 @@ const Connection = ({
                 label='Connect'
                 className={`bg-blue-500 w-24 h-10 flex justify-center items-center mx-8 text-base  active:scale-95 transform transition focus:outline-none  shadow-lg`}
                 onClick={handleConnect}
-                disabled={!selectedEyeTracker}
+                disabled={!selectedEyeTracker?.device_name}
               />
             </div>
             {selectedEyeTracker && (

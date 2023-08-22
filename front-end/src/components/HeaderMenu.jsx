@@ -1,4 +1,4 @@
-import { useCallback, useContext, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { MdCastConnected, MdDensityMedium } from "react-icons/md";
 import { BsFillPersonFill } from "react-icons/bs";
 import Profile from "./Profile";
@@ -11,13 +11,8 @@ import { useSnackbar } from "../hooks/useSnackbar";
 import { isEqual } from "lodash";
 import Dialog from "./ui/Dialog";
 import Tooltip from "./ui/Tooltip";
-import {
-  apiURL,
-  darkBg_primary,
-  darkBg_secondary,
-  lightBg_primary,
-  lightBg_secondary,
-} from "../consts";
+import { apiURL, darkBg_secondary, lightBg_secondary } from "../consts";
+import { IEyeTracker } from "./EyeTrackerInfo";
 
 export const HeaderMenu = () => {
   const {
@@ -27,6 +22,8 @@ export const HeaderMenu = () => {
     setIsMenuOpen,
     userSettingsUi,
     userSettingsApi,
+    selectedEyeTracker,
+    isEyeTrackerConnected,
   } = useContext(Context);
   const [showProfile, setShowProfile] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState("");
@@ -40,10 +37,6 @@ export const HeaderMenu = () => {
     () => isEqual(userSettingsUi, userSettingsApi),
     [userSettingsApi, userSettingsUi]
   );
-
-  const buttonStyle = () => ({
-    backgroundColor: connectionStatus === "connected" ? "green" : "",
-  });
 
   const isDarkTheme = userSettingsApi.theme === "dark";
 
@@ -59,24 +52,15 @@ export const HeaderMenu = () => {
     setShowProfile((prev) => !prev);
   };
 
-  const requestEyeTrackers = () => {
-    axios
-      .get(`${apiURL}/get-eye-trackers`)
-      .then((response) => {
-        // Store the eye trackers in state
-        setEyeTrackers(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
-
   const toggleEyeTrackerSearch = useCallback(() => {
     axios
       .post(`${apiURL}/search`)
       .then((response) => {
+        console.log(response.data);
         setConnectionStatus("selection");
-        requestEyeTrackers();
+        if (response.data.length) {
+          setEyeTrackers(response.data);
+        }
       })
       .catch((error) => {
         // setConnectionStatus("error");
@@ -91,10 +75,6 @@ export const HeaderMenu = () => {
       });
   }, [triggerSnackbar]);
 
-  const connectToEyeTracker = () => {
-    console.log("connection!!!!!!");
-  };
-
   const handleClick = useCallback(() => {
     setShowConnectionModal(true);
     setConnectionStatus("searching");
@@ -103,10 +83,6 @@ export const HeaderMenu = () => {
 
   const onClickLogout = () => {
     logout();
-  };
-
-  const updateStatus = (status) => {
-    setConnectionStatus(status);
   };
 
   const onCloseConnection = () => {
@@ -134,6 +110,14 @@ export const HeaderMenu = () => {
   const onDialogClose = () => {
     setShowDiscardDialog(false);
   };
+
+  useEffect(() => {
+    if (connectionStatus === "connected") {
+      setTimeout(() => {
+        setShowConnectionModal(false);
+      }, 2000);
+    }
+  }, [connectionStatus]);
 
   return (
     <>
@@ -169,7 +153,7 @@ export const HeaderMenu = () => {
             />
           </Button>
         </Tooltip>
-        {file.size !== 0 && (
+        {file.size !== 0 && !isEyeTrackerConnected && (
           <Tooltip
             content='Connection'
             position='right'
@@ -194,12 +178,15 @@ export const HeaderMenu = () => {
             </Button>
           </Tooltip>
         )}
+        {isEyeTrackerConnected && (
+          <div className='text-green-400 font-bold text-base self-center'>{`Connected to ${selectedEyeTracker.device_name}`}</div>
+        )}
         {showConnectionModal && (
           <Connection
             error={error}
             status={connectionStatus}
-            connectToEyeTracker={connectToEyeTracker}
-            updateStatus={updateStatus}
+            eyeTrackers={eyeTrackers}
+            setConnectionStatus={setConnectionStatus}
             onClose={onCloseConnection}
           />
         )}

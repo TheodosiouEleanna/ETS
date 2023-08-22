@@ -37,7 +37,6 @@ function Menu({ onCloseMenu }) {
   const { triggerSnackbar } = useSnackbar();
 
   const isDarkTheme = userSettingsApi.theme === "dark";
-  console.log({ isDarkTheme, userSettingsApi });
   const areSettingsEqual = useMemo(
     () => isEqual(userSettingsUi, userSettingsApi),
     [userSettingsApi, userSettingsUi]

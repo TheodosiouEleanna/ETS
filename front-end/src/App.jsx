@@ -6,11 +6,13 @@ import Footer from "./components/ui/Footer";
 import Header from "./components/ui/Header";
 import { useSnackbar } from "./hooks/useSnackbar";
 import Snackbar from "./components/ui/Snackbar";
+import useEyeTracking from "./hooks/useEyeTracking";
 
 const App = () => {
   const { userInfo } = useContext(Context);
   const { isLoggedIn } = userInfo;
   const { snackbarData } = useSnackbar();
+  const data = useEyeTracking();
 
   return (
     <>

@@ -203,11 +203,23 @@ def search_eye_tracker():
     request_data = "search_eye_tracker"
     response_data = send_request(request_data)
 
-    # Convert JSON string to Python list. The returned type of response_data must be string
+    # Convert JSON string to Python list. The returned type of response_data must be string.
     return json.loads(response_data)
 
-# User profile
+@app.route('/api/connect', methods=['POST'])
+def get_eye_tracker():
+    
+    data = request.get_json()
 
+    address = data['address']
+    print("I arrived: ", address)
+    request_data = address
+    response_data = send_request(request_data)
+    print("This is the response_data: ", response_data)
+    # Convert JSON string to Python list. The returned type of response_data must be string.
+    return  jsonify({"message": response_data}), 200
+
+# User profile
 
 @app.route('/api/create-profile', methods=['POST'])
 def create_profile():
@@ -322,14 +334,6 @@ def get_user_settings():
     }
 
     return jsonify(settings), 200
-
-
-@app.route('/api/get-eye-trackers', methods=['GET'])
-def get_eye_tracker():
-    request_data = "get_eye_tracker"
-    response_data = send_request(request_data)
-    print("This is the response_data from get_eye_tracker", response_data)
-    return response_data
 
 
 if __name__ == "__main__":
