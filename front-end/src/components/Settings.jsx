@@ -25,7 +25,10 @@ const Settings = () => {
 
   if (loading) {
     return (
-      <div className='flex justify-center items-center w-full h-full' style={getFontColorSecondary(isDarkTheme)}>
+      <div
+        className='flex justify-center items-center w-full h-full'
+        style={{ color: getFontColorSecondary(isDarkTheme) }}
+      >
         Loading documents...
       </div>
     );
@@ -35,19 +38,19 @@ const Settings = () => {
     <div className='flex flex-col m-2 p-4'>
       <h1
         className='py-1 mb-4 text-xl font-bold text-gray-900 border-b border-gray-300'
-        style={getFontColorSecondary(isDarkTheme)}
+        style={{ color: getFontColorSecondary(isDarkTheme) }}
       >
         Settings
       </h1>
-      <div className='mb-8 text-gray-600' style={getFontColorSecondary(isDarkTheme)}>
+      <div className='mb-8 text-gray-600' style={{ color: getFontColorSecondary(isDarkTheme) }}>
         Adjust the settings to your preferences and click Confirm to apply them to your document.
       </div>
       <div className='xl:w-[500px] lg:w-[350px]'>
         <div className='mb-4 flex justify-between '>
-          <label className='text-base' style={getFontColorSecondary(isDarkTheme)}>
+          <label className='text-base' style={{ color: getFontColorSecondary(isDarkTheme) }}>
             Zoom Level
           </label>
-          <div className='flex ' style={getFontColorSecondary(isDarkTheme)}>
+          <div className='flex ' style={{ color: getFontColorSecondary(isDarkTheme) }}>
             <input
               type='range'
               min='10'
@@ -56,13 +59,13 @@ const Settings = () => {
               onChange={(e) => handleSettingsChange("zoom", Number(e.target.value))}
               className='slider text-gray-900 p-1 h-10 rounded border border-gray-300'
             />
-            <p className='text-base pl-4 align-middle' style={getFontColorSecondary(isDarkTheme)}>
+            <p className='text-base pl-4 align-middle' style={{ color: getFontColorSecondary(isDarkTheme) }}>
               {(zoom * 100).toFixed()}%
             </p>
           </div>
         </div>
         <div className='mb-4 flex justify-between'>
-          <label className='text-base' style={getFontColorSecondary(isDarkTheme)}>
+          <label className='text-base' style={{ color: getFontColorSecondary(isDarkTheme) }}>
             Theme
           </label>
           <select
@@ -86,7 +89,7 @@ const Settings = () => {
           </select>
         </div>
         <div className='mb-4 flex justify-between'>
-          <label className='text-base' style={getFontColorSecondary(isDarkTheme)}>
+          <label className='text-base' style={{ color: getFontColorSecondary(isDarkTheme) }}>
             Language
           </label>
           <select

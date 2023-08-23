@@ -98,7 +98,7 @@ const Documents = ({ onConfirm }) => {
         />
       )}
       <div
-        className={`text-base text-gray-800 `}
+        className='mb-4'
         style={{
           backgroundColor: getBgSecondary(isDarkTheme),
         }}
@@ -117,11 +117,11 @@ const Documents = ({ onConfirm }) => {
           <div className='py-2 px-1 col-span-1 font-bold ml-[-15px]'>Actions</div>
         </div>
         {documents.map((doc) => (
-          <div className='flex items-center px-4' style={getFontColorSecondary(isDarkTheme)}>
+          <div className='flex items-center px-4' style={{ color: getFontColorSecondary(isDarkTheme) }}>
             <div
               onClick={() => handleDocumentClick(doc.docID)}
               className='flex items-center justify-center h-6 w-6  cursor-pointer m-1'
-              style={getFontColorSecondary(isDarkTheme)}
+              style={{ color: getFontColorSecondary(isDarkTheme) }}
             >
               {selectedDocID === doc.docID ? <FaCheckSquare /> : <FaRegSquare />}
             </div>
@@ -139,7 +139,7 @@ const Documents = ({ onConfirm }) => {
               <div className='flex items-center px-1 py-2 col-span-2'>{doc.uploadDate.split(".")[0]}</div>
               <div className='flex items-center py-2 col-span-1'>
                 <Button className='p-0' onClick={() => onClickDelete(doc.docID)}>
-                  <RiDeleteBin4Fill className='text-[1.1rem] text-red-800 hover:text-red-700' />
+                  <RiDeleteBin4Fill className='text-[1.1rem] text-red-700 hover:text-red-600' />
                 </Button>
               </div>
             </div>

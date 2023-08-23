@@ -6,6 +6,7 @@ import { dark_primary, dark_secondary, light_primary, light_secondary } from "..
 import EyeTrackerInfo from "./EyeTrackerInfo";
 import { useSnackbar } from "../hooks/useSnackbar";
 import { Context } from "../context/Context";
+import { getBgSecondary, getFontColorSecondary } from "../utils/functions";
 
 const Connection = ({ status, error, setConnectionStatus, eyeTrackers, onClose }) => {
   const { userSettingsApi, selectedEyeTracker, setSelectedEyeTracker, setIsEyeTrackerConnected } = useContext(Context);
@@ -18,6 +19,7 @@ const Connection = ({ status, error, setConnectionStatus, eyeTrackers, onClose }
     setSelectedEyeTracker(selected);
   };
 
+  // Todo: cancel the request if modal closes
   const handleConnect = () => {
     console.log(`Connecting to ${selectedEyeTracker.device_name}`);
     axios
@@ -46,15 +48,20 @@ const Connection = ({ status, error, setConnectionStatus, eyeTrackers, onClose }
   };
 
   return (
-    <ModalWrapper className='w-[700px] h-[28rem] px-12 py-12' shouldShowConfirm={false} onClose={onClose}>
+    <ModalWrapper
+      className='w-[700px] h-[28rem] px-12 py-12'
+      shouldShowConfirm={false}
+      style={{ backgroundColor: getBgSecondary(isDarkTheme) }}
+      onClose={onClose}
+    >
       <div className='flex flex-col w-full h-full'>
         {status === "searching" && (
-          <h1 className='text-xl' style={isDarkTheme ? { color: light_secondary } : { color: dark_secondary }}>
+          <h1 className='text-xl' style={{ color: getFontColorSecondary(isDarkTheme) }}>
             Searching...
           </h1>
         )}
         {status === "connected" && (
-          <h1 className='text-xl' style={isDarkTheme ? { color: light_secondary } : { color: dark_secondary }}>
+          <h1 className='text-xl' style={{ color: getFontColorSecondary(isDarkTheme) }}>
             Connected !
           </h1>
         )}

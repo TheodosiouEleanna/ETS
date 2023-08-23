@@ -1,8 +1,9 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { Context } from "../context/Context";
 import FileViewer from "./FileViewer";
 import axios from "axios";
-import { apiURL, dark_primary, dark_secondary, light_primary, light_secondary } from "../consts";
+import { apiURL, dark_secondary, light_primary, light_secondary } from "../consts";
+import { getFontColorSecondary } from "../utils/functions";
 
 const MainContent = () => {
   const { file, loading, userSettingsApi, setUserSettingsApi, userInfo } = useContext(Context);
@@ -44,10 +45,7 @@ const MainContent = () => {
       }
     >
       {loading && (
-        <div
-          className={`h-full flex items-center`}
-          style={isDarkTheme ? { color: light_secondary } : { color: dark_secondary }}
-        >
+        <div className={`h-full flex items-center`} style={{ color: getFontColorSecondary(isDarkTheme) }}>
           Loading Pdf Document...
         </div>
       )}

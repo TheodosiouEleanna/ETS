@@ -11,7 +11,7 @@ import { Button } from "./ui/Button";
 import { FiArrowLeft } from "react-icons/fi";
 import { isEqual } from "lodash";
 import { apiURL, dark_primary, light_primary } from "../consts";
-import { getBgSecondary } from "../utils/functions";
+import { getBgSecondary, getFontColorPrimary } from "../utils/functions";
 
 function Menu({ onCloseMenu }) {
   const {
@@ -114,15 +114,16 @@ function Menu({ onCloseMenu }) {
     <>
       <ModalWrapper
         loading={loadingMenu}
-        className='xl:w-[70%] lg:w-[80%] h-[80vh] '
+        className='xl:w-[70%] lg:w-[80%] h-[80vh]'
         title='Menu'
+        style={{ backgroundColor: getBgSecondary(isDarkTheme) }}
         onConfirm={onConfirm}
         onClickUpload={onClickUpload}
         shouldDisableConfirm={(selectedOption === "documents" || selectedOption === "upload") && selectedDocID === ""}
         shouldShowUpload={selectedOption === "documents"}
         onClose={onCloseMenu}
       >
-        <div className={`flex h-[64vh]`} style={isDarkTheme ? { color: light_primary } : { color: dark_primary }}>
+        <div className={`flex h-[64vh]`} style={{ color: getFontColorPrimary(isDarkTheme) }}>
           <div
             className={`rounded`}
             style={

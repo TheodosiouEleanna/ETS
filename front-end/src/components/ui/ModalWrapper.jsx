@@ -1,14 +1,12 @@
-import { useContext } from "react";
 import ReactDOM from "react-dom";
 import { Button } from "./Button";
 import { RiCloseFill } from "react-icons/ri";
-import { Context } from "../../context/Context";
-import { dark_secondary, light_secondary } from "../../consts";
+import { light_secondary } from "../../consts";
 
 const ModalWrapper = ({
   children,
   title,
-  style,
+  style = {},
   className,
   shouldShowConfirm = true,
   shouldShowUpload = false,
@@ -17,22 +15,10 @@ const ModalWrapper = ({
   onClickUpload,
   onClose,
 }) => {
-  const { userSettingsApi } = useContext(Context);
-  const isDarkTheme = userSettingsApi.theme === "dark";
   const modalContent = (
     <div className='fixed inset-0 w-full flex items-center justify-center z-40'>
       <div className='absolute inset-0 bg-black opacity-50'></div>
-      <div
-        className={`rounded py-6 px-8 m-2 relative ${className}`}
-        style={
-          isDarkTheme
-            ? { ...style, backgroundColor: dark_secondary }
-            : {
-                ...style,
-                backgroundColor: light_secondary,
-              }
-        }
-      >
+      <div className={`rounded py-6 px-8 relative ${className}`} style={style}>
         {title && (
           <div className='flex justify-center items-center mt-2 '>
             <h1 className={`text-xl font-bold m-2`} style={{ color: light_secondary }}>
@@ -40,12 +26,8 @@ const ModalWrapper = ({
             </h1>
           </div>
         )}
-        <Button
-          className='text-red-700 hover:text-red-600 absolute right-5 top-8'
-          style={{ color: " rgb(153 27 27)" }}
-          onClick={onClose}
-        >
-          <RiCloseFill className='text-3xl' />
+        <Button className=' absolute right-5 top-8' onClick={onClose}>
+          <RiCloseFill className='text-3xl text-red-700 hover:text-red-600' />
         </Button>
 
         {children}

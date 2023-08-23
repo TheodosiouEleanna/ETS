@@ -1,6 +1,6 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { Context } from "../context/Context";
-import { dark_secondary, light_secondary } from "../consts";
+import { getFontColorSecondary } from "../utils/functions";
 
 const Vocabulary = () => {
   const { userSettingsApi } = useContext(Context);
@@ -10,11 +10,11 @@ const Vocabulary = () => {
     <div className='flex flex-col  m-2 p-4'>
       <h1
         className='py-1 mb-4 text-xl font-bold text-gray-900 border-b border-gray-300'
-        style={isDarkTheme ? { color: light_secondary } : { color: dark_secondary }}
+        style={{ color: getFontColorSecondary(isDarkTheme) }}
       >
         Vocabulary
       </h1>
-      <div className='mb-8 text-gray-600' style={isDarkTheme ? { color: light_secondary } : { color: dark_secondary }}>
+      <div className='mb-8 text-gray-600' style={{ color: getFontColorSecondary(isDarkTheme) }}>
         Here is your vocabulary.
       </div>
     </div>

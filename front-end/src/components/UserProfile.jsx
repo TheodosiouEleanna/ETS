@@ -96,7 +96,7 @@ const UserProfile = () => {
             }
       }
     >
-      <div className='xl:mb-[100px] xl:mt-[-100px] lg:mb-[30px]'>
+      <div className='xl:mb-[100px] xl:mt-[100px] lg:mb-[30px]'>
         <img src={isDarkTheme ? "./logo5.png" : "./logo_light.png"} alt='' className='h-32' />
       </div>
       <div
@@ -147,22 +147,22 @@ const UserProfile = () => {
           </Button>
         )}
         {isLogin ? (
-          <div className='my-4' style={getFontColorSecondary(isDarkTheme)}>
+          <div className='my-4' style={{ color: getFontColorSecondary(isDarkTheme) }}>
             Don't have a profile?
             <Button
               className='ml-2 hover:text-blue-600'
-              style={getFontColorSecondary(isDarkTheme)}
+              style={{ color: getFontColorSecondary(isDarkTheme) }}
               onClick={toggleLogin}
             >
               Create Profile
             </Button>
           </div>
         ) : (
-          <div className='my-4' style={getFontColorSecondary(isDarkTheme)}>
+          <div className='my-4' style={{ color: getFontColorSecondary(isDarkTheme) }}>
             Already have a profile?
             <Button
               className='ml-2 hover:text-blue-600'
-              style={getFontColorSecondary(isDarkTheme)}
+              style={{ color: getFontColorSecondary(isDarkTheme) }}
               onClick={toggleLogin}
             >
               Login

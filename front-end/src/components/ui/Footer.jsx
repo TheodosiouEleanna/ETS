@@ -83,7 +83,7 @@ const Footer = () => {
           <BiSolidLeftArrow />
         </Button>
 
-        <span className='mx-2 text-sm' style={getFontColorSecondary(isDarkTheme)}>
+        <span className='mx-2 text-sm' style={{ color: getFontColorSecondary(isDarkTheme) }}>
           Page
           <input
             className='slider text-gray-900 p-1 h-7 rounded  w-10 my-3 mx-1 active:scale-95 transform transition focus:outline-none'

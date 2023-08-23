@@ -48,8 +48,7 @@ export const capitalize = (str) => {
 
 export const getFontColorPrimary = (isDarkTheme) => (isDarkTheme ? light_primary : dark_primary);
 
-export const getFontColorSecondary = (isDarkTheme) =>
-  isDarkTheme ? { color: light_secondary } : { color: dark_secondary };
+export const getFontColorSecondary = (isDarkTheme) => (isDarkTheme ? light_secondary : dark_secondary);
 
 export const getBgPrimary = (isDarkTheme) => (isDarkTheme ? dark_primary : light_primary);
 

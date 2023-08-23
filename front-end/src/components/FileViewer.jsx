@@ -38,7 +38,7 @@ const FileViewer = () => {
     () => ({
       width: "100%",
       height: `calc(100vw / ${pdfDimensions.aspectRatio})`,
-      maxHeight: isElectron ? "89.1vh" : "100%",
+      maxHeight: isElectron ? "89.1vh" : "91%",
       // maxHeight: isElectron ? "89.1vh" : "88.9vh",
     }),
     [isElectron, pdfDimensions.aspectRatio]
@@ -136,7 +136,7 @@ const FileViewer = () => {
 
   return (
     <div
-      className={`${savedZoom >= 1 ? "justify-start" : "justify-center"} flex overflow-auto`}
+      className={`${savedZoom >= 1 ? "justify-start" : "justify-center"} flex overflow-auto lg:h-[88%]`}
       id='pdf-container'
       style={wrapperStyle}
       onScroll={handleScroll}

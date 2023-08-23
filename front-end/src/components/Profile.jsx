@@ -1,15 +1,17 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { Context } from "../context/Context";
-import { dark_primary, dark_secondary, light_primary, light_secondary } from "../consts";
+import { dark_secondary, light_primary } from "../consts";
 import { Button } from "./ui/Button";
+import { getFontColorSecondary } from "../utils/functions";
+import ReactDOM from "react-dom";
 
 const Profile = ({ onClick }) => {
   const { userInfo, userSettingsApi } = useContext(Context);
   const isDarkTheme = userSettingsApi.theme === "dark";
 
-  return (
+  const profileContent = (
     <div
-      className={`p-2 absolute rounded text-lg top-[2.5rem] right-1 shadow-lg`}
+      className={`p-2 absolute rounded text-lg top-[2.5rem] right-0 shadow-lg`}
       style={
         isDarkTheme
           ? {
@@ -21,7 +23,7 @@ const Profile = ({ onClick }) => {
       }
     >
       {/* <div>User ID: {userInfo.userID}</div> */}
-      <div className='w-44 h-12 ' style={isDarkTheme ? { color: light_secondary } : { color: dark_secondary }}>
+      <div className='w-44 h-12 ' style={{ color: getFontColorSecondary(isDarkTheme) }}>
         Logged in as:<span className='text-base'> {userInfo.username}</span>
       </div>
       <div className='flex w-full justify-end'>
@@ -31,6 +33,8 @@ const Profile = ({ onClick }) => {
       </div>
     </div>
   );
+
+  return ReactDOM.createPortal(profileContent, document.getElementById("modal-root"));
 };
 
 export default Profile;

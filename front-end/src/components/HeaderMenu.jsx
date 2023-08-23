@@ -144,7 +144,7 @@ export const HeaderMenu = () => {
             } transform transition-transform duration-300 active:scale-95 focus:outline-none`}
             onClick={toggleOpen}
           >
-            <MdDensityMedium className='text-xl' style={getFontColorSecondary(isDarkTheme)} />
+            <MdDensityMedium className='text-xl' style={{ color: getFontColorSecondary(isDarkTheme) }} />
           </Button>
         </Tooltip>
         {file.size !== 0 && !isEyeTrackerConnected && (
@@ -153,7 +153,7 @@ export const HeaderMenu = () => {
               className={`py-2 px-2 rounded-full hover:scale-110 ${btnClass} transform transition-transform duration-300 active:scale-95 focus:outline-none`}
               onClick={handleClick}
             >
-              <MdCastConnected className='text-xl' style={getFontColorSecondary(isDarkTheme)} />
+              <MdCastConnected className='text-xl' style={{ color: getFontColorSecondary(isDarkTheme) }} />
             </Button>
           </Tooltip>
         )}
@@ -181,7 +181,7 @@ export const HeaderMenu = () => {
             className={`py-2 px-2 rounded-full hover:scale-110 ${btnClass} transform transition-transform duration-300 active:scale-95 focus:outline-none`}
             onClick={toggleProfile}
           >
-            <BsFillPersonFill className='text-xl' style={getFontColorSecondary(isDarkTheme)} />
+            <BsFillPersonFill className='text-xl' style={{ color: getFontColorSecondary(isDarkTheme) }} />
           </Button>
         </Tooltip>
       </div>
