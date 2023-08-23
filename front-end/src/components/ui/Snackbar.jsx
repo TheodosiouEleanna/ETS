@@ -1,10 +1,5 @@
-import { useState, useEffect, useContext } from "react";
-import {
-  darkBg_primary,
-  lightBg_primary,
-  lightBg_secondary,
-} from "../../consts";
-import { Context } from "../../context/Context";
+import { useState, useEffect } from "react";
+import { lightBg_secondary } from "../../consts";
 
 const Snackbar = ({ message, status, duration = 2000, onClose }) => {
   const [visible, setVisible] = useState(!!message);
@@ -38,9 +33,7 @@ const Snackbar = ({ message, status, duration = 2000, onClose }) => {
 
   return (
     <div
-      className={`fixed bottom-20 left-[1.5rem] p-2 rounded shadow-lg ${getStatusStyle(
-        status
-      )}`}
+      className={`fixed bottom-20 left-[1.5rem] p-2 rounded shadow-lg ${getStatusStyle(status)}`}
       style={{ color: lightBg_secondary }}
     >
       {message}
