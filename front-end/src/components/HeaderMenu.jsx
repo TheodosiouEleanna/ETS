@@ -12,8 +12,8 @@ import { useSnackbar } from "../hooks/useSnackbar";
 import { isEqual } from "lodash";
 import Dialog from "./ui/Dialog";
 import Tooltip from "./ui/Tooltip";
-import { apiURL, darkBg_secondary, lightBg_secondary } from "../consts";
-import { IEyeTracker } from "./EyeTrackerInfo";
+import { apiURL } from "../consts";
+import { getBgSecondary, getBgSecondaryReverse, getFontColorSecondary } from "../utils/functions";
 
 export const HeaderMenu = () => {
   const {
@@ -35,12 +35,13 @@ export const HeaderMenu = () => {
   const { triggerSnackbar } = useSnackbar();
   const [showDiscardDialog, setShowDiscardDialog] = useState(false);
 
-  const areSettingsEqual = useMemo(
-    () => isEqual(userSettingsUi, userSettingsApi),
-    [userSettingsApi, userSettingsUi]
-  );
+  const areSettingsEqual = useMemo(() => isEqual(userSettingsUi, userSettingsApi), [userSettingsApi, userSettingsUi]);
 
   const isDarkTheme = userSettingsApi.theme === "dark";
+
+  const btnClass = () => {
+    return isDarkTheme ? "bg-dark_primary hover:bg-darkHoverColor" : "bg-light_secondary hover:bg-lightHoverColor";
+  };
 
   const toggleOpen = () => {
     if (isMenuOpen) {
@@ -58,7 +59,6 @@ export const HeaderMenu = () => {
     axios
       .post(`${apiURL}/search`)
       .then((response) => {
-        console.log(response.data);
         setConnectionStatus("selection");
         if (response.data.length) {
           setEyeTrackers(response.data);
@@ -137,51 +137,23 @@ export const HeaderMenu = () => {
         />
       )}
       <div className='ml-4 flex space-x-8'>
-        <Tooltip
-          content='Menu'
-          position='right'
-          color={isDarkTheme ? lightBg_secondary : darkBg_secondary}
-        >
+        <Tooltip content='Menu' position='right' color={getBgSecondaryReverse(isDarkTheme)}>
           <Button
             className={`py-2 px-2 rounded-full hover:scale-110 ${
-              isDarkTheme
-                ? "bg-darkBg_primary hover:bg-darkHoverColor"
-                : "bg-lightBg_secondary hover:bg-lightHoverColor"
+              isDarkTheme ? "bg-dark_primary hover:bg-darkHoverColor" : "bg-light_secondary hover:bg-lightHoverColor"
             } transform transition-transform duration-300 active:scale-95 focus:outline-none`}
             onClick={toggleOpen}
           >
-            <MdDensityMedium
-              className='text-xl'
-              style={
-                isDarkTheme
-                  ? { color: lightBg_secondary }
-                  : { color: darkBg_secondary }
-              }
-            />
+            <MdDensityMedium className='text-xl' style={getFontColorSecondary(isDarkTheme)} />
           </Button>
         </Tooltip>
         {file.size !== 0 && !isEyeTrackerConnected && (
-          <Tooltip
-            content='Connection'
-            position='right'
-            color={isDarkTheme ? lightBg_secondary : darkBg_secondary}
-          >
+          <Tooltip content='Connection' position='right' color={getBgSecondaryReverse(isDarkTheme)}>
             <Button
-              className={`py-2 px-2 rounded-full hover:scale-110 ${
-                isDarkTheme
-                  ? "bg-darkBg_primary hover:bg-darkHoverColor"
-                  : "bg-lightBg_secondary hover:bg-lightHoverColor"
-              } transform transition-transform duration-300 active:scale-95 focus:outline-none`}
+              className={`py-2 px-2 rounded-full hover:scale-110 ${btnClass} transform transition-transform duration-300 active:scale-95 focus:outline-none`}
               onClick={handleClick}
             >
-              <MdCastConnected
-                className='text-xl'
-                style={
-                  isDarkTheme
-                    ? { color: lightBg_secondary }
-                    : { color: darkBg_secondary }
-                }
-              />
+              <MdCastConnected className='text-xl' style={getFontColorSecondary(isDarkTheme)} />
             </Button>
           </Tooltip>
         )}
@@ -200,59 +172,16 @@ export const HeaderMenu = () => {
         {isMenuOpen && <Menu onCloseMenu={onCloseMenu} />}
       </div>
       <div className='ml-[-35px]'>
-        <img
-          src={isDarkTheme ? "./logo5.png" : "./logo_light.png"}
-          alt=''
-          className='h-[2.3rem]'
-        />
+        <img src={isDarkTheme ? "./logo5.png" : "./logo_light.png"} alt='' className='h-[2.3rem]' />
       </div>
       <div className='mr-4 flex space-x-8'>
         {showProfile && <Profile onClick={onClickLogout} />}
-        <Tooltip
-          content='Close Connection'
-          position='left'
-          color={isDarkTheme ? lightBg_secondary : darkBg_secondary}
-        >
+        <Tooltip content='Profile' position='left' color={getBgSecondaryReverse(isDarkTheme)}>
           <Button
-            className={`py-2 px-2 rounded-full hover:scale-110 ${
-              isDarkTheme
-                ? "bg-darkBg_primary hover:bg-darkHoverColor"
-                : "bg-lightBg_secondary hover:bg-lightHoverColor"
-            } transform transition-transform duration-300 active:scale-95 focus:outline-none`}
-            onClick={onCloseSocketConnection}
-          >
-            <AiOutlineDisconnect
-              className='text-xl'
-              style={{
-                ...(isDarkTheme
-                  ? { color: lightBg_secondary }
-                  : { color: darkBg_secondary }),
-                color: isEyeTrackerConnected ? "green" : "red",
-              }}
-            />
-          </Button>
-        </Tooltip>
-        <Tooltip
-          content='Profile'
-          position='left'
-          color={isDarkTheme ? lightBg_secondary : darkBg_secondary}
-        >
-          <Button
-            className={`py-2 px-2 rounded-full hover:scale-110 ${
-              isDarkTheme
-                ? "bg-darkBg_primary hover:bg-darkHoverColor"
-                : "bg-lightBg_secondary hover:bg-lightHoverColor"
-            } transform transition-transform duration-300 active:scale-95 focus:outline-none`}
+            className={`py-2 px-2 rounded-full hover:scale-110 ${btnClass} transform transition-transform duration-300 active:scale-95 focus:outline-none`}
             onClick={toggleProfile}
           >
-            <BsFillPersonFill
-              className='text-xl'
-              style={
-                isDarkTheme
-                  ? { color: lightBg_secondary }
-                  : { color: darkBg_secondary }
-              }
-            />
+            <BsFillPersonFill className='text-xl' style={getFontColorSecondary(isDarkTheme)} />
           </Button>
         </Tooltip>
       </div>

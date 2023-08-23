@@ -2,14 +2,9 @@ import React, { useContext, useState } from "react";
 import axios from "axios";
 import { Context } from "../context/Context";
 import { useSnackbar } from "../hooks/useSnackbar";
-import {
-  apiURL,
-  darkBg_primary,
-  darkBg_secondary,
-  lightBg_primary,
-  lightBg_secondary,
-} from "../consts";
+import { apiURL, dark_primary, dark_secondary, light_primary, light_secondary } from "../consts";
 import { Button } from "./ui/Button";
+import { getFontColorSecondary } from "../utils/functions";
 
 const UserProfile = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -94,35 +89,29 @@ const UserProfile = () => {
       style={
         isDarkTheme
           ? {
-              backgroundColor: darkBg_primary,
+              backgroundColor: dark_primary,
             }
           : {
-              backgroundColor: lightBg_secondary,
+              backgroundColor: light_secondary,
             }
       }
     >
-      <div className='my-20'>
-        <img
-          src={isDarkTheme ? "./logo5.png" : "./logo_light.png"}
-          alt=''
-          className='h-32'
-        />
+      <div className='xl:mb-[100px] xl:mt-[-100px] lg:mb-[30px]'>
+        <img src={isDarkTheme ? "./logo5.png" : "./logo_light.png"} alt='' className='h-32' />
       </div>
       <div
         className='p-8  rounded shadow-md w-96 flex flex-col justify-between items-center'
         style={
           isDarkTheme
             ? {
-                backgroundColor: darkBg_secondary,
+                backgroundColor: dark_secondary,
               }
             : {
-                backgroundColor: lightBg_primary,
+                backgroundColor: light_primary,
               }
         }
       >
-        <h2 className='mb-8 text-3xl text-blue-500 text-center'>
-          {isLogin ? "Login" : "Create profile"}
-        </h2>
+        <h2 className='mb-8 text-3xl text-blue-500 text-center'>{isLogin ? "Login" : "Create profile"}</h2>
         <input
           className='mb-4 w-full px-3 py-2 border rounded-md'
           type='text'
@@ -139,17 +128,11 @@ const UserProfile = () => {
           onKeyDown={handleEnterPress}
           placeholder='Password'
         />
-        {error && (
-          <div className='text-red-700 flex justify-center pb-2'>{error}</div>
-        )}
+        {error && <div className='text-red-700 flex justify-center pb-2'>{error}</div>}
         {isLogin ? (
           <Button
             className={`w-full px-3 py-2 bg-green-600  rounded-md hover:bg-green-700`}
-            style={
-              isDarkTheme
-                ? { color: lightBg_secondary }
-                : { color: darkBg_secondary }
-            }
+            style={{ color: light_secondary }}
             onClick={loginUser}
           >
             Login
@@ -157,55 +140,29 @@ const UserProfile = () => {
         ) : (
           <Button
             className={`w-full px-3 py-2 bg-green-600 rounded-md hover:bg-green-700`}
-            style={
-              isDarkTheme
-                ? { color: lightBg_secondary }
-                : { color: darkBg_secondary }
-            }
+            style={{ color: light_secondary }}
             onClick={createUser}
           >
             Create Profile
           </Button>
         )}
         {isLogin ? (
-          <div
-            className='my-4'
-            style={
-              isDarkTheme
-                ? { color: lightBg_secondary }
-                : { color: darkBg_secondary }
-            }
-          >
+          <div className='my-4' style={getFontColorSecondary(isDarkTheme)}>
             Don't have a profile?
             <Button
-              className='ml-2 text-gray-800 hover:text-blue-600'
-              style={
-                isDarkTheme
-                  ? { color: lightBg_secondary }
-                  : { color: darkBg_secondary }
-              }
+              className='ml-2 hover:text-blue-600'
+              style={getFontColorSecondary(isDarkTheme)}
               onClick={toggleLogin}
             >
               Create Profile
             </Button>
           </div>
         ) : (
-          <div
-            className='my-4'
-            style={
-              isDarkTheme
-                ? { color: lightBg_secondary }
-                : { color: darkBg_secondary }
-            }
-          >
+          <div className='my-4' style={getFontColorSecondary(isDarkTheme)}>
             Already have a profile?
             <Button
               className='ml-2 hover:text-blue-600'
-              style={
-                isDarkTheme
-                  ? { color: lightBg_secondary }
-                  : { color: darkBg_secondary }
-              }
+              style={getFontColorSecondary(isDarkTheme)}
               onClick={toggleLogin}
             >
               Login

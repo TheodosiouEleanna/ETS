@@ -1,13 +1,8 @@
 import React, { useContext } from "react";
-import {
-  darkBg_primary,
-  darkBg_secondary,
-  lightBg_primary,
-  lightBg_secondary,
-} from "../consts";
+import { dark_primary, dark_secondary, light_primary, light_secondary } from "../consts";
 import { Context } from "../context/Context";
 
-// export interface IEyeTracker {
+// export dark_primary IEyeTracker {
 //   address: string;
 //   device_capabilities: string[];
 //   device_name: string;
@@ -26,112 +21,40 @@ const EyeTrackerInfo = ({ tracker }) => {
       style={
         isDarkTheme
           ? {
-              backgroundColor: darkBg_primary,
+              backgroundColor: dark_primary,
             }
           : {
-              backgroundColor: lightBg_primary,
+              backgroundColor: light_primary,
             }
       }
     >
-      <h2 className='text-xl font-semibold mb-4 text-blue-500'>
-        Eye tracker details
-      </h2>
-      <p
-        className='mb-2 text-base'
-        style={
-          isDarkTheme
-            ? { color: lightBg_secondary }
-            : { color: darkBg_secondary }
-        }
-      >
-        <span
-          className='font-semibold'
-          style={
-            isDarkTheme
-              ? { color: lightBg_secondary }
-              : { color: darkBg_secondary }
-          }
-        >
+      <h2 className='text-xl font-semibold mb-4 text-blue-500'>Eye tracker details</h2>
+      <p className='mb-2 text-base' style={isDarkTheme ? { color: light_secondary } : { color: dark_secondary }}>
+        <span className='font-semibold' style={isDarkTheme ? { color: light_secondary } : { color: dark_secondary }}>
           Model:
         </span>{" "}
         {tracker.model}
       </p>
-      <p
-        className='mb-2 text-base'
-        style={
-          isDarkTheme
-            ? { color: lightBg_secondary }
-            : { color: darkBg_secondary }
-        }
-      >
-        <span
-          className='font-semibold'
-          style={
-            isDarkTheme
-              ? { color: lightBg_secondary }
-              : { color: darkBg_secondary }
-          }
-        >
+      <p className='mb-2 text-base' style={isDarkTheme ? { color: light_secondary } : { color: dark_secondary }}>
+        <span className='font-semibold' style={isDarkTheme ? { color: light_secondary } : { color: dark_secondary }}>
           Address:
         </span>{" "}
         {tracker.address}
       </p>
-      <p
-        className='mb-2 text-base'
-        style={
-          isDarkTheme
-            ? { color: lightBg_secondary }
-            : { color: darkBg_secondary }
-        }
-      >
-        <span
-          className='font-semibold'
-          style={
-            isDarkTheme
-              ? { color: lightBg_secondary }
-              : { color: darkBg_secondary }
-          }
-        >
+      <p className='mb-2 text-base' style={isDarkTheme ? { color: light_secondary } : { color: dark_secondary }}>
+        <span className='font-semibold' style={isDarkTheme ? { color: light_secondary } : { color: dark_secondary }}>
           Name:
         </span>{" "}
         {tracker.device_name}
       </p>
-      <p
-        className='mb-2 text-base'
-        style={
-          isDarkTheme
-            ? { color: lightBg_secondary }
-            : { color: darkBg_secondary }
-        }
-      >
-        <span
-          className='font-semibold'
-          style={
-            isDarkTheme
-              ? { color: lightBg_secondary }
-              : { color: darkBg_secondary }
-          }
-        >
+      <p className='mb-2 text-base' style={isDarkTheme ? { color: light_secondary } : { color: dark_secondary }}>
+        <span className='font-semibold' style={isDarkTheme ? { color: light_secondary } : { color: dark_secondary }}>
           Serial Number:
         </span>{" "}
         {tracker.serial_number}
       </p>
-      <p
-        className='mb-2 text-base'
-        style={
-          isDarkTheme
-            ? { color: lightBg_secondary }
-            : { color: darkBg_secondary }
-        }
-      >
-        <span
-          className='font-semibold'
-          style={
-            isDarkTheme
-              ? { color: lightBg_secondary }
-              : { color: darkBg_secondary }
-          }
-        >
+      <p className='mb-2 text-base' style={isDarkTheme ? { color: light_secondary } : { color: dark_secondary }}>
+        <span className='font-semibold' style={isDarkTheme ? { color: light_secondary } : { color: dark_secondary }}>
           Firmware version:
         </span>{" "}
         {tracker.firmware_version}

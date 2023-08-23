@@ -1,3 +1,5 @@
+import { dark_primary, dark_secondary, light_primary, light_secondary } from "../consts";
+
 export const base64ToBlob = (base64, type = "") => {
   const byteCharacters = atob(base64.split(",")[1]);
   const byteNumbers = new Array(byteCharacters.length);
@@ -43,3 +45,16 @@ export const debounce = (fn, delay) => {
 export const capitalize = (str) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
+
+export const getFontColorPrimary = (isDarkTheme) => (isDarkTheme ? light_primary : dark_primary);
+
+export const getFontColorSecondary = (isDarkTheme) =>
+  isDarkTheme ? { color: light_secondary } : { color: dark_secondary };
+
+export const getBgPrimary = (isDarkTheme) => (isDarkTheme ? dark_primary : light_primary);
+
+export const getBgSecondary = (isDarkTheme) => (isDarkTheme ? dark_secondary : light_secondary);
+
+export const getBgPrimaryReverse = (isDarkTheme) => (isDarkTheme ? light_primary : dark_primary);
+
+export const getBgSecondaryReverse = (isDarkTheme) => (isDarkTheme ? light_secondary : dark_secondary);

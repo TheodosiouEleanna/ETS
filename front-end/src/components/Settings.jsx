@@ -1,16 +1,10 @@
 import { useContext, useEffect, useState } from "react";
 import { Context } from "../context/Context";
-import {
-  darkBg_primary,
-  darkBg_secondary,
-  languageMap,
-  lightBg_primary,
-  lightBg_secondary,
-} from "../consts";
+import { dark_primary, dark_secondary, languageMap, light_primary, light_secondary } from "../consts";
+import { getFontColorSecondary } from "../utils/functions";
 
 const Settings = () => {
-  const { userSettingsUi, setUserSettingsUi, userSettingsApi } =
-    useContext(Context);
+  const { userSettingsUi, setUserSettingsUi, userSettingsApi } = useContext(Context);
   const { zoom, theme, language } = userSettingsUi;
   const [loading, setLoading] = useState(false);
   const isDarkTheme = userSettingsApi.theme === "dark";
@@ -31,14 +25,7 @@ const Settings = () => {
 
   if (loading) {
     return (
-      <div
-        className='flex justify-center items-center w-full h-full'
-        style={
-          isDarkTheme
-            ? { color: lightBg_secondary }
-            : { color: darkBg_secondary }
-        }
-      >
+      <div className='flex justify-center items-center w-full h-full' style={getFontColorSecondary(isDarkTheme)}>
         Loading documents...
       </div>
     );
@@ -48,76 +35,34 @@ const Settings = () => {
     <div className='flex flex-col m-2 p-4'>
       <h1
         className='py-1 mb-4 text-xl font-bold text-gray-900 border-b border-gray-300'
-        style={
-          isDarkTheme
-            ? { color: lightBg_secondary }
-            : { color: darkBg_secondary }
-        }
+        style={getFontColorSecondary(isDarkTheme)}
       >
         Settings
       </h1>
-      <div
-        className='mb-8 text-gray-600'
-        style={
-          isDarkTheme
-            ? { color: lightBg_secondary }
-            : { color: darkBg_secondary }
-        }
-      >
-        Adjust the settings to your preferences and click Confirm to apply them
-        to your document.
+      <div className='mb-8 text-gray-600' style={getFontColorSecondary(isDarkTheme)}>
+        Adjust the settings to your preferences and click Confirm to apply them to your document.
       </div>
-      <div className='w-[500px]'>
+      <div className='xl:w-[500px] lg:w-[350px]'>
         <div className='mb-4 flex justify-between '>
-          <label
-            className='text-base'
-            style={
-              isDarkTheme
-                ? { color: lightBg_secondary }
-                : { color: darkBg_secondary }
-            }
-          >
+          <label className='text-base' style={getFontColorSecondary(isDarkTheme)}>
             Zoom Level
           </label>
-          <div
-            className='flex '
-            style={
-              isDarkTheme
-                ? { color: lightBg_secondary }
-                : { color: darkBg_secondary }
-            }
-          >
+          <div className='flex ' style={getFontColorSecondary(isDarkTheme)}>
             <input
               type='range'
               min='10'
               max='200'
               value={zoom * 100}
-              onChange={(e) =>
-                handleSettingsChange("zoom", Number(e.target.value))
-              }
+              onChange={(e) => handleSettingsChange("zoom", Number(e.target.value))}
               className='slider text-gray-900 p-1 h-10 rounded border border-gray-300'
             />
-            <p
-              className='text-base pl-4 align-middle'
-              style={
-                isDarkTheme
-                  ? { color: lightBg_secondary }
-                  : { color: darkBg_secondary }
-              }
-            >
+            <p className='text-base pl-4 align-middle' style={getFontColorSecondary(isDarkTheme)}>
               {(zoom * 100).toFixed()}%
             </p>
           </div>
         </div>
         <div className='mb-4 flex justify-between'>
-          <label
-            className='text-base'
-            style={
-              isDarkTheme
-                ? { color: lightBg_secondary }
-                : { color: darkBg_secondary }
-            }
-          >
+          <label className='text-base' style={getFontColorSecondary(isDarkTheme)}>
             Theme
           </label>
           <select
@@ -125,12 +70,12 @@ const Settings = () => {
             style={
               isDarkTheme
                 ? {
-                    backgroundColor: darkBg_secondary,
-                    color: lightBg_secondary,
+                    backgroundColor: dark_secondary,
+                    color: light_secondary,
                   }
                 : {
-                    backgroundColor: lightBg_primary,
-                    color: darkBg_primary,
+                    backgroundColor: light_primary,
+                    color: dark_primary,
                   }
             }
             value={theme}
@@ -141,14 +86,7 @@ const Settings = () => {
           </select>
         </div>
         <div className='mb-4 flex justify-between'>
-          <label
-            className='text-base'
-            style={
-              isDarkTheme
-                ? { color: lightBg_secondary }
-                : { color: darkBg_secondary }
-            }
-          >
+          <label className='text-base' style={getFontColorSecondary(isDarkTheme)}>
             Language
           </label>
           <select
@@ -156,12 +94,12 @@ const Settings = () => {
             style={
               isDarkTheme
                 ? {
-                    backgroundColor: darkBg_secondary,
-                    color: lightBg_secondary,
+                    backgroundColor: dark_secondary,
+                    color: light_secondary,
                   }
                 : {
-                    backgroundColor: lightBg_primary,
-                    color: darkBg_primary,
+                    backgroundColor: light_primary,
+                    color: dark_primary,
                   }
             }
             className='text-base p-1 w-48 rounded border border-gray-300'

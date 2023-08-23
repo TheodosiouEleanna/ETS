@@ -18,15 +18,13 @@ const App = () => {
     <>
       {!isLoggedIn && <UserProfile />}
       {isLoggedIn && (
-        <div className='h-full overflow-hidden flex flex-col items-center justify-center'>
+        <div className='h-full overflow-hidden '>
           <Header />
           <MainContent />
           <Footer />
         </div>
       )}
-      {snackbarData.open && (
-        <Snackbar message={snackbarData.message} status={snackbarData.status} />
-      )}
+      {snackbarData.open && <Snackbar message={snackbarData.message} status={snackbarData.status} />}
     </>
   );
 };

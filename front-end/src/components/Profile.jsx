@@ -1,11 +1,6 @@
 import React, { useContext } from "react";
 import { Context } from "../context/Context";
-import {
-  darkBg_primary,
-  darkBg_secondary,
-  lightBg_primary,
-  lightBg_secondary,
-} from "../consts";
+import { dark_primary, dark_secondary, light_primary, light_secondary } from "../consts";
 import { Button } from "./ui/Button";
 
 const Profile = ({ onClick }) => {
@@ -18,22 +13,15 @@ const Profile = ({ onClick }) => {
       style={
         isDarkTheme
           ? {
-              backgroundColor: darkBg_secondary,
+              backgroundColor: dark_secondary,
             }
           : {
-              backgroundColor: lightBg_primary,
+              backgroundColor: light_primary,
             }
       }
     >
       {/* <div>User ID: {userInfo.userID}</div> */}
-      <div
-        className='w-44 h-12 '
-        style={
-          isDarkTheme
-            ? { color: lightBg_secondary }
-            : { color: darkBg_secondary }
-        }
-      >
+      <div className='w-44 h-12 ' style={isDarkTheme ? { color: light_secondary } : { color: dark_secondary }}>
         Logged in as:<span className='text-base'> {userInfo.username}</span>
       </div>
       <div className='flex w-full justify-end'>

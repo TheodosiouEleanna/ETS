@@ -1,11 +1,7 @@
 import React, { useContext } from "react";
 import { HeaderMenu } from "../HeaderMenu";
 import { Context } from "../../context/Context";
-import {
-  darkBg_primary,
-  darkBg_secondary,
-  lightBg_secondary,
-} from "../../consts";
+import { dark_primary, light_secondary } from "../../consts";
 
 const Header = () => {
   const { userSettingsApi } = useContext(Context);
@@ -13,9 +9,9 @@ const Header = () => {
 
   return (
     <header
-      className={`relative shadow-lg z-30 flex justify-between items-center w-full text-xl h-14`}
+      className={`relative shadow-lg z-30 flex justify-between items-center w-full text-xl h-10`}
       style={{
-        backgroundColor: isDarkTheme ? darkBg_primary : lightBg_secondary,
+        backgroundColor: isDarkTheme ? dark_primary : light_secondary,
       }}
     >
       <HeaderMenu />

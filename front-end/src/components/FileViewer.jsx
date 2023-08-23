@@ -1,11 +1,5 @@
 import "react-pdf/dist/esm/Page/TextLayer.css";
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { pdfjs, Document, Page } from "react-pdf";
 import { Context } from "../context/Context";
 import { StyleSheet } from "@react-pdf/renderer";
@@ -44,7 +38,8 @@ const FileViewer = () => {
     () => ({
       width: "100%",
       height: `calc(100vw / ${pdfDimensions.aspectRatio})`,
-      maxHeight: isElectron ? "89.1vh" : "88.9vh",
+      maxHeight: isElectron ? "89.1vh" : "100%",
+      // maxHeight: isElectron ? "89.1vh" : "88.9vh",
     }),
     [isElectron, pdfDimensions.aspectRatio]
   );
@@ -94,8 +89,7 @@ const FileViewer = () => {
       const container = event.target;
       const pageHeight = pdfDimensions.height;
 
-      const scrolledPages =
-        Math.floor((container.scrollTop + pageHeight / 4) / pageHeight) + 1;
+      const scrolledPages = Math.floor((container.scrollTop + pageHeight / 4) / pageHeight) + 1;
 
       setCurrentPage(scrolledPages);
     },
@@ -104,9 +98,7 @@ const FileViewer = () => {
 
   useEffect(() => {
     const containerElement = document.getElementById("pdf-container");
-    const { width } = containerElement
-      ? containerElement.getBoundingClientRect()
-      : {};
+    const { width } = containerElement ? containerElement.getBoundingClientRect() : {};
     setElWidth(width);
   }, []);
 
@@ -144,9 +136,7 @@ const FileViewer = () => {
 
   return (
     <div
-      className={`${
-        savedZoom >= 1 ? "justify-start" : "justify-center"
-      } flex overflow-auto`}
+      className={`${savedZoom >= 1 ? "justify-start" : "justify-center"} flex overflow-auto`}
       id='pdf-container'
       style={wrapperStyle}
       onScroll={handleScroll}

@@ -10,13 +10,8 @@ import { useSnackbar } from "../hooks/useSnackbar";
 import { Button } from "./ui/Button";
 import { FiArrowLeft } from "react-icons/fi";
 import { isEqual } from "lodash";
-import {
-  apiURL,
-  darkBg_primary,
-  darkBg_secondary,
-  lightBg_primary,
-  lightBg_secondary,
-} from "../consts";
+import { apiURL, dark_primary, light_primary } from "../consts";
+import { getBgSecondary } from "../utils/functions";
 
 function Menu({ onCloseMenu }) {
   const {
@@ -37,10 +32,7 @@ function Menu({ onCloseMenu }) {
   const { triggerSnackbar } = useSnackbar();
 
   const isDarkTheme = userSettingsApi.theme === "dark";
-  const areSettingsEqual = useMemo(
-    () => isEqual(userSettingsUi, userSettingsApi),
-    [userSettingsApi, userSettingsUi]
-  );
+  const areSettingsEqual = useMemo(() => isEqual(userSettingsUi, userSettingsApi), [userSettingsApi, userSettingsUi]);
 
   const onConfirm = (id) => {
     setLoadingMenu(true);
@@ -122,45 +114,35 @@ function Menu({ onCloseMenu }) {
     <>
       <ModalWrapper
         loading={loadingMenu}
-        className='w-[70%] h-[80vh] '
+        className='xl:w-[70%] lg:w-[80%] h-[80vh] '
         title='Menu'
         onConfirm={onConfirm}
         onClickUpload={onClickUpload}
-        shouldDisableConfirm={
-          (selectedOption === "documents" || selectedOption === "upload") &&
-          selectedDocID === ""
-        }
+        shouldDisableConfirm={(selectedOption === "documents" || selectedOption === "upload") && selectedDocID === ""}
         shouldShowUpload={selectedOption === "documents"}
         onClose={onCloseMenu}
       >
-        <div
-          className={`flex h-[64vh]`}
-          style={
-            isDarkTheme ? { color: lightBg_primary } : { color: darkBg_primary }
-          }
-        >
+        <div className={`flex h-[64vh]`} style={isDarkTheme ? { color: light_primary } : { color: dark_primary }}>
           <div
             className={`rounded`}
             style={
               isDarkTheme
                 ? {
-                    border: `2px solid ${darkBg_primary}`,
-                    backgroundColor: darkBg_primary,
+                    border: `2px solid ${dark_primary}`,
+                    backgroundColor: dark_primary,
                   }
                 : {
-                    border: `2px solid ${lightBg_primary}`,
-                    backgroundColor: lightBg_primary,
+                    border: `2px solid ${light_primary}`,
+                    backgroundColor: light_primary,
                   }
             }
           >
             <div
-              className={`cursor-pointer p-1 w-48 text-base hover:text-blue-500 px-4 py-2`}
+              className={`cursor-pointer p-1 xl:w-48 lg:w-[12rem] text-base hover:text-blue-500 px-4 py-2`}
               style={
                 selectedOption === "settings"
                   ? {
-                      backgroundColor: isDarkTheme
-                        ? darkBg_secondary
-                        : lightBg_secondary,
+                      backgroundColor: getBgSecondary(isDarkTheme),
                       color: "rgb(59 130 246)",
                     }
                   : {}
@@ -170,13 +152,11 @@ function Menu({ onCloseMenu }) {
               Settings
             </div>
             <div
-              className={`cursor-pointer p-1 w-48 text-base hover:text-blue-500 px-4 py-2`}
+              className={`cursor-pointer p-1 xl:w-48 lg:w-[12rem] text-base hover:text-blue-500 px-4 py-2`}
               style={
                 selectedOption === "documents" || selectedOption === "upload"
                   ? {
-                      backgroundColor: isDarkTheme
-                        ? darkBg_secondary
-                        : lightBg_secondary,
+                      backgroundColor: getBgSecondary(isDarkTheme),
                       color: "rgb(59 130 246)",
                     }
                   : {}
@@ -186,13 +166,11 @@ function Menu({ onCloseMenu }) {
               Documents
             </div>
             <div
-              className={`cursor-pointer p-1 w-48 text-base hover:text-blue-500 px-4 py-2`}
+              className={`cursor-pointer p-1 xl:w-48 lg:w-[12rem] text-base hover:text-blue-500 px-4 py-2`}
               style={
                 selectedOption === "vocabulary"
                   ? {
-                      backgroundColor: isDarkTheme
-                        ? darkBg_secondary
-                        : lightBg_secondary,
+                      backgroundColor: getBgSecondary(isDarkTheme),
                       color: "rgb(59 130 246)",
                     }
                   : {}
@@ -208,10 +186,10 @@ function Menu({ onCloseMenu }) {
               style={
                 isDarkTheme
                   ? {
-                      borderColor: darkBg_primary,
+                      borderColor: dark_primary,
                     }
                   : {
-                      borderColor: lightBg_primary,
+                      borderColor: light_primary,
                     }
               }
             >
