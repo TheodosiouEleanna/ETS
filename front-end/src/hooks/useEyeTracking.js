@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from "react";
-import { io } from "socket.io-client";
 import { Context } from "../context/Context";
 
 const useEyeTracking = () => {
@@ -9,27 +8,40 @@ const useEyeTracking = () => {
 
   useEffect(() => {
     console.log("I run");
-    const serverURL = "http://localhost:5001";
+    const serverURL = "ws://localhost:5001";
+    const socket = new WebSocket(serverURL);
     if (isEyeTrackerConnected) {
-      // Replace with your server URL
-      // Todo: Add this to app settings
-
-      // Establish a socket connection
-      const socketConnection = io(serverURL, {
-        transports: ["websocket"],
-      });
-      socketConnection.emit("startTracking", address);
-
-      // Set up a listener for the 'eyeData' event
-      // socketConnection.on("eyeData", (data) => {
-      //   setEyeData((prevData) => [...prevData, data]);
-      // });
-
-      // Handle any cleanup
-      return () => {
-        socketConnection.disconnect();
+      socket.onopen = () => {
+        // Send a message to the server once the socket is open
+        socket.send("startTracking");
       };
+
+      // socket.onmessage = (event) => {
+      //   // Handle data received from the server
+      //   const data = JSON.parse(event.data);
+      //   console.log({ data });
+      // };
+
+      socket.onerror = (error) => {
+        console.error("WebSocket Error:", error);
+      };
+
+      socket.onclose = (event) => {
+        if (event.wasClean) {
+          console.log(
+            `Closed cleanly, code=${event.code}, reason=${event.reason}`
+          );
+        } else {
+          console.error("Connection died");
+        }
+      };
+    } else {
+      socket.close();
     }
+    return () => {
+      // Clean up the socket when the component is destroyed
+      socket.close();
+    };
   }, [address, isEyeTrackerConnected]);
 
   return eyeData;

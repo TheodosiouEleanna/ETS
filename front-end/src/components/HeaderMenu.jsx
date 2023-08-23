@@ -1,6 +1,7 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { MdCastConnected, MdDensityMedium } from "react-icons/md";
 import { BsFillPersonFill } from "react-icons/bs";
+import { AiOutlineDisconnect } from "react-icons/ai";
 import Profile from "./Profile";
 import { Button } from "./ui/Button";
 import Menu from "./Menu";
@@ -24,6 +25,7 @@ export const HeaderMenu = () => {
     userSettingsApi,
     selectedEyeTracker,
     isEyeTrackerConnected,
+    setIsEyeTrackerConnected,
   } = useContext(Context);
   const [showProfile, setShowProfile] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState("");
@@ -85,13 +87,18 @@ export const HeaderMenu = () => {
     logout();
   };
 
-  const onCloseConnection = () => {
+  const onCloseConnectionModal = () => {
     if (connectionStatus === "connected") {
       setShowConnectionModal(false);
     } else {
       setConnectionStatus("");
       setShowConnectionModal(false);
     }
+  };
+
+  const onCloseSocketConnection = () => {
+    console.log("close conn");
+    setIsEyeTrackerConnected(false);
   };
 
   const onCloseMenu = () => {
@@ -187,7 +194,7 @@ export const HeaderMenu = () => {
             status={connectionStatus}
             eyeTrackers={eyeTrackers}
             setConnectionStatus={setConnectionStatus}
-            onClose={onCloseConnection}
+            onClose={onCloseConnectionModal}
           />
         )}
         {isMenuOpen && <Menu onCloseMenu={onCloseMenu} />}
@@ -199,8 +206,32 @@ export const HeaderMenu = () => {
           className='h-[2.3rem]'
         />
       </div>
-      <div className='relative mr-4'>
+      <div className='mr-4 flex space-x-8'>
         {showProfile && <Profile onClick={onClickLogout} />}
+        <Tooltip
+          content='Close Connection'
+          position='left'
+          color={isDarkTheme ? lightBg_secondary : darkBg_secondary}
+        >
+          <Button
+            className={`py-2 px-2 rounded-full hover:scale-110 ${
+              isDarkTheme
+                ? "bg-darkBg_primary hover:bg-darkHoverColor"
+                : "bg-lightBg_secondary hover:bg-lightHoverColor"
+            } transform transition-transform duration-300 active:scale-95 focus:outline-none`}
+            onClick={onCloseSocketConnection}
+          >
+            <AiOutlineDisconnect
+              className='text-xl'
+              style={{
+                ...(isDarkTheme
+                  ? { color: lightBg_secondary }
+                  : { color: darkBg_secondary }),
+                color: isEyeTrackerConnected ? "green" : "red",
+              }}
+            />
+          </Button>
+        </Tooltip>
         <Tooltip
           content='Profile'
           position='left'

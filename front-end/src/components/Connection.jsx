@@ -44,14 +44,14 @@ const Connection = ({
         address: selectedEyeTracker.address,
       })
       .then((response) => {
+        console.log(response);
         setConnectionStatus("connected");
         setIsEyeTrackerConnected(true);
         triggerSnackbar({
-          message: JSON.parse(response.data.message),
+          message: response.data.message,
           status: "success",
           open: true,
         });
-        console.log(JSON.parse(response.data.message));
       })
       .catch((err) => {
         console.error(err);

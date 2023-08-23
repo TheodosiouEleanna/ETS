@@ -13,6 +13,8 @@ from datetime import datetime
 from flask_cors import CORS
 import traceback
 import tobii_research as tr
+import websockets
+import asyncio
 
 # Import the configuration loader from config.py
 from config import load_config
@@ -49,21 +51,13 @@ def _build_cors_preflight_response():
     return response
 
 
-def send_request(request_data):
+async def send_request(request_data):
     server_host, server_port = get_host_and_port(ETSDVM_address)
-    # TCP communication
-    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_address = (server_host, server_port)
-    client_socket.connect(server_address)
-
-    # Send the request_data to ETSDVM
-    client_socket.sendall(request_data.encode())
-    # Waits to receive the response from the server and decode the bytes received
-    response_data = client_socket.recv(1024).decode()
-    # Once the communication is done, the client socket is closed to free up system resources
-    client_socket.close()
-
-    return response_data
+    async with websockets.connect(f"ws://{server_host}:{server_port}") as websocket:
+        # Send the data over the WebSocket connection
+        await websocket.send(request_data)
+        response_data = await websocket.recv()  # Wait to receive the response
+        return response_data
 
 
 def upload_file(file, user_id):
@@ -201,25 +195,32 @@ def get_documents():
 @app.route('/api/search', methods=['POST'])
 def search_eye_tracker():
     request_data = "search_eye_tracker"
-    response_data = send_request(request_data)
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    response_data = loop.run_until_complete(send_request(request_data))
 
     # Convert JSON string to Python list. The returned type of response_data must be string.
     return json.loads(response_data)
 
+
 @app.route('/api/connect', methods=['POST'])
 def get_eye_tracker():
-    
+
     data = request.get_json()
 
     address = data['address']
     print("I arrived: ", address)
     request_data = address
-    response_data = send_request(request_data)
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    response_data = loop.run_until_complete(send_request(request_data))
     print("This is the response_data: ", response_data)
+
     # Convert JSON string to Python list. The returned type of response_data must be string.
-    return  jsonify({"message": response_data}), 200
+    return jsonify({"message": response_data}), 200
 
 # User profile
+
 
 @app.route('/api/create-profile', methods=['POST'])
 def create_profile():

@@ -117,7 +117,7 @@ const reducer = (state, action) => {
     case "SET_IS_EYE_TRACKER_CONNECTED":
       return {
         ...state,
-        isEyeTrackerConnected: true,
+        isEyeTrackerConnected: action.payload,
       };
     case "LOGOUT":
       localStorage.removeItem("userInfo");
@@ -134,7 +134,7 @@ export const Context = createContext();
 
 export const ContextProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  // console.log({ state });
+  console.log({ state });
 
   // -------------------- DOCUMENT ACTIONS -----------------------
   const loadFile = (file) => {
