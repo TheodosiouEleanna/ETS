@@ -26,6 +26,7 @@ export interface IContextProps {
   setIsMenuOpen?: (isOpen: boolean) => void;
   setSelectedEyeTracker?: (eyeTracker: IEyeTracker) => void;
   setIsEyeTrackerConnected?: (isConnected: boolean) => void;
+  eyeData?: Record<string, any>[];
 }
 
 export interface IContextValues extends IContextState {}
@@ -78,4 +79,9 @@ export interface Document {
   uploadDate: string;
 }
 
-export type ConnectionStatus = "error" | "searching" | "connected" | "selection" | "";
+export type ConnectionStatus =
+  | "error"
+  | "searching"
+  | "connected"
+  | "selection"
+  | "";

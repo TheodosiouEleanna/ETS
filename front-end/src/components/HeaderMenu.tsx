@@ -1,4 +1,11 @@
-import React, { useCallback, useContext, useEffect, useMemo, useState, FC } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  FC,
+} from "react";
 import { MdCastConnected, MdDensityMedium } from "react-icons/md";
 import { BsFillPersonFill } from "react-icons/bs";
 import Profile from "./Profile";
@@ -9,16 +16,22 @@ import Connection from "./Connection";
 import { useSnackbar } from "../hooks/useSnackbar";
 import { isEqual } from "lodash";
 import Tooltip from "./ui/Tooltip";
-import { apiURL } from "../utils/consts";
-import { getBgSecondaryReverse, getFontColorSecondary } from "../utils/functions";
+import { apiURL, dark_secondary, light_secondary } from "../consts";
+import {
+  getBgSecondaryReverse,
+  getFontColorSecondary,
+  saveToFile,
+} from "../utils/functions";
+import { FiDownload } from "react-icons/fi";
+import Button from "./ui/Button";
 import { ConnectionStatus, IContextProps } from "types/AppTypes";
 import Dialog from "./ui/Dialog";
-import Button from "./ui/Button";
 
 const HeaderMenu: FC = () => {
   const {
     file,
     logout,
+    eyeData,
     isMenuOpen,
     setIsMenuOpen,
     userSettingsUi,
@@ -28,19 +41,26 @@ const HeaderMenu: FC = () => {
     setIsEyeTrackerConnected,
   } = useContext<IContextProps>(Context);
   const [showProfile, setShowProfile] = useState(false);
-  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>("");
-  const [showConnectionModal, setShowConnectionModal] = useState<boolean>(false);
+  const [connectionStatus, setConnectionStatus] =
+    useState<ConnectionStatus>("");
+  const [showConnectionModal, setShowConnectionModal] =
+    useState<boolean>(false);
   const [eyeTrackers, setEyeTrackers] = useState([]);
   const [error, setError] = useState("");
   const { triggerSnackbar } = useSnackbar();
   const [showDiscardDialog, setShowDiscardDialog] = useState(false);
 
-  const areSettingsEqual = useMemo(() => isEqual(userSettingsUi, userSettingsApi), [userSettingsApi, userSettingsUi]);
+  const areSettingsEqual = useMemo(
+    () => isEqual(userSettingsUi, userSettingsApi),
+    [userSettingsApi, userSettingsUi]
+  );
 
   const isDarkTheme = userSettingsApi.theme === "dark";
 
   const btnClass = () => {
-    return isDarkTheme ? "bg-dark_primary hover:bg-darkHoverColor" : "bg-light_secondary hover:bg-lightHoverColor";
+    return isDarkTheme
+      ? "bg-dark_primary hover:bg-darkHoverColor"
+      : "bg-light_secondary hover:bg-lightHoverColor";
   };
 
   const toggleOpen = () => {
@@ -101,6 +121,10 @@ const HeaderMenu: FC = () => {
     setIsEyeTrackerConnected?.(false);
   };
 
+  const onDownloadDataClick = () => {
+    saveToFile(eyeData, "output.txt");
+  };
+
   const onCloseMenu = () => {
     if (!areSettingsEqual) {
       setShowDiscardDialog(true);
@@ -137,23 +161,39 @@ const HeaderMenu: FC = () => {
         />
       )}
       <div className='ml-4 flex space-x-8'>
-        <Tooltip content='Menu' position='right' color={getBgSecondaryReverse(isDarkTheme)}>
+        <Tooltip
+          content='Menu'
+          position='right'
+          color={getBgSecondaryReverse(isDarkTheme)}
+        >
           <Button
             className={`py-2 px-2 rounded-full hover:scale-110 ${
-              isDarkTheme ? "bg-dark_primary hover:bg-darkHoverColor" : "bg-light_secondary hover:bg-lightHoverColor"
+              isDarkTheme
+                ? "bg-dark_primary hover:bg-darkHoverColor"
+                : "bg-light_secondary hover:bg-lightHoverColor"
             } transform transition-transform duration-300 active:scale-95 focus:outline-none`}
             onClick={toggleOpen}
           >
-            <MdDensityMedium className='text-xl' style={{ color: getFontColorSecondary(isDarkTheme) }} />
+            <MdDensityMedium
+              className='text-xl'
+              style={{ color: getFontColorSecondary(isDarkTheme) }}
+            />
           </Button>
         </Tooltip>
         {file?.size !== 0 && !isEyeTrackerConnected && (
-          <Tooltip content='Connection' position='right' color={getBgSecondaryReverse(isDarkTheme)}>
+          <Tooltip
+            content='Connection'
+            position='right'
+            color={getBgSecondaryReverse(isDarkTheme)}
+          >
             <Button
               className={`py-2 px-2 rounded-full hover:scale-110 ${btnClass} transform transition-transform duration-300 active:scale-95 focus:outline-none`}
               onClick={handleClick}
             >
-              <MdCastConnected className='text-xl' style={{ color: getFontColorSecondary(isDarkTheme) }} />
+              <MdCastConnected
+                className='text-xl'
+                style={{ color: getFontColorSecondary(isDarkTheme) }}
+              />
             </Button>
           </Tooltip>
         )}
@@ -172,16 +212,63 @@ const HeaderMenu: FC = () => {
         {isMenuOpen && <Menu onCloseMenu={onCloseMenu} />}
       </div>
       <div className='ml-[-35px]'>
-        <img src={isDarkTheme ? "./logo5.png" : "./logo_light.png"} alt='' className='h-[2.3rem]' />
+        <img
+          src={isDarkTheme ? "./logo5.png" : "./logo_light.png"}
+          alt=''
+          className='h-[2.3rem]'
+        />
       </div>
       <div className='mr-4 flex space-x-8'>
         {showProfile && <Profile onClick={onClickLogout} />}
-        <Tooltip content='Profile' position='left' color={getBgSecondaryReverse(isDarkTheme)}>
+        <Tooltip
+          content='Download Eye data'
+          position='left'
+          color={isDarkTheme ? light_secondary : dark_secondary}
+        >
+          <Button
+            className={`py-2 px-2 rounded-full hover:scale-110 transform transition-transform duration-300 active:scale-95 focus:outline-none `}
+            onClick={onDownloadDataClick}
+          >
+            <FiDownload className='text-xl text-blue-500' />
+          </Button>
+        </Tooltip>
+        {/* <Tooltip
+          content='Close Connection'
+          position='left'
+          color={isDarkTheme ? light_secondary : dark_secondary}
+        >
+          <Button
+            className={`py-2 px-2 rounded-full hover:scale-110 ${
+              isDarkTheme
+                ? "bg-darkBg_primary hover:bg-darkHoverColor"
+                : "bg-lightBg_secondary hover:bg-lightHoverColor"
+            } transform transition-transform duration-300 active:scale-95 focus:outline-none`}
+            onClick={onCloseSocketConnection}
+          >
+            <AiOutlineDisconnect
+              className='text-xl'
+              style={{
+                ...(isDarkTheme
+                  ? { color: light_secondary }
+                  : { color: dark_secondary }),
+                color: isEyeTrackerConnected ? "green" : "red",
+              }}
+            />
+          </Button>
+        </Tooltip> */}
+        <Tooltip
+          content='Profile'
+          position='left'
+          color={getBgSecondaryReverse(isDarkTheme)}
+        >
           <Button
             className={`py-2 px-2 rounded-full hover:scale-110 ${btnClass} transform transition-transform duration-300 active:scale-95 focus:outline-none`}
             onClick={toggleProfile}
           >
-            <BsFillPersonFill className='text-xl' style={{ color: getFontColorSecondary(isDarkTheme) }} />
+            <BsFillPersonFill
+              className='text-xl'
+              style={{ color: getFontColorSecondary(isDarkTheme) }}
+            />
           </Button>
         </Tooltip>
       </div>
