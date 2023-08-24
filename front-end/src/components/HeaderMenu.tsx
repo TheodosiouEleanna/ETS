@@ -16,7 +16,6 @@ import Connection from "./Connection";
 import { useSnackbar } from "../hooks/useSnackbar";
 import { isEqual } from "lodash";
 import Tooltip from "./ui/Tooltip";
-import { apiURL, dark_secondary, light_secondary } from "../consts";
 import {
   getBgSecondaryReverse,
   getFontColorSecondary,
@@ -26,6 +25,7 @@ import { FiDownload } from "react-icons/fi";
 import Button from "./ui/Button";
 import { ConnectionStatus, IContextProps } from "types/AppTypes";
 import Dialog from "./ui/Dialog";
+import { apiURL, dark_secondary, light_secondary } from "utils/consts";
 
 const HeaderMenu: FC = () => {
   const {
@@ -122,7 +122,7 @@ const HeaderMenu: FC = () => {
   };
 
   const onDownloadDataClick = () => {
-    saveToFile(eyeData, "output.txt");
+    saveToFile(eyeData as Record<string, any>, "output.txt");
   };
 
   const onCloseMenu = () => {

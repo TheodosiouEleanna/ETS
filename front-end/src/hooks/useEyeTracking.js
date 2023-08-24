@@ -23,7 +23,7 @@ const useEyeTracking = () => {
       }
 
       socket.onmessage = (event) => {
-        console.log(event.data);
+        // console.log(event.data);
         if (!isEmpty(event.data)) {
           let parsedData;
 
@@ -64,6 +64,7 @@ const useEyeTracking = () => {
       };
 
       socket.onclose = (event) => {
+        console.log("Closed ");
         if (event.wasClean) {
           console.log(
             `Closed cleanly, code=${event.code}, reason=${event.reason}`
@@ -80,7 +81,8 @@ const useEyeTracking = () => {
     //   // Clean up the socket when the component is destroyed
     //   socket.close();
     // };
-  }, [accumulateData, address, isEyeTrackerConnected]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [address, isEyeTrackerConnected]);
 };
 
 export default useEyeTracking;
