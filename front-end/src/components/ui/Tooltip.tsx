@@ -1,24 +1,30 @@
-import { useState } from "react";
+import React, { CSSProperties, MouseEvent, ReactNode, useState } from "react";
+import { getSize } from "../../utils/functions";
 
-const getSize = () => {
-  const element = document.getElementById("tooltip");
-  if (element) {
-    const { width, height } = element.getBoundingClientRect();
-    return { width, height };
-  }
-  return { width: 0, height: 0 };
-};
+interface TooltipProps {
+  children: ReactNode;
+  content: string | ReactNode;
+  position?: "left" | "right";
+  color?: string;
+}
 
-const Tooltip = ({ children, content, position = "right", color }) => {
+interface TooltipPosition {
+  top: number;
+  left: number;
+}
+
+const Tooltip: React.FC<TooltipProps> = ({ children, content, position = "right", color }) => {
   const [show, setShow] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
 
   const tooltipOffset = 10;
 
   const handleMouseEnter = () => setShow(true);
+
   const handleMouseLeave = () => setShow(false);
-  const handleMouseMove = (event) => {
-    const tooltipPosition = {};
+
+  const handleMouseMove = (event: MouseEvent<HTMLDivElement>) => {
+    const tooltipPosition: TooltipPosition = { top: 0, left: 0 };
     switch (position) {
       case "left":
         tooltipPosition.top = event.clientY + tooltipOffset;
@@ -33,7 +39,7 @@ const Tooltip = ({ children, content, position = "right", color }) => {
     setTooltipPosition(tooltipPosition);
   };
 
-  const tooltipStyle = {
+  const tooltipStyle: CSSProperties = {
     position: "fixed",
     top: tooltipPosition.top + "px",
     left: tooltipPosition.left + "px",

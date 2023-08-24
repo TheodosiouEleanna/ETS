@@ -1,12 +1,18 @@
 import "react-pdf/dist/esm/Page/TextLayer.css";
 import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { pdfjs, Document, Page } from "react-pdf";
-import { Context } from "../context/Context";
 import { StyleSheet } from "@react-pdf/renderer";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 import { useSnackbar } from "../hooks/useSnackbar";
+import { debounce } from "../utils/functions";
+import { Context } from "../context/Context";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.js`;
+
+interface LoadSuccessParams {
+  numPages: number;
+  getPage: (pageNumber: number) => Promise<any>;
+}
 
 const styles = StyleSheet.create({
   page: {
@@ -15,7 +21,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const FileViewer = () => {
+const FileViewer: React.FC = () => {
   const {
     file,
     setLoading,
@@ -26,11 +32,8 @@ const FileViewer = () => {
     pdfDimensions,
     setPdfDimensions,
   } = useContext(Context);
-  // const isElectron = window && window.process && window.process.type;
   const isElectron = /Electron/.test(navigator.userAgent);
-  const [elWidth, setElWidth] = useState({});
-  // const [visiblePages, setVisiblePages] = useState([1]);
-  // const [observer, setObserver] = useState(null);
+  const [elWidth, setElWidth] = useState<number>();
   const { triggerSnackbar } = useSnackbar();
   const { zoom: savedZoom } = userSettingsApi;
 
@@ -39,15 +42,14 @@ const FileViewer = () => {
       width: "100%",
       height: `calc(100vw / ${pdfDimensions.aspectRatio})`,
       maxHeight: isElectron ? "89.1vh" : "91%",
-      // maxHeight: isElectron ? "89.1vh" : "88.9vh",
     }),
     [isElectron, pdfDimensions.aspectRatio]
   );
 
-  const onDocumentLoadSuccess = async (pdf) => {
+  const onDocumentLoadSuccess = async (pdf: LoadSuccessParams) => {
     console.log("doc load success");
-    setPageCount(pdf.numPages);
-    setLoading(false);
+    setPageCount?.(pdf.numPages);
+    setLoading?.(false);
     triggerSnackbar({
       message: "Document loaded successfully!",
       status: "success",
@@ -65,74 +67,56 @@ const FileViewer = () => {
         const height = rect.height;
 
         const aspectRatio = width / height;
-        setPdfDimensions({ aspectRatio, width, height: height + 34 });
+        setPdfDimensions?.({ aspectRatio, width, height: height + 34 });
       }
     }, 500);
 
     page.cleanup();
   };
 
-  // const observePage = useCallback(
-  //   (node) => {
-  //     if (observer && node !== null) {
-  //       observer.observe(node);
-  //     }
-  //   },
-  //   [observer]
-  // );
-
   const handleScroll = useCallback(
-    (event) => {
+    (event: React.UIEvent<HTMLDivElement>) => {
       event.stopPropagation();
       event.preventDefault();
 
-      const container = event.target;
+      const container = event.target as HTMLDivElement;
       const pageHeight = pdfDimensions.height;
 
       const scrolledPages = Math.floor((container.scrollTop + pageHeight / 4) / pageHeight) + 1;
 
-      setCurrentPage(scrolledPages);
+      setCurrentPage?.(scrolledPages);
     },
     [pdfDimensions.height, setCurrentPage]
   );
 
   useEffect(() => {
     const containerElement = document.getElementById("pdf-container");
-    const { width } = containerElement ? containerElement.getBoundingClientRect() : {};
+    const { width = 0 } = containerElement ? containerElement.getBoundingClientRect() : {};
     setElWidth(width);
   }, []);
 
-  // useEffect(() => {
-  //   const containerElement = document.getElementById("pdf-container");
+  useEffect(() => {
+    const updatePdfDimensions = () => {
+      setTimeout(() => {
+        const element = document.querySelector(".react-pdf__Page");
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          const width = rect.width;
+          const height = rect.height;
 
-  //   const handleIntersect = (entries, observer) => {
-  //     const visiblePages = entries
-  //       .filter((entry) => entry.isIntersecting)
-  //       .map((entry) => parseInt(entry.target.dataset.pageNumber, 10));
+          const aspectRatio = width / height;
+          setPdfDimensions?.({ aspectRatio, width, height: height + 34 });
+        }
+      }, 500);
+    };
 
-  //     setVisiblePages(visiblePages);
+    const debouncedUpdatePdfDimensions = debounce(updatePdfDimensions, 500);
+    window.addEventListener("resize", debouncedUpdatePdfDimensions);
 
-  //     if (visiblePages.length) {
-  //       setCurrentPage(visiblePages[0]);
-  //     }
-  //   };
-  //   const options = {
-  //     root: containerElement,
-  //     rootMargin: "0px",
-  //     threshold: 0.1,
-  //   };
-
-  //   const obs = new IntersectionObserver(handleIntersect, options);
-  //   setObserver(obs);
-
-  //   return () => {
-  //     if (observer) {
-  //       observer.disconnect();
-  //     }
-  //   };
-  // }, [setVisiblePages]);
-
-  // Todo: Optimize this to load the pages as you scroll
+    return () => {
+      window.removeEventListener("resize", debouncedUpdatePdfDimensions);
+    };
+  }, [setPdfDimensions]);
 
   return (
     <div
@@ -141,7 +125,7 @@ const FileViewer = () => {
       style={wrapperStyle}
       onScroll={handleScroll}
     >
-      <Document file={file} onLoadSuccess={onDocumentLoadSuccess} loading=''>
+      <Document file={file instanceof Blob ? file : undefined} onLoadSuccess={onDocumentLoadSuccess} loading=''>
         {Array.from(new Array(pageCount), (el, index) => (
           //    <Page
           //   visiblePages={visiblePages}
@@ -154,17 +138,14 @@ const FileViewer = () => {
           // />
           <div
             key={`wrapper_${index}`}
-            style={{ height: pdfDimensions.height }}
+            style={{ height: pdfDimensions.height, ...styles.page }}
             data-page-number={index}
             // ref={(node) => observePage(node, index)}
           >
             <Page
               loading=''
               className='mb-8 border border-gray-300'
-              id='page'
               key={`page_${index + 1}`}
-              size='A4'
-              style={styles.page}
               pageNumber={index + 1}
               scale={savedZoom}
               renderMode='canvas'

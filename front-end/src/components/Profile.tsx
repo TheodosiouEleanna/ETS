@@ -1,12 +1,16 @@
-import { useContext } from "react";
+import React, { useContext } from "react";
 import { Context } from "../context/Context";
-import { dark_secondary, light_primary } from "../consts";
-import { Button } from "./ui/Button";
+import { dark_secondary, light_primary, light_secondary } from "../utils/consts";
 import { getFontColorSecondary } from "../utils/functions";
 import ReactDOM from "react-dom";
+import { IContextProps } from "types/AppTypes";
+import Button from "./ui/Button";
+interface ProfileProps {
+  onClick: () => void;
+}
 
-const Profile = ({ onClick }) => {
-  const { userInfo, userSettingsApi } = useContext(Context);
+const Profile: React.FC<ProfileProps> = ({ onClick }) => {
+  const { userInfo, userSettingsApi } = useContext<IContextProps>(Context);
   const isDarkTheme = userSettingsApi.theme === "dark";
 
   const profileContent = (
@@ -22,19 +26,18 @@ const Profile = ({ onClick }) => {
             }
       }
     >
-      {/* <div>User ID: {userInfo.userID}</div> */}
       <div className='w-44 h-12 ' style={{ color: getFontColorSecondary(isDarkTheme) }}>
         Logged in as:<span className='text-base'> {userInfo.username}</span>
       </div>
       <div className='flex w-full justify-end'>
-        <Button className={` rounded bg-blue-500 py-1 px-2`} onClick={onClick}>
+        <Button className={` rounded bg-blue-500 py-1 px-2`} style={{ color: light_secondary }} onClick={onClick}>
           Logout
         </Button>
       </div>
     </div>
   );
 
-  return ReactDOM.createPortal(profileContent, document.getElementById("modal-root"));
+  return ReactDOM.createPortal(profileContent, document.getElementById("modal-root") as Element);
 };
 
 export default Profile;

@@ -1,21 +1,21 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useContext, useEffect, useMemo, useState, FC } from "react";
 import { MdCastConnected, MdDensityMedium } from "react-icons/md";
 import { BsFillPersonFill } from "react-icons/bs";
-import { AiOutlineDisconnect } from "react-icons/ai";
 import Profile from "./Profile";
-import { Button } from "./ui/Button";
 import Menu from "./Menu";
 import { Context } from "../context/Context";
 import axios from "axios";
 import Connection from "./Connection";
 import { useSnackbar } from "../hooks/useSnackbar";
 import { isEqual } from "lodash";
-import Dialog from "./ui/Dialog";
 import Tooltip from "./ui/Tooltip";
-import { apiURL } from "../consts";
-import { getBgSecondary, getBgSecondaryReverse, getFontColorSecondary } from "../utils/functions";
+import { apiURL } from "../utils/consts";
+import { getBgSecondaryReverse, getFontColorSecondary } from "../utils/functions";
+import { ConnectionStatus, IContextProps } from "types/AppTypes";
+import Dialog from "./ui/Dialog";
+import Button from "./ui/Button";
 
-export const HeaderMenu = () => {
+const HeaderMenu: FC = () => {
   const {
     file,
     logout,
@@ -26,10 +26,10 @@ export const HeaderMenu = () => {
     selectedEyeTracker,
     isEyeTrackerConnected,
     setIsEyeTrackerConnected,
-  } = useContext(Context);
+  } = useContext<IContextProps>(Context);
   const [showProfile, setShowProfile] = useState(false);
-  const [connectionStatus, setConnectionStatus] = useState("");
-  const [showConnectionModal, setShowConnectionModal] = useState("");
+  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>("");
+  const [showConnectionModal, setShowConnectionModal] = useState<boolean>(false);
   const [eyeTrackers, setEyeTrackers] = useState([]);
   const [error, setError] = useState("");
   const { triggerSnackbar } = useSnackbar();
@@ -45,9 +45,9 @@ export const HeaderMenu = () => {
 
   const toggleOpen = () => {
     if (isMenuOpen) {
-      setIsMenuOpen(false);
+      setIsMenuOpen?.(false);
     } else {
-      setIsMenuOpen(true);
+      setIsMenuOpen?.(true);
     }
   };
 
@@ -98,20 +98,20 @@ export const HeaderMenu = () => {
 
   const onCloseSocketConnection = () => {
     console.log("close conn");
-    setIsEyeTrackerConnected(false);
+    setIsEyeTrackerConnected?.(false);
   };
 
   const onCloseMenu = () => {
     if (!areSettingsEqual) {
       setShowDiscardDialog(true);
     } else {
-      setIsMenuOpen(false);
+      setIsMenuOpen?.(false);
     }
   };
 
   const onDialogConfirm = () => {
     setShowDiscardDialog(false);
-    setIsMenuOpen(false);
+    setIsMenuOpen?.(false);
   };
 
   const onDialogClose = () => {
@@ -147,7 +147,7 @@ export const HeaderMenu = () => {
             <MdDensityMedium className='text-xl' style={{ color: getFontColorSecondary(isDarkTheme) }} />
           </Button>
         </Tooltip>
-        {file.size !== 0 && !isEyeTrackerConnected && (
+        {file?.size !== 0 && !isEyeTrackerConnected && (
           <Tooltip content='Connection' position='right' color={getBgSecondaryReverse(isDarkTheme)}>
             <Button
               className={`py-2 px-2 rounded-full hover:scale-110 ${btnClass} transform transition-transform duration-300 active:scale-95 focus:outline-none`}
@@ -188,3 +188,5 @@ export const HeaderMenu = () => {
     </>
   );
 };
+
+export default HeaderMenu;

@@ -1,12 +1,12 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, KeyboardEvent } from "react";
 import axios from "axios";
 import { Context } from "../context/Context";
 import { useSnackbar } from "../hooks/useSnackbar";
-import { apiURL, dark_primary, dark_secondary, light_primary, light_secondary } from "../consts";
-import { Button } from "./ui/Button";
+import { apiURL, dark_primary, dark_secondary, light_primary, light_secondary } from "../utils/consts";
 import { getFontColorSecondary } from "../utils/functions";
+import Button from "./ui/Button";
 
-const UserProfile = () => {
+const UserProfile: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -15,7 +15,7 @@ const UserProfile = () => {
   const { triggerSnackbar } = useSnackbar();
   const isDarkTheme = userSettingsApi.theme === "dark";
 
-  const handleEnterPress = (event, type) => {
+  const handleEnterPress = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
       if (isLogin) {
         loginUser();
@@ -64,7 +64,7 @@ const UserProfile = () => {
       })
       .then((res) => {
         if (res.status === 200) {
-          setUserInfo({
+          setUserInfo?.({
             isLoggedIn: true,
             userID: res.data.userID,
             username: res.data.username,
@@ -111,7 +111,7 @@ const UserProfile = () => {
               }
         }
       >
-        <h2 className='mb-8 text-3xl text-blue-500 text-center'>{isLogin ? "Login" : "Create profile"}</h2>
+        <h2 className='mb-8 text-3xl text-blue-600 text-center'>{isLogin ? "Login" : "Create profile"}</h2>
         <input
           className='mb-4 w-full px-3 py-2 border rounded-md'
           type='text'

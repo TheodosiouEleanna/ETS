@@ -161,6 +161,29 @@ def delete_file():
 def remove_file(doc_id, user_id):
     # Logic to remove the file metadata from the database based on doc_id and user_id
     # Logic to delete the actual file from the file system
+    
+    conn = sqlite3.connect(sqLiteDatabase)
+    c = conn.cursor()
+
+    # Check if the file with given doc_id and user_id exists
+    c.execute("SELECT COUNT(*), docName FROM documents WHERE docID = ? AND userID = ?",
+              (doc_id, user_id))
+    row = c.fetchone()
+
+    if row[0] == 0:
+        conn.close()
+        response = {
+            'message': 'File not found or unauthorized.',
+            'docID': doc_id,
+            'userID': user_id
+        }
+        return jsonify(response), 404
+
+    c.execute("DELETE FROM documents WHERE docID = ? AND userID = ?",
+              (doc_id, user_id))
+    conn.commit()
+    conn.close()
+
 
     response = {
         'message': 'File deleted successfully.',

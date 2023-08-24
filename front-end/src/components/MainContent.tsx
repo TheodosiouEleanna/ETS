@@ -1,12 +1,13 @@
-import { useContext, useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import { Context } from "../context/Context";
 import FileViewer from "./FileViewer";
 import axios from "axios";
-import { apiURL, dark_secondary, light_primary, light_secondary } from "../consts";
+import { apiURL, dark_secondary, light_primary, light_secondary } from "../utils/consts";
 import { getFontColorSecondary } from "../utils/functions";
+import { IContextProps } from "types/AppTypes";
 
-const MainContent = () => {
-  const { file, loading, userSettingsApi, setUserSettingsApi, userInfo } = useContext(Context);
+const MainContent: React.FC = () => {
+  const { file, loading, userSettingsApi, setUserSettingsApi, userInfo } = useContext<IContextProps>(Context);
   const { userID } = userInfo;
   const isDarkTheme = userSettingsApi.theme === "dark";
 
@@ -17,7 +18,7 @@ const MainContent = () => {
           params: { userID },
         });
         const settings = response.data;
-        setUserSettingsApi({
+        setUserSettingsApi?.({
           zoom: settings.zoomLevel,
           theme: settings.theme,
           language: settings.selected_language,
@@ -49,8 +50,8 @@ const MainContent = () => {
           Loading Pdf Document...
         </div>
       )}
-      {file.size !== 0 && !loading && <FileViewer />}
-      {file.size === 0 && !loading && (
+      {file?.size !== 0 && !loading && <FileViewer />}
+      {file?.size === 0 && !loading && (
         <div className='flex flex-col items-center w-[40%] h-full mt-10'>
           <div
             className={`flex flex-col pt-20 items-center w-full h-full border border-[${light_secondary}] shadow rounded`}

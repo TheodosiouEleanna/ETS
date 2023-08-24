@@ -1,9 +1,25 @@
+import React from "react";
 import ReactDOM from "react-dom";
-import { Button } from "./Button";
 import { RiCloseFill } from "react-icons/ri";
-import { light_secondary } from "../../consts";
+import { light_secondary } from "../../utils/consts";
+import { CSSProperties, FC, ReactNode } from "react";
+import Button from "./Button";
 
-const ModalWrapper = ({
+interface ModalWrapperProps {
+  children: ReactNode;
+  loading?: boolean;
+  title?: string;
+  style?: CSSProperties;
+  className?: string;
+  shouldShowConfirm?: boolean;
+  shouldShowUpload?: boolean;
+  shouldDisableConfirm?: boolean;
+  onConfirm: (arg: string) => void;
+  onClickUpload?: () => void;
+  onClose: () => void;
+}
+
+const ModalWrapper: FC<ModalWrapperProps> = ({
   children,
   title,
   style = {},
@@ -14,7 +30,9 @@ const ModalWrapper = ({
   onConfirm,
   onClickUpload,
   onClose,
-}) => {
+}: ModalWrapperProps) => {
+  const modalRoot = document.getElementById("modal-root");
+
   const modalContent = (
     <div className='fixed inset-0 w-full flex items-center justify-center z-40'>
       <div className='absolute inset-0 bg-black opacity-50'></div>
@@ -38,7 +56,7 @@ const ModalWrapper = ({
               disabled={shouldDisableConfirm}
               className={`bg-blue-500 w-24 flex justify-center items-center text-base absolute right-0 top-3 rounded  active:scale-95 transform transition focus:outline-none  shadow-lg`}
               style={{ color: light_secondary }}
-              onClick={(e) => onConfirm("")}
+              onClick={(e: any) => onConfirm("")}
             >
               {/* {loading && <Loader />} */}
             </Button>
@@ -58,7 +76,10 @@ const ModalWrapper = ({
     </div>
   );
 
-  return ReactDOM.createPortal(modalContent, document.getElementById("modal-root"));
+  if (modalRoot !== null) {
+    return ReactDOM.createPortal(modalContent, modalRoot);
+  }
+  return null;
 };
 
 export default ModalWrapper;

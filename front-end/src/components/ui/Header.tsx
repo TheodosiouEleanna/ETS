@@ -1,10 +1,11 @@
-import React, { useContext } from "react";
-import { HeaderMenu } from "../HeaderMenu";
+import React, { FC, useContext } from "react";
 import { Context } from "../../context/Context";
-import { dark_primary, light_secondary } from "../../consts";
+import { dark_primary, light_secondary } from "../../utils/consts";
+import { IContextProps } from "types/AppTypes";
+import HeaderMenu from "components/HeaderMenu";
 
-const Header = () => {
-  const { userSettingsApi } = useContext(Context);
+const Header: FC = () => {
+  const { userSettingsApi } = useContext<IContextProps>(Context);
   const isDarkTheme = userSettingsApi.theme === "dark";
 
   return (

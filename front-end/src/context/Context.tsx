@@ -1,7 +1,7 @@
 import { createContext, useEffect, useReducer } from "react";
 import axios from "axios";
-import { apiURL } from "../consts";
-import { IAction, IContextState, IEyeTracker, IFile, IUserInfo, IUserSettings } from "types/AppTypes";
+import { apiURL } from "../utils/consts";
+import { IAction, IContextProps, ID, IEyeTracker, File, IUserInfo, IUserSettings } from "types/AppTypes";
 import React from "react";
 import { initEyeTracker, initFile, initPdfDimensions, initSettings, initUserInfo } from "utils/initData";
 
@@ -16,7 +16,7 @@ const userSettingsUi = userSettingsFromStorage ? JSON.parse(userSettingsFromStor
 const eyeTrackerFromStorage = localStorage.getItem("eyeTracker");
 const selectedEyeTracker = eyeTrackerFromStorage ? JSON.parse(eyeTrackerFromStorage) : initEyeTracker;
 
-const initialState: IContextState = {
+const initialState: IContextProps = {
   file: initFile,
   selectedDocID,
   currentPage: 0,
@@ -29,9 +29,10 @@ const initialState: IContextState = {
   isMenuOpen: false,
   selectedEyeTracker,
   isEyeTrackerConnected: false,
+  logout: () => {},
 };
 
-const reducer = (state: IContextState, action: IAction): IContextState => {
+const reducer = (state: IContextProps, action: IAction): IContextProps => {
   let container: HTMLElement | null;
   let scrollTop: number;
   switch (action.type) {
@@ -135,7 +136,7 @@ const reducer = (state: IContextState, action: IAction): IContextState => {
   }
 };
 
-export const Context = createContext<Partial<IContextState>>({});
+export const Context = createContext<IContextProps>(initialState);
 
 export const ContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -143,16 +144,16 @@ export const ContextProvider = ({ children }: { children: React.ReactNode }) => 
 
   // -------------------- DOCUMENT ACTIONS -----------------------
 
-  const loadFile = (file: IFile) => {
+  const loadFile = (file?: File) => {
     dispatch({ type: "LOAD_FILE", payload: file });
   };
 
-  const setSelectedDocID = (id: string) => {
+  const setSelectedDocID = (id: ID) => {
     dispatch({ type: "SET_DOCUMENT_ID", payload: id });
   };
 
-  const setCurrentPage = (pageCount: number) => {
-    dispatch({ type: "SET_CURRENT_PAGE", payload: pageCount });
+  const setCurrentPage = (pageNumber: number) => {
+    dispatch({ type: "SET_CURRENT_PAGE", payload: pageNumber });
   };
 
   const setPageCount = (pageCount: number) => {
@@ -163,12 +164,12 @@ export const ContextProvider = ({ children }: { children: React.ReactNode }) => 
     dispatch({ type: "SET_PDF_DIMENSIONS", payload: dimensions });
   };
 
-  const goToNextPage = (pageNumber: string) => {
-    dispatch({ type: "GO_TO_NEXT_PAGE", payload: parseInt(pageNumber) });
+  const goToNextPage = () => {
+    dispatch({ type: "GO_TO_NEXT_PAGE" });
   };
 
-  const goToPrevPage = (pageNumber: string) => {
-    dispatch({ type: "GO_TO_PREV_PAGE", payload: parseInt(pageNumber) });
+  const goToPrevPage = () => {
+    dispatch({ type: "GO_TO_PREV_PAGE" });
   };
   // -------------------- OTHER ACTIONS -----------------------
 
@@ -180,10 +181,10 @@ export const ContextProvider = ({ children }: { children: React.ReactNode }) => 
     dispatch({ type: "SET_SESSION", payload: userInfo });
   };
 
-  const setUserSettingsUi = (userSettings: IUserSettings) => {
+  const setUserSettingsUi = (userSettings: Partial<IUserSettings>) => {
     dispatch({ type: "SET_USER_SETTINGS_UI", payload: userSettings });
   };
-  const setUserSettingsApi = (userSettings: IUserSettings) => {
+  const setUserSettingsApi = (userSettings: Partial<IUserSettings>) => {
     dispatch({ type: "SET_USER_SETTINGS_API", payload: userSettings });
   };
 

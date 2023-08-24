@@ -1,19 +1,14 @@
 import React, { useContext } from "react";
-import { dark_primary, dark_secondary, light_primary, light_secondary } from "../consts";
+import { dark_primary, light_primary } from "../utils/consts";
 import { Context } from "../context/Context";
 import { getFontColorSecondary } from "../utils/functions";
+import { IEyeTracker } from "types/AppTypes";
 
-// export dark_primary IEyeTracker {
-//   address: string;
-//   device_capabilities: string[];
-//   device_name: string;
-//   firmware_version: string;
-//   model: string;
-//   runtime_version: string;
-//   serial_number: string;
-// }
+interface EyeTrackerInfoProps {
+  tracker: IEyeTracker;
+}
 
-const EyeTrackerInfo = ({ tracker }) => {
+const EyeTrackerInfo: React.FC<EyeTrackerInfoProps> = ({ tracker }) => {
   const { userSettingsApi } = useContext(Context);
   const isDarkTheme = userSettingsApi.theme === "dark";
   return (

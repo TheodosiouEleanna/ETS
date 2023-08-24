@@ -1,30 +1,41 @@
-export interface IContextState {
-  file: IFile;
+export interface IContextProps {
+  file?: File;
   selectedDocID: string;
   currentPage: number;
   pageCount: number;
   loading: boolean;
-  pdfDimensions: {
-    width: number;
-    height: number;
-    aspectRatio: number;
-  };
+  pdfDimensions: IPdfDimensions;
   userInfo: IUserInfo;
   userSettingsApi: IUserSettings;
   userSettingsUi: IUserSettings;
   isMenuOpen: boolean;
-  selectedEyeTracker: {
-    device_name: string;
-  };
+  selectedEyeTracker: IEyeTracker;
   isEyeTrackerConnected: boolean;
+  loadFile?: (file?: File) => void;
+  setSelectedDocID?: (id: ID) => void;
+  setCurrentPage?: (pageNumber: number) => void;
+  setPageCount?: (pageCount: number) => void;
+  setUserInfo?: (userInfo: IUserInfo) => void;
+  setLoading?: (loading: boolean) => void;
+  logout: () => void;
+  setUserSettingsUi?: (userSettings: Part) => void;
+  setUserSettingsApi?: (userSettings: IUserSettings) => void;
+  setPdfDimensions?: (dimensions: IPdfDimensions) => void;
+  goToNextPage?: () => void;
+  goToPrevPage?: () => void;
+  setIsMenuOpen?: (isOpen: boolean) => void;
+  setSelectedEyeTracker?: (eyeTracker: IEyeTracker) => void;
+  setIsEyeTrackerConnected?: (isConnected: boolean) => void;
 }
+
+export interface IContextValues extends IContextState {}
 
 export interface IAction {
   type: string;
   payload?: any;
 }
 
-export interface IFile {
+export interface File {
   size: number;
 }
 
@@ -45,5 +56,26 @@ export interface IEyeTracker {
   model?: string;
   address?: string;
   serial_number?: string;
+  firmware_version?: string;
+  runtime_version?: string;
   // TODO: add more fields here as needed.
 }
+
+export interface IPdfDimensions {
+  width: number;
+  height: number;
+  aspectRatio: number;
+}
+
+export type DebounceFn = (...args: any[]) => void;
+
+export type ID = string | number;
+
+export interface Document {
+  docID: ID;
+  docName: string;
+  lastReadPage: number;
+  uploadDate: string;
+}
+
+export type ConnectionStatus = "error" | "searching" | "connected" | "selection" | "";

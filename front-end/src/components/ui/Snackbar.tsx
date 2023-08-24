@@ -1,9 +1,15 @@
-import { useState, useEffect, useContext } from "react";
-import { dark_primary, light_primary, light_secondary } from "../../consts";
-import { Context } from "../../context/Context";
+import React, { useState, useEffect, FC } from "react";
+import { light_secondary } from "../../utils/consts";
 
-const Snackbar = ({ message, status, duration = 2000, onClose }) => {
-  const [visible, setVisible] = useState(!!message);
+interface Props {
+  message: string;
+  status: "success" | "error" | "info";
+  duration?: number;
+  onClose?: () => void;
+}
+
+const Snackbar: FC<Props> = ({ message, status, duration = 2000, onClose }) => {
+  const [visible, setVisible] = useState<boolean>(!!message);
 
   useEffect(() => {
     if (message && visible) {
@@ -15,9 +21,9 @@ const Snackbar = ({ message, status, duration = 2000, onClose }) => {
         clearTimeout(timer);
       };
     }
-  }, [message, visible, duration, onClose]);
+  }, [message, visible, duration, onClose, setVisible]);
 
-  const getStatusStyle = (status) => {
+  const getStatusStyle = (status: "success" | "error" | "info"): string => {
     switch (status) {
       case "success":
         return "bg-green-600";
@@ -34,7 +40,7 @@ const Snackbar = ({ message, status, duration = 2000, onClose }) => {
 
   return (
     <div
-      className={`fixed bottom-16 left-[1.3rem] p-2 rounded shadow-lg ${getStatusStyle(status)}`}
+      className={`fixed bottom-16 left-[1.3rem] p-2 rounded shadow-lg ${getStatusStyle(status)} z-50`}
       style={{ color: light_secondary }}
     >
       {message}

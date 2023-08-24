@@ -1,9 +1,10 @@
-import { useContext } from "react";
+import React, { useContext, FC } from "react";
 import { Context } from "../context/Context";
 import { getFontColorSecondary } from "../utils/functions";
+import { IContextProps } from "types/AppTypes";
 
-const Vocabulary = () => {
-  const { userSettingsApi } = useContext(Context);
+const Vocabulary: FC = () => {
+  const { userSettingsApi } = useContext<IContextProps>(Context);
   const isDarkTheme = userSettingsApi.theme === "dark";
 
   return (

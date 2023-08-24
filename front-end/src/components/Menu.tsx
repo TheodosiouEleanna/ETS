@@ -1,4 +1,4 @@
-import { useContext, useMemo, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import ModalWrapper from "./ui/ModalWrapper";
 import Documents from "./Documents";
 import { Context } from "../context/Context";
@@ -7,13 +7,18 @@ import FileUpload from "./FileUpload";
 import Settings from "./Settings";
 import Vocabulary from "./Vocabulary";
 import { useSnackbar } from "../hooks/useSnackbar";
-import { Button } from "./ui/Button";
 import { FiArrowLeft } from "react-icons/fi";
 import { isEqual } from "lodash";
-import { apiURL, dark_primary, light_primary } from "../consts";
+import { apiURL, dark_primary, light_primary } from "../utils/consts";
 import { getBgSecondary, getFontColorPrimary } from "../utils/functions";
+import { IContextProps, ID } from "types/AppTypes";
+import Button from "./ui/Button";
 
-function Menu({ onCloseMenu }) {
+interface MenuProps {
+  onCloseMenu: () => void;
+}
+
+function Menu({ onCloseMenu }: MenuProps) {
   const {
     file,
     loadFile,
@@ -24,21 +29,29 @@ function Menu({ onCloseMenu }) {
     userSettingsUi,
     userSettingsApi,
     setUserSettingsApi,
-  } = useContext(Context);
+  } = useContext<IContextProps>(Context);
   const { zoom, theme, language } = userSettingsUi;
   const { userID } = userInfo;
   const [selectedOption, setSelectedOption] = useState("settings");
   const [loadingMenu, setLoadingMenu] = useState(false);
   const { triggerSnackbar } = useSnackbar();
 
-  const isDarkTheme = userSettingsApi.theme === "dark";
-  const areSettingsEqual = useMemo(() => isEqual(userSettingsUi, userSettingsApi), [userSettingsApi, userSettingsUi]);
+  const settingsHaveChanges = useMemo(
+    () => !isEqual(userSettingsUi, userSettingsApi),
+    [userSettingsApi, userSettingsUi]
+  );
 
-  const onConfirm = (id) => {
+  const shouldDisableConfirm =
+    ((selectedOption === "documents" || selectedOption === "upload") && selectedDocID === "") ||
+    (selectedOption === "settings" && !settingsHaveChanges);
+
+  const isDarkTheme = userSettingsApi.theme === "dark";
+
+  const onConfirm = (id: ID) => {
     setLoadingMenu(true);
-    setLoading(true);
+    setLoading?.(true);
     if (selectedOption === "settings") {
-      if (areSettingsEqual) {
+      if (!settingsHaveChanges) {
       } else {
         axios
           .post(`${apiURL}/settings`, {
@@ -49,8 +62,8 @@ function Menu({ onCloseMenu }) {
           })
           .then((res) => {
             setLoadingMenu(false);
-            loadFile(file);
-            setUserSettingsApi({
+            loadFile?.(file);
+            setUserSettingsApi?.({
               zoom,
               theme,
               language,
@@ -60,7 +73,7 @@ function Menu({ onCloseMenu }) {
               status: "success",
               open: true,
             });
-            setLoading(false);
+            setLoading?.(false);
           })
           .catch((err) => {
             console.error(err);
@@ -81,14 +94,15 @@ function Menu({ onCloseMenu }) {
             type: response.data.type,
           });
           setLoadingMenu(false);
-          loadFile(fileBlob);
-          setLoading(false);
+          loadFile?.(fileBlob);
+          setLoading?.(false);
         })
         .catch((error) => {
+          console.log({ error });
           alert("Failed to load file.");
         });
     }
-    setIsMenuOpen(false);
+    setIsMenuOpen?.(false);
   };
 
   const onClickUpload = () => {
@@ -98,9 +112,9 @@ function Menu({ onCloseMenu }) {
   const renderContent = () => {
     switch (selectedOption) {
       case "settings":
-        return <Settings onConfirm={onConfirm} />;
+        return <Settings />;
       case "vocabulary":
-        return <Vocabulary onConfirm={onConfirm} />;
+        return <Vocabulary />;
       case "documents":
         return <Documents onConfirm={onConfirm} />;
       case "upload":
@@ -119,7 +133,7 @@ function Menu({ onCloseMenu }) {
         style={{ backgroundColor: getBgSecondary(isDarkTheme) }}
         onConfirm={onConfirm}
         onClickUpload={onClickUpload}
-        shouldDisableConfirm={(selectedOption === "documents" || selectedOption === "upload") && selectedDocID === ""}
+        shouldDisableConfirm={shouldDisableConfirm}
         shouldShowUpload={selectedOption === "documents"}
         onClose={onCloseMenu}
       >

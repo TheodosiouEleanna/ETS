@@ -1,10 +1,10 @@
-import { useContext, useEffect, useMemo, useState } from "react";
-import { Button } from "./Button";
+import React, { useContext, useEffect, useMemo, useState, ChangeEvent } from "react";
 import { Context } from "../../context/Context";
 import { BiSolidLeftArrow } from "react-icons/bi";
 import { BiSolidRightArrow } from "react-icons/bi";
-import { dark_primary, dark_secondary, light_primary, light_secondary, shadowLgTop } from "../../consts";
+import { dark_primary, dark_secondary, light_primary, light_secondary, shadowLgTop } from "../../utils/consts";
 import { getBgPrimary, getFontColorSecondary } from "../../utils/functions";
+import Button from "./Button";
 
 const Footer = () => {
   const {
@@ -34,24 +34,27 @@ const Footer = () => {
     [isDarkTheme]
   );
 
-  const handlePageChange = (e) => {
-    const pageNumber = e.target.value;
+  const handlePageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    const pageNumber = Number(value);
 
     if (pageNumber > 0 && pageNumber <= pageCount) {
       setInputValue(Number(pageNumber));
-      setCurrentPage(pageNumber);
+      setCurrentPage?.(pageNumber);
       const container = document.getElementById("pdf-container");
       const scrollTop = (pageNumber - 1) * pdfDimensions.height;
-      container.scrollTop = scrollTop;
+      if (container) {
+        container.scrollTop = scrollTop;
+      }
     }
   };
 
-  const onPrevClick = (e) => {
-    goToPrevPage();
+  const onPrevClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    goToPrevPage?.();
   };
 
-  const onNextClick = (e) => {
-    goToNextPage();
+  const onNextClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    goToNextPage?.();
   };
 
   useEffect(() => {
@@ -77,6 +80,7 @@ const Footer = () => {
           className={`bg-blue-500 text-[${getBgPrimary(
             isDarkTheme
           )}] text-sm rounded-full hover:scale-110 py-2 px-1 active:scale-95 transform transition focus:outline-none shadow-lg`}
+          style={{ color: light_secondary }}
           onClick={onPrevClick}
           disabled={currentPage === 1 || currentPage === 0 || loading}
         >
@@ -101,6 +105,7 @@ const Footer = () => {
           className={`bg-blue-500 text-[${getBgPrimary(
             isDarkTheme
           )}] text-sm rounded-full hover:scale-110 py-2 px-1 active:scale-95 transform transition focus:outline-none shadow-lg`}
+          style={{ color: light_secondary }}
           onClick={onNextClick}
           disabled={currentPage === pageCount || currentPage === 0 || loading}
         >

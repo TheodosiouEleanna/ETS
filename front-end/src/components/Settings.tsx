@@ -1,24 +1,28 @@
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, FC } from "react";
 import { Context } from "../context/Context";
-import { dark_primary, dark_secondary, languageMap, light_primary, light_secondary } from "../consts";
+import { dark_primary, dark_secondary, languageMap, light_primary, light_secondary } from "../utils/consts";
 import { getFontColorSecondary } from "../utils/functions";
+import { IContextProps, IUserSettings } from "types/AppTypes";
 
-const Settings = () => {
-  const { userSettingsUi, setUserSettingsUi, userSettingsApi } = useContext(Context);
+const Settings: FC = ({}) => {
+  const { userSettingsUi, setUserSettingsUi, userSettingsApi } = useContext<IContextProps>(Context);
   const { zoom, theme, language } = userSettingsUi;
   const [loading, setLoading] = useState(false);
   const isDarkTheme = userSettingsApi.theme === "dark";
 
-  const handleSettingsChange = (key, value) => {
+  const handleSettingsChange = (key: keyof IUserSettings, value: IUserSettings[keyof IUserSettings]) => {
+    let newValue: IUserSettings[keyof IUserSettings] = value;
     if (key === "zoom") {
-      value = value / 100;
+      newValue = (value as IUserSettings["zoom"]) / 100;
     }
-    setUserSettingsUi({ [key]: value });
+    if (setUserSettingsUi) {
+      setUserSettingsUi({ [key]: newValue });
+    }
   };
 
   useEffect(() => {
     setLoading(true);
-    setUserSettingsUi(userSettingsApi);
+    setUserSettingsUi?.(userSettingsApi);
     setLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userSettingsApi]);

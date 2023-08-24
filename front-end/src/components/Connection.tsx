@@ -1,22 +1,46 @@
-import { useContext } from "react";
-import { Button } from "./ui/Button";
-import ModalWrapper from "./ui/ModalWrapper";
+import React, { useContext, useMemo } from "react";
 import axios from "axios";
-import { dark_primary, dark_secondary, light_primary, light_secondary } from "../consts";
+import ModalWrapper from "./ui/ModalWrapper";
 import EyeTrackerInfo from "./EyeTrackerInfo";
 import { useSnackbar } from "../hooks/useSnackbar";
-import { Context } from "../context/Context";
-import { getBgSecondary, getFontColorSecondary } from "../utils/functions";
+import { ConnectionStatus, IContextProps, IEyeTracker } from "types/AppTypes";
+import { dark_primary, dark_secondary, light_primary, light_secondary } from "utils/consts";
+import { initEyeTracker } from "utils/initData";
+import Button from "./ui/Button";
+import { getBgSecondary, getFontColorSecondary } from "utils/functions";
+import { Context } from "context/Context";
 
-const Connection = ({ status, error, setConnectionStatus, eyeTrackers, onClose }) => {
-  const { userSettingsApi, selectedEyeTracker, setSelectedEyeTracker, setIsEyeTrackerConnected } = useContext(Context);
+interface ConnectionProps {
+  error: string;
+  status: ConnectionStatus;
+  setConnectionStatus: React.Dispatch<React.SetStateAction<ConnectionStatus>>;
+  eyeTrackers: IEyeTracker[];
+  onClose: () => void;
+}
+
+const Connection: React.FC<ConnectionProps> = ({ status, error, setConnectionStatus, eyeTrackers, onClose }) => {
+  const { userSettingsApi, selectedEyeTracker, setSelectedEyeTracker, setIsEyeTrackerConnected } =
+    useContext<IContextProps>(Context);
+
   const isDarkTheme = userSettingsApi.theme === "dark";
+
+  const style = useMemo(
+    () =>
+      isDarkTheme
+        ? {
+            color: light_secondary,
+          }
+        : {
+            color: dark_primary,
+          },
+    [isDarkTheme]
+  );
 
   const { triggerSnackbar } = useSnackbar();
 
-  const handleEyeTrackerChange = (e) => {
+  const handleEyeTrackerChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selected = eyeTrackers.find((eye) => eye.device_name === e.target.value);
-    setSelectedEyeTracker(selected);
+    setSelectedEyeTracker?.(selected || initEyeTracker);
   };
 
   // Todo: cancel the request if modal closes
@@ -24,12 +48,11 @@ const Connection = ({ status, error, setConnectionStatus, eyeTrackers, onClose }
     console.log(`Connecting to ${selectedEyeTracker.device_name}`);
     axios
       .post("http://localhost:5000/api/connect", {
-        address: selectedEyeTracker.address,
+        address: selectedEyeTracker?.address,
       })
       .then((response) => {
-        console.log(response);
         setConnectionStatus("connected");
-        setIsEyeTrackerConnected(true);
+        setIsEyeTrackerConnected?.(true);
         triggerSnackbar({
           message: response.data.message,
           status: "success",
@@ -52,6 +75,7 @@ const Connection = ({ status, error, setConnectionStatus, eyeTrackers, onClose }
       className='w-[700px] h-[28rem] px-12 py-12'
       shouldShowConfirm={false}
       style={{ backgroundColor: getBgSecondary(isDarkTheme) }}
+      onConfirm={() => {}}
       onClose={onClose}
     >
       <div className='flex flex-col w-full h-full'>
@@ -69,18 +93,7 @@ const Connection = ({ status, error, setConnectionStatus, eyeTrackers, onClose }
           <div className='flex flex-col w-full'>
             <h1 className=' text-xl font-bold text-blue-500  mb-8'>Found {eyeTrackers.length} eye trackers.</h1>
             <div className='flex w-full items-center text-lg'>
-              <div
-                className='mr-4'
-                style={
-                  isDarkTheme
-                    ? {
-                        color: light_secondary,
-                      }
-                    : {
-                        color: dark_primary,
-                      }
-                }
-              >
+              <div className='mr-4' style={style}>
                 Select:
               </div>
               <select
@@ -121,6 +134,7 @@ const Connection = ({ status, error, setConnectionStatus, eyeTrackers, onClose }
               <Button
                 label='Connect'
                 className={`bg-blue-500 w-24 h-10 flex justify-center items-center mx-8 text-base  active:scale-95 transform transition focus:outline-none  shadow-lg`}
+                style={{ color: light_secondary }}
                 onClick={handleConnect}
                 disabled={!selectedEyeTracker?.device_name}
               />

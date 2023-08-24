@@ -2,36 +2,43 @@ import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { Context } from "../context/Context";
 import { FaRegSquare, FaCheckSquare } from "react-icons/fa";
-import { Button } from "./ui/Button";
 import { RiDeleteBin4Fill } from "react-icons/ri";
-import Dialog from "./ui/Dialog";
-import { apiURL } from "../consts";
+import { apiURL } from "../utils/consts";
 import { getBgSecondary, getFontColorSecondary } from "../utils/functions";
+import React from "react";
+import Button from "./ui/Button";
+import { Document, IContextProps, ID } from "types/AppTypes";
+import Dialog from "./ui/Dialog";
 
-const Documents = ({ onConfirm }) => {
-  const [documents, setDocuments] = useState([]);
+interface DocumentsProps {
+  onConfirm: (id: ID) => void;
+}
+
+const Documents: React.FC<DocumentsProps> = ({ onConfirm }) => {
+  const [documents, setDocuments] = useState<Document[]>();
   const [loading, setLoading] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [error, setError] = useState(null);
-  const { userInfo, selectedDocID, setSelectedDocID, userSettingsApi } = useContext(Context);
+  const { userInfo, selectedDocID, setSelectedDocID, userSettingsApi } = useContext<IContextProps>(Context);
+
   const { userID } = userInfo;
   const isDarkTheme = userSettingsApi.theme === "dark";
 
-  const handleDocumentClick = (docID) => {
+  const handleDocumentClick = (docID: ID) => {
     if (selectedDocID === docID) {
-      setSelectedDocID("");
+      setSelectedDocID?.("");
     } else {
-      setSelectedDocID(docID);
+      setSelectedDocID?.(docID);
     }
   };
 
-  const onDoubleClick = (id) => {
-    setSelectedDocID(id);
+  const onDoubleClick = (id: ID) => {
+    setSelectedDocID?.(id);
     onConfirm(id);
   };
 
-  const onClickDelete = (id) => {
-    selectedDocID(id);
+  const onClickDelete = (id: ID) => {
+    setSelectedDocID?.(id);
     setShowDeleteDialog(true);
   };
 
@@ -50,13 +57,12 @@ const Documents = ({ onConfirm }) => {
       .then((response) => {
         setShowDeleteDialog(false);
         setDocuments((prev) => {
-          return prev.filter((doc) => doc.docID !== selectedDocID);
+          return prev?.filter((doc) => doc.docID !== selectedDocID);
         });
-        setSelectedDocID(null);
+        setSelectedDocID?.("");
         alert("File successfully deleted");
       })
       .catch((err) => {
-        console.error(err);
         setShowDeleteDialog(false);
       });
   };
@@ -116,7 +122,7 @@ const Documents = ({ onConfirm }) => {
           <div className='py-2 col-span-2 font-bold'>Upload date</div>
           <div className='py-2 px-1 col-span-1 font-bold ml-[-15px]'>Actions</div>
         </div>
-        {documents.map((doc) => (
+        {documents?.map((doc) => (
           <div className='flex items-center px-4' style={{ color: getFontColorSecondary(isDarkTheme) }}>
             <div
               onClick={() => handleDocumentClick(doc.docID)}
