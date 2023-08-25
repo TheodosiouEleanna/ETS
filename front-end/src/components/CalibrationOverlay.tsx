@@ -1,5 +1,10 @@
 import { Context } from "context/Context";
-import React, { useState, useEffect, FunctionComponent, useContext } from "react";
+import React, {
+  useState,
+  useEffect,
+  FunctionComponent,
+  useContext,
+} from "react";
 import { CalibrationPoint, IContextProps } from "types/AppTypes";
 import { getBgPrimary, getBgPrimaryReverse } from "utils/functions";
 
@@ -15,7 +20,8 @@ const timeFrame = 3000;
 
 const CalibrationOverlay: FunctionComponent = () => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
-  const { setIsCalibrating, userSettingsApi } = useContext<IContextProps>(Context);
+  const { setIsCalibrating, userSettingsApi } =
+    useContext<IContextProps>(Context);
   const [showInitialScreen, setShowInitialScreen] = useState(true);
   const [key, setKey] = useState(Math.random());
   const isDarkTheme = userSettingsApi.theme === "dark";
@@ -51,7 +57,9 @@ const CalibrationOverlay: FunctionComponent = () => {
     >
       {showInitialScreen && (
         <div className='absolute inset-0 flex items-center justify-center'>
-          <span className='text-lg text-white'>Stare at the dots until they disappear.</span>
+          <span className='text-lg text-white'>
+            Stare at the dots until they disappear.
+          </span>
         </div>
       )}
 

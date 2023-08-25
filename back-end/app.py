@@ -161,7 +161,7 @@ def delete_file():
 def remove_file(doc_id, user_id):
     # Logic to remove the file metadata from the database based on doc_id and user_id
     # Logic to delete the actual file from the file system
-    
+
     conn = sqlite3.connect(sqLiteDatabase)
     c = conn.cursor()
 
@@ -183,7 +183,6 @@ def remove_file(doc_id, user_id):
               (doc_id, user_id))
     conn.commit()
     conn.close()
-
 
     response = {
         'message': 'File deleted successfully.',
@@ -217,12 +216,18 @@ def get_documents():
 
 @app.route('/api/search', methods=['POST'])
 def search_eye_tracker():
-    request_data = "search_eye_tracker"
+    request_data = {
+        "action": "search_eye_tracker"
+    }
+
+    # Convert the dictionary to a JSON string for sending the request
+    request_json = json.dumps(request_data)
+
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-    response_data = loop.run_until_complete(send_request(request_data))
+    response_data = loop.run_until_complete(send_request(request_json))
 
-    # Convert JSON string to Python list. The returned type of response_data must be string.
+    # Convert JSON string to a Python dictionary or list. The returned type of response_data must be string.
     return json.loads(response_data)
 
 
@@ -233,10 +238,14 @@ def get_eye_tracker():
 
     address = data['address']
     print("I arrived: ", address)
-    request_data = address
+    request_data = {
+        "action": "connect_to_tracker",
+        "address": address
+    }
+    request_json = json.dumps(request_data)
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-    response_data = loop.run_until_complete(send_request(request_data))
+    response_data = loop.run_until_complete(send_request(request_json))
     print("This is the response_data: ", response_data)
 
     # Convert JSON string to Python list. The returned type of response_data must be string.

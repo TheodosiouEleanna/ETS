@@ -4,7 +4,12 @@ import ModalWrapper from "./ui/ModalWrapper";
 import EyeTrackerInfo from "./EyeTrackerInfo";
 import { useSnackbar } from "../hooks/useSnackbar";
 import { ConnectionStatus, IContextProps, IEyeTracker } from "types/AppTypes";
-import { dark_primary, dark_secondary, light_primary, light_secondary } from "utils/consts";
+import {
+  dark_primary,
+  dark_secondary,
+  light_primary,
+  light_secondary,
+} from "utils/consts";
 import { initEyeTracker } from "utils/initData";
 import Button from "./ui/Button";
 import { getBgSecondary, getFontColorSecondary } from "utils/functions";
@@ -14,13 +19,27 @@ interface ConnectionProps {
   error: string;
   status: ConnectionStatus;
   setConnectionStatus: React.Dispatch<React.SetStateAction<ConnectionStatus>>;
+  onStartTracking: () => void;
   eyeTrackers: IEyeTracker[];
   onClose: () => void;
 }
 
-const Connection: React.FC<ConnectionProps> = ({ status, error, setConnectionStatus, eyeTrackers, onClose }) => {
-  const { userSettingsApi, selectedEyeTracker, setSelectedEyeTracker, setIsEyeTrackerConnected } =
-    useContext<IContextProps>(Context);
+const Connection: React.FC<ConnectionProps> = ({
+  status,
+  error,
+  setConnectionStatus,
+  onStartTracking,
+  eyeTrackers,
+  onClose,
+}) => {
+  const {
+    userSettingsApi,
+    setIsCalibrating,
+    selectedEyeTracker,
+    setShouldSubscribe,
+    setSelectedEyeTracker,
+    setIsEyeTrackerConnected,
+  } = useContext<IContextProps>(Context);
 
   const isDarkTheme = userSettingsApi.theme === "dark";
 
@@ -39,7 +58,9 @@ const Connection: React.FC<ConnectionProps> = ({ status, error, setConnectionSta
   const { triggerSnackbar } = useSnackbar();
 
   const handleEyeTrackerChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selected = eyeTrackers.find((eye) => eye.device_name === e.target.value);
+    const selected = eyeTrackers.find(
+      (eye) => eye.device_name === e.target.value
+    );
     setSelectedEyeTracker?.(selected || initEyeTracker);
   };
 
@@ -53,6 +74,7 @@ const Connection: React.FC<ConnectionProps> = ({ status, error, setConnectionSta
       .then((response) => {
         setConnectionStatus("connected");
         setIsEyeTrackerConnected?.(true);
+        setIsCalibrating?.(true);
         triggerSnackbar({
           message: response.data.message,
           status: "success",
@@ -80,18 +102,36 @@ const Connection: React.FC<ConnectionProps> = ({ status, error, setConnectionSta
     >
       <div className='flex flex-col w-full h-full'>
         {status === "searching" && (
-          <h1 className='text-xl' style={{ color: getFontColorSecondary(isDarkTheme) }}>
+          <h1
+            className='text-xl'
+            style={{ color: getFontColorSecondary(isDarkTheme) }}
+          >
             Searching...
           </h1>
         )}
         {status === "connected" && (
-          <h1 className='text-xl' style={{ color: getFontColorSecondary(isDarkTheme) }}>
-            Connected !
-          </h1>
+          <>
+            <h1
+              className='text-xl'
+              style={{ color: getFontColorSecondary(isDarkTheme) }}
+            >
+              Connected !
+            </h1>
+            <div className='w-full h-full flex justify-center items-center'>
+              <Button
+                label='Start Tracking'
+                style={{ color: light_secondary }}
+                className={`bg-blue-500 flex justify-center items-center absolute text-2xl px-8 py-4 hover:scale-110 active:scale-95 transform transition focus:outline-none shadow-lg`}
+                onClick={onStartTracking}
+              ></Button>
+            </div>
+          </>
         )}
         {status === "selection" && (
           <div className='flex flex-col w-full'>
-            <h1 className=' text-xl font-bold text-blue-500  mb-8'>Found {eyeTrackers.length} eye trackers.</h1>
+            <h1 className=' text-xl font-bold text-blue-500  mb-8'>
+              Found {eyeTrackers.length} eye trackers.
+            </h1>
             <div className='flex w-full items-center text-lg'>
               <div className='mr-4' style={style}>
                 Select:
@@ -139,7 +179,9 @@ const Connection: React.FC<ConnectionProps> = ({ status, error, setConnectionSta
                 disabled={!selectedEyeTracker?.device_name}
               />
             </div>
-            {selectedEyeTracker && <EyeTrackerInfo tracker={selectedEyeTracker} />}
+            {selectedEyeTracker && (
+              <EyeTrackerInfo tracker={selectedEyeTracker} />
+            )}
           </div>
         )}
         {status === "error" && <div className='text-red-800'> {error} </div>}
