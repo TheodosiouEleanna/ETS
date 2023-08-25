@@ -11,6 +11,7 @@ export interface IContextProps {
   isMenuOpen: boolean;
   selectedEyeTracker: IEyeTracker;
   isEyeTrackerConnected: boolean;
+  isCalibrating: boolean;
   loadFile?: (file?: File) => void;
   setSelectedDocID?: (id: ID) => void;
   setCurrentPage?: (pageNumber: number) => void;
@@ -27,6 +28,7 @@ export interface IContextProps {
   setSelectedEyeTracker?: (eyeTracker: IEyeTracker) => void;
   setIsEyeTrackerConnected?: (isConnected: boolean) => void;
   accumulateData?: (eyeData: Record<string, any>) => void;
+  setIsCalibrating?: (isCalibrating: boolean) => void;
   eyeData?: Record<string, any>[];
 }
 
@@ -86,4 +88,8 @@ export interface GazeData {
   left_gaze_point_on_display_area: [number, number];
   right_gaze_point_on_display_area: [number, number];
   // Todo: add other fields
+}
+export interface CalibrationPoint {
+  x: number;
+  y: number;
 }
