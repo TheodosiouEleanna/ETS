@@ -2,15 +2,14 @@ import { useContext, useEffect, useRef } from "react";
 import { Context } from "../context/Context";
 import { createRedPoint, getGazePointCoordinates } from "../utils/eyeTracking";
 import { isEmpty } from "lodash";
+import { IContextProps } from "types/AppTypes";
 
-const useEyeTracking = () => {
-  const { selectedEyeTracker, isEyeTrackerConnected, accumulateData } =
-    useContext(Context);
+const useEyeTracking = (): void => {
+  const { selectedEyeTracker, isEyeTrackerConnected, accumulateData } = useContext<IContextProps>(Context);
   const { address } = selectedEyeTracker;
-  const hasSentMessage = useRef(false);
-  const socketRef = useRef(null);
+  const hasSentMessage = useRef<boolean>(false);
+  const socketRef = useRef<WebSocket | null>(null);
   const serverURL = "ws://localhost:5001";
-  // console.log("Socket readyState:", socketRef.current?.readyState);
 
   useEffect(() => {
     if (isEyeTrackerConnected) {
@@ -19,12 +18,8 @@ const useEyeTracking = () => {
         socketRef.current = new WebSocket(serverURL);
         socketRef.current.onopen = () => {
           // Send a message to the server once the socket is open
-          console.log(
-            "Why do you run?",
-            isEyeTrackerConnected,
-            hasSentMessage.current
-          );
-          socketRef.current.send("startTracking");
+          console.log("Why do you run?", isEyeTrackerConnected, hasSentMessage.current);
+          socketRef.current?.send("startTracking");
         };
         hasSentMessage.current = true;
       }
@@ -44,19 +39,21 @@ const useEyeTracking = () => {
   useEffect(() => {
     if (isEyeTrackerConnected) {
       console.log("I run on message");
-      socketRef.current.onmessage = (event) => {
-        // console.log(event.data);
-        console.log(socketRef.current.readyState);
-        if (!isEmpty(event.data)) {
-          try {
-            accumulateData(event.data);
-            const { pointX, pointY } = getGazePointCoordinates(event.data);
-            createRedPoint(pointX, pointY);
-          } catch (error) {
-            console.error("Error parsing JSON:", error);
+      if (socketRef.current) {
+        socketRef.current.onmessage = (event) => {
+          // console.log(event.data);
+          console.log(socketRef.current?.readyState);
+          if (!isEmpty(event.data)) {
+            try {
+              accumulateData?.(event.data);
+              const { pointX, pointY } = getGazePointCoordinates(event.data);
+              createRedPoint(pointX, pointY);
+            } catch (error) {
+              console.error("Error parsing JSON:", error);
+            }
           }
-        }
-      };
+        };
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEyeTrackerConnected]);
@@ -72,9 +69,11 @@ const useEyeTracking = () => {
   useEffect(() => {
     if (isEyeTrackerConnected) {
       console.log("I run on error or on close");
-      socketRef.current.onerror = (error) => {
-        console.error("WebSocket Error:", error);
-      };
+      if (socketRef.current) {
+        socketRef.current.onerror = (error) => {
+          console.error("WebSocket Error:", error);
+        };
+      }
 
       // socketRef.current.onclose = (event) => {
       //   console.log("Closed ");

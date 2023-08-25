@@ -26,6 +26,7 @@ export interface IContextProps {
   setIsMenuOpen?: (isOpen: boolean) => void;
   setSelectedEyeTracker?: (eyeTracker: IEyeTracker) => void;
   setIsEyeTrackerConnected?: (isConnected: boolean) => void;
+  accumulateData?: (eyeData: Record<string, any>) => void;
   eyeData?: Record<string, any>[];
 }
 
@@ -79,9 +80,10 @@ export interface Document {
   uploadDate: string;
 }
 
-export type ConnectionStatus =
-  | "error"
-  | "searching"
-  | "connected"
-  | "selection"
-  | "";
+export type ConnectionStatus = "error" | "searching" | "connected" | "selection" | "";
+
+export interface GazeData {
+  left_gaze_point_on_display_area: [number, number];
+  right_gaze_point_on_display_area: [number, number];
+  // Todo: add other fields
+}

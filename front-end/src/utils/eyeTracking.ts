@@ -1,3 +1,5 @@
+import { GazeData } from "types/AppTypes";
+
 // export const normalizeCoordinates = (x, y) => {
 //   const screenWidth = window.screen.width;
 //   const screenHeight = window.screen.height;
@@ -18,7 +20,7 @@
 //   console.log(`Normalized coordinates: (${xNormalized}, ${yNormalized})`);
 // });
 
-export const createRedPoint = (normalizedX, normalizedY) => {
+export const createRedPoint = (normalizedX: number, normalizedY: number): void => {
   const screenWidth = window.screen.width;
   const screenHeight = window.screen.height;
 
@@ -43,25 +45,19 @@ export const createRedPoint = (normalizedX, normalizedY) => {
   point.style.transform = "translateX(-50%) translateY(-50%)";
   point.style.pointerEvents = "none";
   point.style.transition = "all 300ms ease-out";
-  point.style.zIndex = 999;
+  point.style.zIndex = "999";
 
   document.body.appendChild(point);
 };
 
-export const getGazePointCoordinates = (data) => {
+export const getGazePointCoordinates = (data: string): { pointX: number; pointY: number } => {
   if (!data.includes("NaN")) {
-    const parsedData = JSON.parse(data);
+    const parsedData: GazeData = JSON.parse(data);
     const { left_gaze_point_on_display_area } = parsedData;
     const { right_gaze_point_on_display_area } = parsedData;
 
-    const averageX =
-      (left_gaze_point_on_display_area[0] +
-        right_gaze_point_on_display_area[0]) /
-      2;
-    const averageY =
-      (left_gaze_point_on_display_area[1] +
-        right_gaze_point_on_display_area[1]) /
-      2;
+    const averageX = (left_gaze_point_on_display_area[0] + right_gaze_point_on_display_area[0]) / 2;
+    const averageY = (left_gaze_point_on_display_area[1] + right_gaze_point_on_display_area[1]) / 2;
     return { pointX: averageX, pointY: averageY };
   }
   return { pointX: 0, pointY: 0 };
