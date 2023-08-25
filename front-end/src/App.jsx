@@ -10,7 +10,7 @@ const App = () => {
   const { userInfo } = useContext(Context);
   const { isLoggedIn } = userInfo;
   useEyeTracking();
-
+  // console.log("App renders");
   return (
     <>
       {!isLoggedIn && <UserProfile />}
