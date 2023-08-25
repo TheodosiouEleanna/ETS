@@ -11,6 +11,7 @@ export interface IContextProps {
   isMenuOpen: boolean;
   selectedEyeTracker: IEyeTracker;
   isEyeTrackerConnected: boolean;
+  shouldSubscribe: boolean;
   loadFile?: (file?: File) => void;
   setSelectedDocID?: (id: ID) => void;
   setCurrentPage?: (pageNumber: number) => void;
@@ -26,6 +27,7 @@ export interface IContextProps {
   setIsMenuOpen?: (isOpen: boolean) => void;
   setSelectedEyeTracker?: (eyeTracker: IEyeTracker) => void;
   setIsEyeTrackerConnected?: (isConnected: boolean) => void;
+  setShouldSubscribe?: () => void;
   eyeData?: Record<string, any>[];
 }
 
@@ -79,9 +81,4 @@ export interface Document {
   uploadDate: string;
 }
 
-export type ConnectionStatus =
-  | "error"
-  | "searching"
-  | "connected"
-  | "selection"
-  | "";
+export type ConnectionStatus = "error" | "searching" | "connected" | "selection" | "";

@@ -45,14 +45,25 @@ export const createRedPoint = (normalizedX, normalizedY) => {
   point.style.transition = "all 300ms ease-out";
   point.style.zIndex = 999;
 
-  //   point.style.position = "absolute";
-  //   point.style.left = `${actualX}px`;
-  //   point.style.top = `${actualY}px`;
-  //   point.style.width = "5px"; // size of the point
-  //   point.style.height = "5px";
-  //   point.style.backgroundColor = "red";
-  //   point.style.borderRadius = "50%"; // makes the point circular
-  //   point.style.zIndex = 10000; // ensures the point appears on top of other elements
-
   document.body.appendChild(point);
+};
+
+export const getGazePointCoordinates = (data) => {
+  const parsedData = JSON.parse(data);
+  const { left_gaze_point_on_display_area } = parsedData;
+  const { right_gaze_point_on_display_area } = parsedData;
+
+  if (
+    !isNaN(
+      left_gaze_point_on_display_area[0] &&
+        !isNaN(left_gaze_point_on_display_area[1]) &&
+        !isNaN(right_gaze_point_on_display_area[0]) &&
+        !isNaN(right_gaze_point_on_display_area[1])
+    )
+  ) {
+    const averageX = (left_gaze_point_on_display_area[0] + right_gaze_point_on_display_area[0]) / 2;
+    const averageY = (left_gaze_point_on_display_area[1] + right_gaze_point_on_display_area[1]) / 2;
+    return { pointX: averageX, pointY: averageY };
+  }
+  return { pointX: 0, pointY: 0 };
 };

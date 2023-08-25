@@ -49,29 +49,27 @@ const ModalWrapper: FC<ModalWrapperProps> = ({
         </Button>
 
         {children}
-        <div className='flex relative'>
-          {shouldShowConfirm && (
-            <Button
-              label='Confirm'
-              disabled={shouldDisableConfirm}
-              className={`bg-blue-500 w-24 flex justify-center items-center text-base absolute right-0 top-3 rounded  active:scale-95 transform transition focus:outline-none  shadow-lg`}
-              style={{ color: light_secondary }}
-              onClick={(e: any) => onConfirm("")}
-            >
-              {/* {loading && <Loader />} */}
-            </Button>
-          )}
-          {shouldShowUpload && (
-            <Button
-              label='Upload File'
-              className={`bg-blue-500 w-24 flex justify-center items-center text-base absolute right-28 top-3`}
-              style={{ color: light_secondary }}
-              onClick={onClickUpload}
-            >
-              {/* {loading && <Loader />} */}
-            </Button>
-          )}
-        </div>
+        {shouldShowConfirm && (
+          <Button
+            label='Confirm'
+            disabled={shouldDisableConfirm}
+            className={`bg-blue-500 w-24 flex justify-center items-center text-base absolute right-[30px] bottom-[30px] rounded  active:scale-95 transform transition focus:outline-none  shadow-lg`}
+            style={{ color: light_secondary }}
+            onClick={(e: any) => onConfirm("")}
+          >
+            {/* {loading && <Loader />} */}
+          </Button>
+        )}
+        {shouldShowUpload && (
+          <Button
+            label='Upload File'
+            className={`bg-blue-500 w-24 flex justify-center items-center text-base absolute right-[9rem] bottom-[30px]`}
+            style={{ color: light_secondary }}
+            onClick={onClickUpload}
+          >
+            {/* {loading && <Loader />} */}
+          </Button>
+        )}
       </div>
     </div>
   );

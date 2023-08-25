@@ -1,74 +1,52 @@
 import { useContext, useEffect, useRef } from "react";
 import { Context } from "../context/Context";
-import { createRedPoint } from "../utils/eyeTracking";
-import { isEmpty, isNaN } from "lodash";
+import { createRedPoint, getGazePointCoordinates } from "../utils/eyeTracking";
+import { isEmpty } from "lodash";
 
 const useEyeTracking = () => {
-  const { selectedEyeTracker, isEyeTrackerConnected, accumulateData } =
-    useContext(Context);
+  const { selectedEyeTracker, isEyeTrackerConnected, accumulateData, shouldSubscribe } = useContext(Context);
   const { address } = selectedEyeTracker;
   const hasSentMessage = useRef(false);
+  const socketRef = useRef(null);
+  const serverURL = "ws://localhost:5001";
 
   useEffect(() => {
     console.log("I run");
-    const serverURL = "ws://localhost:5001";
-    const socket = new WebSocket(serverURL);
+    socketRef.current = new WebSocket(serverURL);
     if (isEyeTrackerConnected) {
       if (!hasSentMessage.current) {
-        socket.onopen = () => {
+        socketRef.current.onopen = () => {
           // Send a message to the server once the socket is open
-          socket.send("startTracking");
+          socketRef.current.send("startTracking", selectedEyeTracker.address);
         };
         hasSentMessage.current = true;
       }
 
-      socket.onmessage = (event) => {
-        // console.log(event.data);
+      socketRef.current.onmessage = (event) => {
+        console.log(event.data);
         if (!isEmpty(event.data)) {
-          let parsedData;
-
           try {
-            parsedData = JSON.parse(event.data);
             accumulateData(event.data);
-
-            const { left_gaze_point_on_display_area } = parsedData;
-            const { right_gaze_point_on_display_area } = parsedData;
-
-            if (
-              !isNaN(
-                left_gaze_point_on_display_area[0] &&
-                  !isNaN(left_gaze_point_on_display_area[1]) &&
-                  !isNaN(right_gaze_point_on_display_area[0]) &&
-                  !isNaN(right_gaze_point_on_display_area[1])
-              )
-            ) {
-              const averageX =
-                (left_gaze_point_on_display_area[0] +
-                  right_gaze_point_on_display_area[0]) /
-                2;
-              const averageY =
-                (left_gaze_point_on_display_area[1] +
-                  right_gaze_point_on_display_area[1]) /
-                2;
-              createRedPoint(averageX, averageY);
-            }
+            const { pointX, pointY } = getGazePointCoordinates(event.data);
+            createRedPoint(pointX, pointY);
           } catch (error) {
-            // console.error("Error parsing JSON:", error);
-            // return; // Stop further execution if JSON parsing failed
+            console.error("Error parsing JSON:", error);
           }
         }
       };
 
-      socket.onerror = (error) => {
+      socketRef.current.onerror = (error) => {
         console.error("WebSocket Error:", error);
       };
 
-      socket.onclose = (event) => {
+      if (!shouldSubscribe) {
+        socketRef.current.send("stopTracking");
+      }
+
+      socketRef.current.onclose = (event) => {
         console.log("Closed ");
         if (event.wasClean) {
-          console.log(
-            `Closed cleanly, code=${event.code}, reason=${event.reason}`
-          );
+          console.log(`Closed cleanly, code=${event.code}, reason=${event.reason}`);
         } else {
           console.error("Connection died");
         }
@@ -77,10 +55,12 @@ const useEyeTracking = () => {
     //  else {
     //   socket.close();
     // }
-    // return () => {
-    //   // Clean up the socket when the component is destroyed
-    //   socket.close();
-    // };
+    //  return () => {
+    //    if (socketRef.current) {
+    //      socketRef.current.close();
+    //      socketRef.current = null;
+    //    }
+    //  };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address, isEyeTrackerConnected]);
 };

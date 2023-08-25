@@ -195,7 +195,7 @@ function Menu({ onCloseMenu }: MenuProps) {
               Vocabulary
             </div>
           </div>
-          <div className={`w-full rounded h-[64vh]`}>
+          <div className={`w-full rounded max-h-[64vh] lg`}>
             <div
               className={`h-full w-full rounded overflow-y-scroll border-[1rem] relative`}
               style={

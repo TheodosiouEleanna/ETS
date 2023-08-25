@@ -1,40 +1,20 @@
 import { createContext, useEffect, useReducer } from "react";
 import axios from "axios";
 import { apiURL } from "../utils/consts";
-import {
-  IAction,
-  IContextProps,
-  ID,
-  IEyeTracker,
-  File,
-  IUserInfo,
-  IUserSettings,
-} from "types/AppTypes";
+import { IAction, IContextProps, ID, IEyeTracker, File, IUserInfo, IUserSettings } from "types/AppTypes";
 import React from "react";
-import {
-  initEyeTracker,
-  initFile,
-  initPdfDimensions,
-  initSettings,
-  initUserInfo,
-} from "utils/initData";
+import { initEyeTracker, initFile, initPdfDimensions, initSettings, initUserInfo } from "utils/initData";
 
 const selectedDocID = localStorage.getItem("selectedDocID") || "";
 
 const userInfoFromStorage = localStorage.getItem("userInfo");
-const userInfo = userInfoFromStorage
-  ? JSON.parse(userInfoFromStorage)
-  : initUserInfo;
+const userInfo = userInfoFromStorage ? JSON.parse(userInfoFromStorage) : initUserInfo;
 
 const userSettingsFromStorage = localStorage.getItem("userSettingsUi");
-const userSettingsUi = userSettingsFromStorage
-  ? JSON.parse(userSettingsFromStorage)
-  : initSettings;
+const userSettingsUi = userSettingsFromStorage ? JSON.parse(userSettingsFromStorage) : initSettings;
 
 const eyeTrackerFromStorage = localStorage.getItem("eyeTracker");
-const selectedEyeTracker = eyeTrackerFromStorage
-  ? JSON.parse(eyeTrackerFromStorage)
-  : initEyeTracker;
+const selectedEyeTracker = eyeTrackerFromStorage ? JSON.parse(eyeTrackerFromStorage) : initEyeTracker;
 
 const initialState: IContextProps = {
   file: initFile,
@@ -49,6 +29,7 @@ const initialState: IContextProps = {
   isMenuOpen: false,
   selectedEyeTracker,
   isEyeTrackerConnected: false,
+  shouldSubscribe: true,
   logout: () => {},
   // will accumulate eye data just for test
   eyeData: [],
@@ -113,10 +94,7 @@ const reducer = (state: IContextProps, action: IAction): IContextProps => {
         userInfo: action.payload,
       };
     case "SET_USER_SETTINGS_UI":
-      localStorage.setItem(
-        "userSettingsUi",
-        JSON.stringify({ ...state.userSettingsUi, ...action.payload })
-      );
+      localStorage.setItem("userSettingsUi", JSON.stringify({ ...state.userSettingsUi, ...action.payload }));
       return {
         ...state,
         userSettingsUi: { ...state.userSettingsUi, ...action.payload },
@@ -156,6 +134,12 @@ const reducer = (state: IContextProps, action: IAction): IContextProps => {
         ...state,
         eyeData: [...(state.eyeData || []), action.payload],
       };
+
+    case "TOGGLE_SUBSCRIBE":
+      return {
+        ...state,
+        shouldSubscribe: !state.shouldSubscribe,
+      };
     case "LOGOUT":
       localStorage.removeItem("userInfo");
       return {
@@ -169,11 +153,7 @@ const reducer = (state: IContextProps, action: IAction): IContextProps => {
 
 export const Context = createContext<IContextProps>(initialState);
 
-export const ContextProvider = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+export const ContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   console.log({ state });
 
@@ -233,6 +213,10 @@ export const ContextProvider = ({
 
   const setIsEyeTrackerConnected = (isConnected: boolean) => {
     dispatch({ type: "SET_IS_EYE_TRACKER_CONNECTED", payload: isConnected });
+  };
+
+  const setShouldSubscribe = () => {
+    dispatch({ type: "TOGGLE_SUBSCRIBE" });
   };
 
   const logout = () => {
@@ -300,6 +284,8 @@ export const ContextProvider = ({
     setIsEyeTrackerConnected,
     eyeData: state.eyeData,
     accumulateData,
+    shouldSubscribe: state.shouldSubscribe,
+    setShouldSubscribe,
   };
 
   return <Context.Provider value={contextValue}>{children}</Context.Provider>;
