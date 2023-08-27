@@ -39,6 +39,7 @@ const HeaderMenu: FC = () => {
     isCalibrating,
     userSettingsUi,
     userSettingsApi,
+    setIsCalibrating,
     setShouldSubscribe,
     isEyeTrackerConnected,
     setIsEyeTrackerConnected,
@@ -122,6 +123,7 @@ const HeaderMenu: FC = () => {
   const onCloseSocketConnection = () => {
     setIsEyeTrackerConnected?.(false);
     setShouldSubscribe?.(false);
+    setIsCalibrating?.(false);
   };
 
   const onStartTracking = () => {

@@ -233,7 +233,6 @@ def search_eye_tracker():
 
 @app.route('/api/connect', methods=['POST'])
 def get_eye_tracker():
-
     data = request.get_json()
 
     address = data['address']
@@ -243,13 +242,18 @@ def get_eye_tracker():
         "address": address
     }
     request_json = json.dumps(request_data)
+
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     response_data = loop.run_until_complete(send_request(request_json))
-    print("This is the response_data: ", response_data)
 
-    # Convert JSON string to Python list. The returned type of response_data must be string.
-    return jsonify({"message": response_data}), 200
+    try:
+        response_dict = json.loads(response_data)
+        message = response_dict.get('message', 'Unknown status')
+    except json.JSONDecodeError:
+        message = 'Invalid response format'
+
+    return jsonify({"message": message}), 200
 
 # User profile
 

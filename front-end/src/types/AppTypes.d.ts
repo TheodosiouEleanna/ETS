@@ -12,6 +12,7 @@ export interface IContextProps {
   selectedEyeTracker: IEyeTracker;
   isEyeTrackerConnected: boolean;
   isCalibrating: boolean;
+  calibrationProcess: Record<string, any> | null;
   shouldSubscribe: boolean;
   loadFile?: (file?: File) => void;
   setSelectedDocID?: (id: ID) => void;
@@ -30,6 +31,7 @@ export interface IContextProps {
   setIsEyeTrackerConnected?: (isConnected: boolean) => void;
   accumulateData?: (eyeData: Record<string, any>) => void;
   setIsCalibrating?: (isCalibrating: boolean) => void;
+  setCalibrationProcess?: (payload: Record<string, any> | null) => void;
   setShouldSubscribe?: (shouldSubscribe: boolean) => void;
   eyeData?: Record<string, any>[];
 }

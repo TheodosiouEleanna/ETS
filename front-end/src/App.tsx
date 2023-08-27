@@ -19,6 +19,8 @@ const App: React.FC = () => {
 
   useEyeTracking();
 
+  console.log({ isCalibrating });
+
   return (
     <>
       {!isLoggedIn && <UserProfile />}

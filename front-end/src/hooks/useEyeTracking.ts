@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef } from "react";
+import { useContext, useEffect, useRef, useCallback, useState } from "react";
 import { Context } from "../context/Context";
 import { createRedPoint, getGazePointCoordinates } from "../utils/eyeTracking";
 import { isEmpty } from "lodash";
@@ -9,64 +9,120 @@ const useEyeTracking = (): void => {
     isCalibrating,
     accumulateData,
     selectedEyeTracker,
+    setCalibrationProcess,
     isEyeTrackerConnected,
     shouldSubscribe,
   } = useContext<IContextProps>(Context);
   const { address } = selectedEyeTracker;
-  const hasSentMessage = useRef<boolean>(false);
+  const [shouldOpenConnection, setShouldOpenConnection] = useState(true);
   const socketRef = useRef<WebSocket | null>(null);
-  const serverURL = "ws://localhost:5001";
+
+  console.log(socketRef.current?.readyState);
+
+  const initializeWebSocket = useCallback(() => {
+    const serverURL = "ws://localhost:5001";
+
+    console.log("Attempting to open WebSocket connection.");
+    if (!socketRef.current) {
+      socketRef.current = new WebSocket(serverURL);
+
+      socketRef.current.onopen = () => {
+        console.log("WebSocket connection opened.");
+        setShouldOpenConnection(false);
+        if (isCalibrating) {
+          const messageData = {
+            action: "startCalibration",
+            address,
+          };
+          socketRef.current?.send(JSON.stringify(messageData));
+        }
+      };
+
+      socketRef.current.onclose = () => {
+        console.log("WebSocket connection closed.");
+      };
+
+      socketRef.current.onerror = (error) => {
+        console.error("WebSocket encountered an error: ", error);
+      };
+    }
+  }, [address, isCalibrating]);
+
+  useEffect(() => {
+    if (shouldOpenConnection) {
+      console.log("start socket NOW");
+
+      initializeWebSocket();
+      setShouldOpenConnection(false);
+    }
+  }, [initializeWebSocket, shouldOpenConnection]);
 
   useEffect(() => {
     if (isEyeTrackerConnected) {
-      if (!socketRef.current) {
-        console.log("Attempting to open WebSocket connection.");
-        socketRef.current = new WebSocket(serverURL);
-
-        socketRef.current.onopen = () => {
-          console.log("WebSocket connection opened.");
-          if (isCalibrating && !hasSentMessage.current) {
-            const messageData = {
-              action: "startCalibration",
-              address,
-            };
-            socketRef.current?.send(JSON.stringify(messageData));
-            hasSentMessage.current = true;
-          }
-        };
-
-        socketRef.current.onclose = () => {
-          console.log("WebSocket connection closed.");
-          hasSentMessage.current = false;
-        };
-
-        socketRef.current.onerror = (error) => {
-          console.error("WebSocket encountered an error: ", error);
-        };
-
+      if (socketRef.current) {
         socketRef.current.onmessage = (event) => {
           console.log(socketRef.current?.readyState);
-          if (!isEmpty(event.data)) {
-            try {
-              accumulateData?.(event.data);
-              const { pointX, pointY } = getGazePointCoordinates(event.data);
-              createRedPoint(pointX, pointY);
-            } catch (error) {
-              console.error("Error parsing JSON:", error);
+          const { data } = event;
+          const parsedData = JSON.parse(data);
+          const { action } = parsedData;
+
+          if (!isEmpty(data)) {
+            if (isCalibrating && action === "calibrationResult") {
+              setCalibrationProcess?.({
+                ...parsedData,
+                goToNextPoint: parsedData.message.includes("success"),
+              });
+            } else if (isCalibrating && action === "startCalibration") {
+              setCalibrationProcess?.(parsedData);
+            } else if (parsedData.action && parsedData.action === "eyeData") {
+              try {
+                accumulateData?.(parsedData.payload);
+                const { pointX, pointY } = getGazePointCoordinates(
+                  parsedData.payload
+                );
+                createRedPoint(pointX, pointY);
+              } catch (error) {
+                console.error("Error parsing JSON:", error);
+              }
             }
           }
         };
       }
-      return () => {
-        console.log("Stopping tracking and closing WebSocket.");
-        if (socketRef.current) {
-          socketRef.current.close();
-          socketRef.current = null;
-        }
-      };
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isEyeTrackerConnected, isCalibrating]);
+  }, [
+    isEyeTrackerConnected,
+    isCalibrating,
+    address,
+    setCalibrationProcess,
+    initializeWebSocket,
+  ]);
+
+  useEffect(() => {
+    // This will run when the component unmounts
+    return () => {
+      console.log("Stopping tracking and closing WebSocket.");
+      if (socketRef.current) {
+        socketRef.current.close();
+        socketRef.current = null;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+      console.log("prepei na treksw pali");
+
+      if (isCalibrating) {
+        console.log("etreksa");
+        const messageData = {
+          action: "startCalibration",
+          address,
+        };
+        socketRef.current?.send(JSON.stringify(messageData));
+      }
+    }
+  }, [address, isCalibrating]);
 
   useEffect(() => {
     if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
@@ -79,6 +135,15 @@ const useEyeTracking = (): void => {
       }
     }
   }, [address, shouldSubscribe]);
+
+  useEffect(() => {
+    if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+      if (!shouldSubscribe && !isEyeTrackerConnected) {
+        socketRef.current.close();
+        window.location.reload();
+      }
+    }
+  }, [address, isEyeTrackerConnected, shouldSubscribe]);
 };
 
 export default useEyeTracking;

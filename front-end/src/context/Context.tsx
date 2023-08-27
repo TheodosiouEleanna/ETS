@@ -51,6 +51,7 @@ const initialState: IContextProps = {
   isEyeTrackerConnected: false,
   isCalibrating: false,
   shouldSubscribe: false,
+  calibrationProcess: null,
   logout: () => {},
   // will accumulate eye data just for test
   eyeData: [],
@@ -164,6 +165,11 @@ const reducer = (state: IContextProps, action: IAction): IContextProps => {
         ...state,
         isCalibrating: action.payload,
       };
+    case "SET_CALIBRATION_PROCESS":
+      return {
+        ...state,
+        calibrationProcess: action.payload,
+      };
     case "SET_SHOULD_SUBSCRIBE":
       return {
         ...state,
@@ -251,6 +257,11 @@ export const ContextProvider = ({
   const setIsCalibrating = (isCalibrating: boolean) => {
     dispatch({ type: "SET_IS_CALIBRATING", payload: isCalibrating });
   };
+
+  const setCalibrationProcess = (payload: Record<string, any> | null) => {
+    dispatch({ type: "SET_CALIBRATION_PROCESS", payload });
+  };
+
   const setShouldSubscribe = (shouldSubscribe: boolean) => {
     dispatch({ type: "SET_SHOULD_SUBSCRIBE", payload: shouldSubscribe });
   };
@@ -324,6 +335,8 @@ export const ContextProvider = ({
     setIsCalibrating,
     shouldSubscribe: state.shouldSubscribe,
     setShouldSubscribe,
+    calibrationProcess: state.calibrationProcess,
+    setCalibrationProcess,
   };
 
   return <Context.Provider value={contextValue}>{children}</Context.Provider>;

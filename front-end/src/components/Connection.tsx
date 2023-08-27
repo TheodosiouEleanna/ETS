@@ -34,6 +34,7 @@ const Connection: React.FC<ConnectionProps> = ({
 }) => {
   const {
     userSettingsApi,
+    isCalibrating,
     setIsCalibrating,
     selectedEyeTracker,
     setShouldSubscribe,
@@ -66,7 +67,7 @@ const Connection: React.FC<ConnectionProps> = ({
 
   // Todo: cancel the request if modal closes
   const handleConnect = () => {
-    console.log(`Connecting to ${selectedEyeTracker.device_name}`);
+    // console.log(`Connecting to ${selectedEyeTracker.device_name}`);
     axios
       .post("http://localhost:5000/api/connect", {
         address: selectedEyeTracker?.address,
@@ -92,9 +93,15 @@ const Connection: React.FC<ConnectionProps> = ({
       });
   };
 
+  const onClickRecalibrate = () => {
+    setIsCalibrating?.(true);
+  };
+
   return (
     <ModalWrapper
-      className='w-[700px] h-[28rem] px-12 py-12'
+      className={`w-[700px] h-[28rem] px-12 py-12 ${
+        isCalibrating ? "pointer-events-none" : ""
+      }`}
       shouldShowConfirm={false}
       style={{ backgroundColor: getBgSecondary(isDarkTheme) }}
       onConfirm={() => {}}
@@ -118,12 +125,20 @@ const Connection: React.FC<ConnectionProps> = ({
               Connected !
             </h1>
             <div className='w-full h-full flex justify-center items-center'>
-              <Button
-                label='Start Tracking'
-                style={{ color: light_secondary }}
-                className={`bg-blue-500 flex justify-center items-center absolute text-2xl px-8 py-4 hover:scale-110 active:scale-95 transform transition focus:outline-none shadow-lg`}
-                onClick={onStartTracking}
-              ></Button>
+              <div className='flex space-x-4 justify-center items-center'>
+                <Button
+                  label='Start Tracking'
+                  style={{ color: light_secondary }}
+                  className={`bg-blue-500 flex justify-center items-center text-xl px-8 py-4 hover:scale-110 active:scale-95 transform transition focus:outline-none shadow-lg`}
+                  onClick={onStartTracking}
+                ></Button>
+                <Button
+                  label='Recalibrate'
+                  style={{ color: light_secondary }}
+                  className={`bg-blue-500 flex justify-center items-center text-xl px-8 py-4 hover:scale-110 active:scale-95 transform transition focus:outline-none shadow-lg`}
+                  onClick={onClickRecalibrate}
+                ></Button>
+              </div>
             </div>
           </>
         )}
