@@ -6,11 +6,7 @@ import React, {
   useContext,
 } from "react";
 import { CalibrationPoint, IContextProps } from "types/AppTypes";
-import {
-  getBgPrimary,
-  getBgPrimaryReverse,
-  getFontColorSecondary,
-} from "utils/functions";
+import { getBgPrimaryReverse, getFontColorSecondary } from "utils/functions";
 import Button from "./ui/Button";
 
 const calibrationPoints: CalibrationPoint[] = [
@@ -21,8 +17,7 @@ const calibrationPoints: CalibrationPoint[] = [
   { x: 90, y: 90 },
 ];
 
-const timeFrame = 3500;
-
+const timeFrame = 3000;
 const CalibrationOverlay: FunctionComponent = () => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const {
@@ -62,7 +57,7 @@ const CalibrationOverlay: FunctionComponent = () => {
       return;
     }
 
-    if (currentIndex >= calibrationPoints.length) {
+    if (calibrationProcess && currentIndex >= calibrationPoints.length) {
       setTimeout(() => {
         setIsCalibrating?.(false);
       }, 2000);
@@ -120,7 +115,7 @@ const CalibrationOverlay: FunctionComponent = () => {
           ) : currentIndex < calibrationPoints.length ? (
             <div
               key={key}
-              className='absolute rounded-full w-6 h-6'
+              className='absolute rounded-full w-8 h-8'
               style={{
                 top: `${calibrationPoints[currentIndex].y}%`,
                 left: `${calibrationPoints[currentIndex].x}%`,

@@ -28,12 +28,12 @@ import Button from "./ui/Button";
 import { ConnectionStatus, IContextProps } from "types/AppTypes";
 import Dialog from "./ui/Dialog";
 import { apiURL, dark_secondary, light_secondary } from "utils/consts";
+import { useEyeTrackingData } from "context/EyeTrackingContext";
 
 const HeaderMenu: FC = () => {
   const {
     file,
     logout,
-    eyeData,
     isMenuOpen,
     setIsMenuOpen,
     isCalibrating,
@@ -44,6 +44,7 @@ const HeaderMenu: FC = () => {
     isEyeTrackerConnected,
     setIsEyeTrackerConnected,
   } = useContext<IContextProps>(Context);
+  const { eyeData } = useEyeTrackingData();
   const [showProfile, setShowProfile] = useState(false);
   const [connectionStatus, setConnectionStatus] =
     useState<ConnectionStatus>("");

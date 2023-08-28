@@ -1,18 +1,18 @@
 import { useContext, useEffect, useRef, useCallback, useState } from "react";
 import { Context } from "../context/Context";
-import { createRedPoint, getGazePointCoordinates } from "../utils/eyeTracking";
 import { isEmpty } from "lodash";
 import { IContextProps } from "types/AppTypes";
+import { useEyeTrackingData } from "context/EyeTrackingContext";
 
 const useEyeTracking = (): void => {
   const {
     isCalibrating,
-    accumulateData,
     selectedEyeTracker,
     setCalibrationProcess,
     isEyeTrackerConnected,
     shouldSubscribe,
   } = useContext<IContextProps>(Context);
+  const { accumulateData } = useEyeTrackingData();
   const { address } = selectedEyeTracker;
   const [shouldOpenConnection, setShouldOpenConnection] = useState(true);
   const socketRef = useRef<WebSocket | null>(null);
@@ -77,10 +77,6 @@ const useEyeTracking = (): void => {
             } else if (parsedData.action && parsedData.action === "eyeData") {
               try {
                 accumulateData?.(parsedData.payload);
-                const { pointX, pointY } = getGazePointCoordinates(
-                  parsedData.payload
-                );
-                createRedPoint(pointX, pointY);
               } catch (error) {
                 console.error("Error parsing JSON:", error);
               }
@@ -141,9 +137,10 @@ const useEyeTracking = (): void => {
       if (!shouldSubscribe && !isEyeTrackerConnected) {
         socketRef.current.close();
         window.location.reload();
+        localStorage.removeItem("eyeTracker");
       }
     }
-  }, [address, isEyeTrackerConnected, shouldSubscribe]);
+  }, [isEyeTrackerConnected, shouldSubscribe]);
 };
 
 export default useEyeTracking;

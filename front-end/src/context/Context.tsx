@@ -54,7 +54,6 @@ const initialState: IContextProps = {
   calibrationProcess: null,
   logout: () => {},
   // will accumulate eye data just for test
-  eyeData: [],
 };
 
 const reducer = (state: IContextProps, action: IAction): IContextProps => {
@@ -153,13 +152,6 @@ const reducer = (state: IContextProps, action: IAction): IContextProps => {
         ...state,
         isEyeTrackerConnected: action.payload,
       };
-    // Just for testing
-    case "ADD_EYE_DATA":
-      return {
-        ...state,
-        eyeData: [...(state.eyeData || []), action.payload],
-      };
-
     case "SET_IS_CALIBRATING":
       return {
         ...state,
@@ -270,11 +262,6 @@ export const ContextProvider = ({
     dispatch({ type: "LOGOUT" });
   };
 
-  // Just for testing
-  const accumulateData = (eyeData: Record<string, any>) => {
-    dispatch({ type: "ADD_EYE_DATA", payload: eyeData });
-  };
-
   useEffect(() => {
     if (state.file && state.file.size === 0 && state.selectedDocID) {
       setLoading(true);
@@ -329,8 +316,6 @@ export const ContextProvider = ({
     setSelectedEyeTracker,
     isEyeTrackerConnected: state.isEyeTrackerConnected,
     setIsEyeTrackerConnected,
-    eyeData: state.eyeData,
-    accumulateData,
     isCalibrating: state.isCalibrating,
     setIsCalibrating,
     shouldSubscribe: state.shouldSubscribe,

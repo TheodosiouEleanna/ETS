@@ -29,11 +29,9 @@ export interface IContextProps {
   setIsMenuOpen?: (isOpen: boolean) => void;
   setSelectedEyeTracker?: (eyeTracker: IEyeTracker) => void;
   setIsEyeTrackerConnected?: (isConnected: boolean) => void;
-  accumulateData?: (eyeData: Record<string, any>) => void;
   setIsCalibrating?: (isCalibrating: boolean) => void;
   setCalibrationProcess?: (payload: Record<string, any> | null) => void;
   setShouldSubscribe?: (shouldSubscribe: boolean) => void;
-  eyeData?: Record<string, any>[];
 }
 
 export interface IContextValues extends IContextState {}
@@ -96,6 +94,10 @@ export type ConnectionStatus =
 export interface GazeData {
   left_gaze_point_on_display_area: [number, number];
   right_gaze_point_on_display_area: [number, number];
+  right_gaze_point_validity: any;
+  left_gaze_point_validity: any;
+  left_gaze_point_in_user_coordinate_system: any;
+  right_gaze_point_in_user_coordinate_system: any;
   // Todo: add other fields
 }
 export interface CalibrationPoint {
