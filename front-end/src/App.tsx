@@ -39,7 +39,6 @@ const App: React.FC = () => {
 
   useEyeTracking();
 
-  console.log({ isCalibrating });
   useEffect(() => {
     if (isCalibrating) {
       toggleFullScreen();
@@ -57,7 +56,6 @@ const App: React.FC = () => {
       points.push({ x, y });
     }
   }
-  console.log({ points });
 
   return (
     <>

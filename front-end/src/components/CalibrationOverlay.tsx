@@ -74,7 +74,6 @@ const CalibrationOverlay: FunctionComponent = () => {
     }
 
     if (calibrationProcess && calibrationProcess?.goToNextPoint === false) {
-      console.log("mpainei pote edw??");
       setCalibrationFailed(true);
     }
   }, [

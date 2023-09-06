@@ -21,11 +21,9 @@ const CircleMover: React.FC = () => {
     x: 0,
     y: 0,
   });
-  console.log({ avgPosition });
 
   const width = document.documentElement.scrollWidth;
   const height = document.documentElement.scrollHeight;
-  console.log({ width, height });
 
   useEffect(() => {
     const recentData = eyeData.slice(-5); // get the last 10 data points
@@ -40,10 +38,6 @@ const CircleMover: React.FC = () => {
     // const { x, y } = scalePointToEdges(pointX, pointY);
     // console.log({ x, y });
 
-    console.log({
-      pointX,
-      pointY,
-    });
     setAvgPosition({ x: pointX, y: pointY });
     // }
   }, [eyeData]);

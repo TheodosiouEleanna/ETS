@@ -41,6 +41,7 @@ const initialState: IContextProps = {
   selectedDocID,
   currentPage: 0,
   pageCount: 0,
+  scrollTop: 0,
   loading: false,
   pdfDimensions: initPdfDimensions,
   userInfo,
@@ -57,7 +58,7 @@ const initialState: IContextProps = {
 };
 
 const reducer = (state: IContextProps, action: IAction): IContextProps => {
-  let container: HTMLElement | null;
+  const container = document.getElementById("pdf-container");
   let scrollTop: number;
   switch (action.type) {
     case "LOAD_FILE":
@@ -73,7 +74,6 @@ const reducer = (state: IContextProps, action: IAction): IContextProps => {
         selectedDocID: action.payload,
       };
     case "GO_TO_PREV_PAGE":
-      container = document.getElementById("pdf-container");
       if (container) {
         scrollTop = (state.currentPage - 2) * state.pdfDimensions.height;
         container.scrollTop = scrollTop;
@@ -84,7 +84,6 @@ const reducer = (state: IContextProps, action: IAction): IContextProps => {
       };
 
     case "GO_TO_NEXT_PAGE":
-      container = document.getElementById("pdf-container");
       if (container) {
         scrollTop = state.currentPage * state.pdfDimensions.height;
         container.scrollTop = scrollTop;
@@ -162,6 +161,14 @@ const reducer = (state: IContextProps, action: IAction): IContextProps => {
         ...state,
         calibrationProcess: action.payload,
       };
+    case "SCROLL":
+      if (container) {
+        return {
+          ...state,
+          scrollTop: container.scrollTop,
+        };
+      }
+      return state;
     case "SET_SHOULD_SUBSCRIBE":
       return {
         ...state,
@@ -258,6 +265,10 @@ export const ContextProvider = ({
     dispatch({ type: "SET_SHOULD_SUBSCRIBE", payload: shouldSubscribe });
   };
 
+  const setScrollTop = () => {
+    dispatch({ type: "SCROLL" });
+  };
+
   const logout = () => {
     dispatch({ type: "LOGOUT" });
   };
@@ -296,6 +307,8 @@ export const ContextProvider = ({
     pageCount: state.pageCount,
     setPageCount,
     loadFile,
+    scrollTop: state.scrollTop,
+    setScrollTop,
     isLoggedIn: state.userInfo.isLoggedIn,
     userInfo: state.userInfo,
     setUserInfo,

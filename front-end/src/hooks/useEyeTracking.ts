@@ -61,7 +61,6 @@ const useEyeTracking = (): void => {
     if (isEyeTrackerConnected) {
       if (socketRef.current) {
         socketRef.current.onmessage = (event) => {
-          console.log(socketRef.current?.readyState);
           const { data } = event;
           const parsedData = JSON.parse(data);
           const { action } = parsedData;
@@ -110,7 +109,6 @@ const useEyeTracking = (): void => {
       console.log("prepei na treksw pali");
 
       if (isCalibrating) {
-        console.log("etreksa");
         const messageData = {
           action: "startCalibration",
           address,

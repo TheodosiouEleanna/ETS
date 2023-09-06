@@ -8,26 +8,26 @@ import { getFontColorSecondary } from "../utils/functions";
 import { IContextProps } from "types/AppTypes";
 import Button from "./ui/Button";
 
-// 2. Use these types when declaring your component function
 const FileUpload: React.FC = () => {
   const [pdfFile, setPdfFile] = useState<File | null>(null);
 
-  // Destructuring context values
-  const { userInfo, setSelectedDocID, userSettingsApi } = useContext<IContextProps>(Context);
+  const { userInfo, setSelectedDocID, userSettingsApi } =
+    useContext<IContextProps>(Context);
 
   const { userID } = userInfo;
   const { triggerSnackbar } = useSnackbar();
 
   const isDarkTheme = userSettingsApi.theme === "dark";
 
-  const fontStyle = useMemo(() => ({ color: getFontColorSecondary(isDarkTheme) }), [isDarkTheme]);
+  const fontStyle = useMemo(
+    () => ({ color: getFontColorSecondary(isDarkTheme) }),
+    [isDarkTheme]
+  );
 
-  // Using FormEvent<HTMLFormElement> for form events
   const submitFile = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData();
 
-    // Checking if pdfFile is not null before appending
     if (pdfFile) {
       formData.append("file", pdfFile);
     }
@@ -58,7 +58,6 @@ const FileUpload: React.FC = () => {
       });
   };
 
-  // Using ChangeEvent<HTMLInputElement> for change events
   const handleFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files ? event.target.files[0] : null;
     setPdfFile(file);
@@ -66,7 +65,10 @@ const FileUpload: React.FC = () => {
 
   return (
     <div className='flex flex-col m-2 p-4'>
-      <h1 className='py-1 mb-4 text-xl font-bold text-gray-900 border-b border-gray-300' style={fontStyle}>
+      <h1
+        className='py-1 mb-4 text-xl font-bold text-gray-900 border-b border-gray-300'
+        style={fontStyle}
+      >
         Upload File
       </h1>
       <div className='mb-6 text-gray-600' style={fontStyle}>
