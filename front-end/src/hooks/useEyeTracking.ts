@@ -104,8 +104,6 @@ const useEyeTracking = (): void => {
 
   useEffect(() => {
     if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
-      console.log("prepei na treksw pali");
-
       if (isCalibrating) {
         const messageData = {
           action: "startCalibration",
