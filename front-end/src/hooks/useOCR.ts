@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef } from "react";
 import { createWorker, Worker } from "tesseract.js";
 import html2canvas from "html2canvas";
 import { debounce } from "utils/functions";

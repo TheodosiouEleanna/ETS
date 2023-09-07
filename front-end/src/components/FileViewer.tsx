@@ -12,7 +12,6 @@ import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 import { useSnackbar } from "../hooks/useSnackbar";
 import { debounce } from "../utils/functions";
 import { Context } from "../context/Context";
-import useOCR from "hooks/useOCR";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.js`;
 
@@ -31,7 +30,6 @@ const FileViewer: React.FC = () => {
   const {
     file,
     setLoading,
-    currentPage,
     setCurrentPage,
     pageCount,
     setScrollTop,
@@ -44,12 +42,6 @@ const FileViewer: React.FC = () => {
   const [elWidth, setElWidth] = useState<number>();
   const { triggerSnackbar } = useSnackbar();
   const { zoom: savedZoom } = userSettingsApi;
-
-  const logger = (text: string, confidence: number, bbox: any) => {
-    console.log({ text, confidence, bbox });
-  };
-
-  // useOCR(logger, currentPage);
 
   const wrapperStyle = useMemo(
     () => ({

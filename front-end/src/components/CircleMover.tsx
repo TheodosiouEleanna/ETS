@@ -1,19 +1,6 @@
 import { useEyeTrackingData } from "context/EyeTrackingContext";
 import React, { useState, useEffect } from "react";
-import {
-  getAverageGazePointCoordinates2,
-  getGazePointCoordinates,
-} from "utils/eyeTracking";
-
-const scalePointToEdges = (
-  pointX: number,
-  pointY: number
-): { x: number; y: number } => {
-  const scaledPointX = 0.1 + 0.8 * pointX;
-  const scaledPointY = 0.1 + 0.8 * pointY;
-
-  return { x: scaledPointX, y: scaledPointY };
-};
+import { getAverageGazePointCoordinates2 } from "utils/eyeTracking";
 
 const CircleMover: React.FC = () => {
   const { eyeData } = useEyeTrackingData();
@@ -56,7 +43,7 @@ const CircleMover: React.FC = () => {
         border: "2px solid rgb(59 130 246)",
         transform: "translate(-50%, -50%)",
         zIndex: 999,
-        transition: "left 0.1s ease, top 0.1s ease", // CSS transition for smooth movement
+        transition: "left 0.1s ease, top 0.1s ease",
         background:
           "radial-gradient(circle, rgba(59,130,246,0) 0%, rgba(59,130,246,0.6) 40%, rgba(59,130,246,0) 100%)",
       }}
