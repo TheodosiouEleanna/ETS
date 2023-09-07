@@ -1,8 +1,5 @@
 import io
-import os
-import sys
 import sqlite3
-import socket
 import re
 import json
 from flask import Flask, make_response, request, jsonify, Response
@@ -15,6 +12,12 @@ import traceback
 import tobii_research as tr
 import websockets
 import asyncio
+import traceback
+from pdf2image import convert_from_bytes
+import pytesseract
+from PyPDF2 import PdfReader
+from concurrent.futures import ThreadPoolExecutor
+
 
 # Import the configuration loader from config.py
 from config import load_config
@@ -104,13 +107,15 @@ def upload_file(file, user_id):
 @app.route('/api/get_file', methods=['GET'])
 def get_file():
     doc_id = request.args.get('docID')
+    user_id = request.args.get('userID')
     if doc_id is None:
         return "No docID provided", 400
 
     conn = sqlite3.connect(sqLiteDatabase)
     c = conn.cursor()
 
-    c.execute("SELECT * FROM documents WHERE docID = ?", (doc_id,))
+    c.execute("SELECT * FROM documents WHERE docID = ? AND userID = ?",
+              (doc_id, user_id))
     record = c.fetchone()
 
     if record is None:
@@ -212,6 +217,64 @@ def get_documents():
     except Exception as e:
         print(traceback.format_exc())  # This will print the full traceback
         return jsonify({"error": str(e)}), 500
+
+
+def process_page(page_image):
+    words_with_positions = []
+    data = pytesseract.image_to_data(
+        page_image, output_type=pytesseract.Output.DICT)
+    words = data['text']
+    confidences = data['conf']
+    boxes = zip(data['left'], data['top'], data['width'], data['height'])
+
+    for word, confidence, box in zip(words, confidences, boxes):
+        if int(confidence) > 30:
+            words_with_positions.append(
+                {"word": word, "confidence": confidence, "box": box})
+
+    return words_with_positions
+
+
+@app.route('/api/words-positions', methods=['GET'])
+def get_position_of_words():
+    try:
+        doc_id = request.args.get('docID')
+        user_id = request.args.get('userID')
+        conn = sqlite3.connect(sqLiteDatabase)
+        conn.row_factory = sqlite3.Row
+        c = conn.cursor()
+
+        c.execute(
+            "SELECT docFile FROM documents WHERE docID = ? AND userID = ?", (doc_id, user_id))
+        row = c.fetchone()
+
+        if row:
+            pdf_content = row['docFile']
+            pdf_reader = PdfReader(io.BytesIO(pdf_content))
+
+            all_pages_data = []
+
+            # A function to process a page
+            def process_single_page(page_num):
+                page_images = convert_from_bytes(
+                    pdf_content, first_page=page_num+1, last_page=page_num+1)
+                if page_images:
+                    page_image = page_images[0]
+                    return {"page": page_num, "data": process_page(page_image)}
+
+            # Use a ThreadPoolExecutor to process multiple pages in parallel
+            with ThreadPoolExecutor() as executor:
+                all_pages_data = list(executor.map(
+                    process_single_page, range(len(pdf_reader.pages))))
+
+            return jsonify({"success": True, "data": all_pages_data})
+
+        else:
+            return jsonify({"success": False, "message": "Document not found"})
+
+    except Exception as e:
+        print(traceback.format_exc())
+        return jsonify({"success": False, "message": "An error occurred"})
 
 
 @app.route('/api/search', methods=['POST'])

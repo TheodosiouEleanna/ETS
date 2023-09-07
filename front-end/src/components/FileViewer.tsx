@@ -12,6 +12,7 @@ import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 import { useSnackbar } from "../hooks/useSnackbar";
 import { debounce } from "../utils/functions";
 import { Context } from "../context/Context";
+import useOCR from "hooks/useOCR";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.js`;
 
@@ -30,6 +31,7 @@ const FileViewer: React.FC = () => {
   const {
     file,
     setLoading,
+    currentPage,
     setCurrentPage,
     pageCount,
     setScrollTop,
@@ -42,6 +44,12 @@ const FileViewer: React.FC = () => {
   const [elWidth, setElWidth] = useState<number>();
   const { triggerSnackbar } = useSnackbar();
   const { zoom: savedZoom } = userSettingsApi;
+
+  const logger = (text: string, confidence: number, bbox: any) => {
+    console.log({ text, confidence, bbox });
+  };
+
+  // useOCR(logger, currentPage);
 
   const wrapperStyle = useMemo(
     () => ({
@@ -96,6 +104,8 @@ const FileViewer: React.FC = () => {
     [pdfDimensions.height, setCurrentPage, setScrollTop]
   );
 
+  const debouncedScroll = debounce(handleScroll, 50);
+
   useEffect(() => {
     const containerElement = document.getElementById("pdf-container");
     const { width = 0 } = containerElement
@@ -134,7 +144,7 @@ const FileViewer: React.FC = () => {
       } flex overflow-auto lg:h-[88%]`}
       id='pdf-container'
       style={wrapperStyle}
-      onScroll={handleScroll}
+      onScroll={debouncedScroll}
     >
       <Document
         file={file instanceof Blob ? file : undefined}

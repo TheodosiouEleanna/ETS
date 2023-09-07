@@ -274,12 +274,13 @@ export const ContextProvider = ({
   };
 
   useEffect(() => {
-    if (state.file && state.file.size === 0 && state.selectedDocID) {
+    if (state.file && state.file?.size === 0 && state.selectedDocID) {
       setLoading(true);
       axios
         .get(`${apiURL}/get_file`, {
           params: {
             docID: state.selectedDocID,
+            userID: state.userInfo.userID,
           },
           responseType: "blob",
         })
@@ -296,7 +297,38 @@ export const ContextProvider = ({
           setLoading(false);
         });
     }
-  }, [state.file, state.file?.size, state.selectedDocID]);
+  }, [
+    state.file,
+    state.file?.size,
+    state.selectedDocID,
+    state.userInfo.userID,
+  ]);
+
+  useEffect(() => {
+    if (
+      state.userInfo.isLoggedIn &&
+      state.userInfo.userID &&
+      state.selectedDocID
+    ) {
+      setLoading(true);
+
+      axios
+        .get(`${apiURL}/words-positions`, {
+          params: {
+            docID: state.selectedDocID,
+            userID: state.userInfo.userID,
+          },
+        })
+        .then((response) => {
+          console.log({ response });
+          setLoading(false);
+        })
+        .catch((error) => {
+          alert("Failed to get words positions.");
+          setLoading(false);
+        });
+    }
+  }, [state.selectedDocID, state.userInfo.isLoggedIn, state.userInfo.userID]);
 
   const contextValue = {
     file: state.file,

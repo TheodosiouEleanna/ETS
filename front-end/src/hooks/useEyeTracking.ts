@@ -17,8 +17,6 @@ const useEyeTracking = (): void => {
   const [shouldOpenConnection, setShouldOpenConnection] = useState(true);
   const socketRef = useRef<WebSocket | null>(null);
 
-  console.log(socketRef.current?.readyState);
-
   const initializeWebSocket = useCallback(() => {
     const serverURL = "ws://localhost:5001";
 

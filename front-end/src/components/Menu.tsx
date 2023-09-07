@@ -42,7 +42,8 @@ function Menu({ onCloseMenu }: MenuProps) {
   );
 
   const shouldDisableConfirm =
-    ((selectedOption === "documents" || selectedOption === "upload") && selectedDocID === "") ||
+    ((selectedOption === "documents" || selectedOption === "upload") &&
+      selectedDocID === "") ||
     (selectedOption === "settings" && !settingsHaveChanges);
 
   const isDarkTheme = userSettingsApi.theme === "dark";
@@ -86,6 +87,7 @@ function Menu({ onCloseMenu }: MenuProps) {
         .get(`${apiURL}/get_file`, {
           params: {
             docID: id || selectedDocID,
+            userID,
           },
           responseType: "blob",
         })
@@ -137,7 +139,10 @@ function Menu({ onCloseMenu }: MenuProps) {
         shouldShowUpload={selectedOption === "documents"}
         onClose={onCloseMenu}
       >
-        <div className={`flex h-[64vh]`} style={{ color: getFontColorPrimary(isDarkTheme) }}>
+        <div
+          className={`flex h-[64vh]`}
+          style={{ color: getFontColorPrimary(isDarkTheme) }}
+        >
           <div
             className={`rounded`}
             style={
