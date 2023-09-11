@@ -17,13 +17,10 @@ from pdf2image import convert_from_bytes
 import pytesseract
 from PyPDF2 import PdfReader
 from concurrent.futures import ThreadPoolExecutor
-
-
-# Import the configuration loader from config.py
+from PIL import Image
 from config import load_config
 
 app = Flask(__name__)
-# Replace with your frontend's address
 CORS(app, resources={
      r"/api/*": {"origins": ["http://localhost:3000", "http://localhost:3001"]}})
 sqLiteDatabase = 'ETSsqLiteDB'
@@ -101,7 +98,6 @@ def upload_file(file, user_id):
     }
     return jsonify(response), 200
 
-
 # ---------------------- API ROUTES ---------------------------------------
 # Files
 @app.route('/api/get_file', methods=['GET'])
@@ -130,7 +126,6 @@ def get_file():
 
     return Response(file_object, mimetype='application/pdf',
                     headers={"Content-Disposition": f"attachment;filename={file_name}"})
-
 
 @app.route('/api/upload_file', methods=['POST'])
 def parse_file():
@@ -235,6 +230,7 @@ def process_page(page_image):
     return words_with_positions
 
 
+memo_object = {}
 @app.route('/api/words-positions', methods=['GET'])
 def get_position_of_words():
     try:
@@ -243,7 +239,25 @@ def get_position_of_words():
         conn = sqlite3.connect(sqLiteDatabase)
         conn.row_factory = sqlite3.Row
         c = conn.cursor()
+        
+        memo_key = f"{doc_id}_{user_id}"
+        
+        if memo_key in memo_object:
+            return jsonify({"success": True, "data": memo_object[memo_key]})
 
+        
+
+
+        # Fetch zoomLevel from user_settings
+        # c.execute(
+        #     "SELECT zoomLevel FROM user_settings WHERE userID = ?", (user_id,))
+        # settings_row = c.fetchone()
+        # if settings_row:
+        #     scaling_factor = settings_row['zoomLevel'] / 1.0 
+        # else:
+        #     scaling_factor = 1.0  # default value
+        # print(scaling_factor)
+        # Fetch the document
         c.execute(
             "SELECT docFile FROM documents WHERE docID = ? AND userID = ?", (doc_id, user_id))
         row = c.fetchone()
@@ -253,20 +267,38 @@ def get_position_of_words():
             pdf_reader = PdfReader(io.BytesIO(pdf_content))
 
             all_pages_data = []
+            
+    #         def process_single_page(page_num):
 
-            # A function to process a page
+    #             page_images = convert_from_bytes(
+    #             pdf_content, first_page=page_num + 1, last_page=page_num + 1
+    # )
+    #             if page_images:
+    #                 original_image = page_images[0]
+                    
+    #                 # Scale the image
+    #                 scaled_image = original_image.resize(
+    #                     (int(original_image.width * scaling_factor), int(original_image.height * scaling_factor)),
+    #                     Image.ANTIALIAS
+    #                 )
+    #                 print(page_num, scaled_image)
+    #                 return {"page": page_num, "data": process_page(scaled_image)}
+    
             def process_single_page(page_num):
                 page_images = convert_from_bytes(
-                    pdf_content, first_page=page_num+1, last_page=page_num+1)
+                    pdf_content, dpi=300, first_page=page_num+1, last_page=page_num+1)
                 if page_images:
                     page_image = page_images[0]
+                    print(page_image)
                     return {"page": page_num, "data": process_page(page_image)}
-
+            
             # Use a ThreadPoolExecutor to process multiple pages in parallel
             with ThreadPoolExecutor() as executor:
                 all_pages_data = list(executor.map(
                     process_single_page, range(len(pdf_reader.pages))))
 
+            memo_object[memo_key] = all_pages_data
+            
             return jsonify({"success": True, "data": all_pages_data})
 
         else:

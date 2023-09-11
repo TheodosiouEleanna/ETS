@@ -15,6 +15,7 @@ export interface IContextProps {
   isCalibrating: boolean;
   calibrationProcess: Record<string, any> | null;
   shouldSubscribe: boolean;
+  wordPositions: { data: IWordPositions[]; page: number }[];
   loadFile?: (file?: File) => void;
   setSelectedDocID?: (id: ID) => void;
   setCurrentPage?: (pageNumber: number) => void;
@@ -27,13 +28,19 @@ export interface IContextProps {
   setPdfDimensions?: (dimensions: IPdfDimensions) => void;
   goToNextPage?: () => void;
   goToPrevPage?: () => void;
-  setScrollTop?: () => void;
+  setScrollTop?: (scrollTop: number) => void;
   setIsMenuOpen?: (isOpen: boolean) => void;
   setSelectedEyeTracker?: (eyeTracker: IEyeTracker) => void;
   setIsEyeTrackerConnected?: (isConnected: boolean) => void;
   setIsCalibrating?: (isCalibrating: boolean) => void;
   setCalibrationProcess?: (payload: Record<string, any> | null) => void;
   setShouldSubscribe?: (shouldSubscribe: boolean) => void;
+}
+
+interface IWordPositions {
+  box: number[];
+  confidence: number;
+  word: string;
 }
 
 export interface IContextValues extends IContextState {}
@@ -86,12 +93,7 @@ export interface Document {
   uploadDate: string;
 }
 
-export type ConnectionStatus =
-  | "error"
-  | "searching"
-  | "connected"
-  | "selection"
-  | "";
+export type ConnectionStatus = "error" | "searching" | "connected" | "selection" | "";
 
 export interface GazeData {
   left_gaze_point_on_display_area: [number, number];
