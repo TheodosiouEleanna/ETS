@@ -1,44 +1,72 @@
 import { Context } from "context/Context";
-import React, { useContext, useMemo } from "react";
-import { IContextProps } from "types/AppTypes";
+import React, { useState, useContext, useEffect } from "react";
+import { IContextProps, IWordPositions } from "types/AppTypes";
 import { calculateScaledPositions } from "utils/functions";
 
 const TestBox = () => {
-  const { scrollTop, wordPositions, currentPage } = useContext<IContextProps>(Context);
+  const {
+    scrollTop,
+    wordPositions,
+    currentPage,
+    userSettingsApi,
+    setScaledWordDimensionsPerPage,
+  } = useContext<IContextProps>(Context);
+  const [currentPageData, setCurrentPageData] = useState<{
+    data: IWordPositions[];
+    page: number;
+  }>();
 
-  const testWord = "structured";
-  const currentPageData = useMemo(() => wordPositions[currentPage - 1], [currentPage, wordPositions]);
-
-  if (currentPageData) {
-    const wordData = currentPageData.data.find((word) => word.word === testWord);
-
-    if (wordData && wordData.box) {
-      const { box } = wordData;
-
-      console.log({ wordPositions, currentPageData, box });
-      const { xPrime, yPrime, wPrime, hPrime } = calculateScaledPositions(box, scrollTop);
-
-      console.log({ xPrime, yPrime, wPrime, hPrime });
-
-      return (
-        <div
-          style={{
-            opacity: 0.3,
-            left: xPrime,
-            top: yPrime,
-            position: "absolute",
-            width: wPrime,
-            height: hPrime,
-            border: "2px solid red",
-            zIndex: 999,
-          }}
-        >
-          TestBox
-        </div>
-      );
+  useEffect(() => {
+    if (wordPositions && wordPositions.length) {
+      setCurrentPageData(wordPositions[currentPage - 1]);
     }
-  }
-  return null;
+  }, [currentPage, wordPositions]);
+  console.log({ currentPageData });
+
+  return (
+    <>
+      {currentPageData &&
+        currentPageData.data.map((wordData, index) => {
+          if (wordData && wordData.box) {
+            const { box, word } = wordData;
+            const { xPrime, yPrime, wPrime, hPrime } = calculateScaledPositions(
+              box,
+              scrollTop,
+              currentPage,
+              userSettingsApi.zoom
+            );
+            setScaledWordDimensionsPerPage?.({
+              pageNum: currentPage,
+              wordCoords: {
+                left: xPrime,
+                top: yPrime,
+                width: wPrime,
+                height: hPrime,
+              },
+            });
+            return (
+              <div
+                key={index}
+                style={{
+                  opacity: 0.3,
+                  left: xPrime,
+                  top: yPrime,
+                  position: "absolute",
+                  width: wPrime,
+                  height: hPrime,
+                  border: "2px solid red",
+                  zIndex: 999,
+                  // padding: 3,
+                }}
+              >
+                {word}
+              </div>
+            );
+          }
+          return null;
+        })}
+    </>
+  );
 };
 
 export default TestBox;

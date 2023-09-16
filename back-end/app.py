@@ -19,6 +19,7 @@ from PyPDF2 import PdfReader
 from concurrent.futures import ThreadPoolExecutor
 from PIL import Image
 from config import load_config
+from functools import partial
 
 app = Flask(__name__)
 CORS(app, resources={
@@ -100,6 +101,8 @@ def upload_file(file, user_id):
 
 # ---------------------- API ROUTES ---------------------------------------
 # Files
+
+
 @app.route('/api/get_file', methods=['GET'])
 def get_file():
     doc_id = request.args.get('docID')
@@ -126,6 +129,7 @@ def get_file():
 
     return Response(file_object, mimetype='application/pdf',
                     headers={"Content-Disposition": f"attachment;filename={file_name}"})
+
 
 @app.route('/api/upload_file', methods=['POST'])
 def parse_file():
@@ -218,6 +222,7 @@ def process_page(page_image):
     words_with_positions = []
     data = pytesseract.image_to_data(
         page_image, output_type=pytesseract.Output.DICT)
+    # print(data)
     words = data['text']
     confidences = data['conf']
     boxes = zip(data['left'], data['top'], data['width'], data['height'])
@@ -230,7 +235,45 @@ def process_page(page_image):
     return words_with_positions
 
 
+def resize_pil_image(image, scaling_factor):
+    original_width, original_height = image.size
+    new_width = int(original_width * scaling_factor)
+    new_height = int(original_height * scaling_factor)
+
+    resized_image = image.resize((new_width, new_height), Image.ANTIALIAS)
+
+    return resized_image
+
+
+def process_single_page(page_num, pdf_content=None, scaling_factor=1.0, ):
+    final_scale_factor_width = scaling_factor * 1.1613269613269613
+    final_scale_factor_height = scaling_factor * 1.1616161616161617
+    page_images = convert_from_bytes(
+        pdf_content, first_page=page_num + 1, last_page=page_num + 1
+    )
+
+    if page_images:
+        original_image = page_images[0]
+
+        if scaling_factor != 1:
+            scaled_image = original_image.resize(
+                (int(original_image.width * final_scale_factor_width),
+                 int(original_image.height * final_scale_factor_height)),
+                Image.ANTIALIAS
+            )
+
+            processed_image = scaled_image
+            print(page_num, 'SCALED IMAGEEEEEE', scaled_image)
+        else:
+            processed_image = original_image
+
+        return {"page": page_num, "data": process_page(processed_image)}
+
+
 memo_object = {}
+previous_zoom = 0
+
+
 @app.route('/api/words-positions', methods=['GET'])
 def get_position_of_words():
     try:
@@ -239,25 +282,23 @@ def get_position_of_words():
         conn = sqlite3.connect(sqLiteDatabase)
         conn.row_factory = sqlite3.Row
         c = conn.cursor()
-        
+
         memo_key = f"{doc_id}_{user_id}"
-        
-        if memo_key in memo_object:
-            return jsonify({"success": True, "data": memo_object[memo_key]})
-
-        
-
 
         # Fetch zoomLevel from user_settings
-        # c.execute(
-        #     "SELECT zoomLevel FROM user_settings WHERE userID = ?", (user_id,))
-        # settings_row = c.fetchone()
-        # if settings_row:
-        #     scaling_factor = settings_row['zoomLevel'] / 1.0 
-        # else:
-        #     scaling_factor = 1.0  # default value
-        # print(scaling_factor)
-        # Fetch the document
+        c.execute(
+            "SELECT zoomLevel FROM user_settings WHERE userID = ?", (user_id,))
+        settings_row = c.fetchone()
+        if settings_row:
+            scaling_factor = settings_row['zoomLevel'] / 1.0
+            previous_zoom = settings_row['zoomLevel']
+        else:
+            scaling_factor = 1.0  # default value
+        print(scaling_factor)
+
+        # if (memo_key in memo_object) and (previous_zoom == scaling_factor):
+        #     return jsonify({"success": True, "data": memo_object[memo_key]})
+
         c.execute(
             "SELECT docFile FROM documents WHERE docID = ? AND userID = ?", (doc_id, user_id))
         row = c.fetchone()
@@ -267,38 +308,16 @@ def get_position_of_words():
             pdf_reader = PdfReader(io.BytesIO(pdf_content))
 
             all_pages_data = []
-            
-    #         def process_single_page(page_num):
 
-    #             page_images = convert_from_bytes(
-    #             pdf_content, first_page=page_num + 1, last_page=page_num + 1
-    # )
-    #             if page_images:
-    #                 original_image = page_images[0]
-                    
-    #                 # Scale the image
-    #                 scaled_image = original_image.resize(
-    #                     (int(original_image.width * scaling_factor), int(original_image.height * scaling_factor)),
-    #                     Image.ANTIALIAS
-    #                 )
-    #                 print(page_num, scaled_image)
-    #                 return {"page": page_num, "data": process_page(scaled_image)}
-    
-            def process_single_page(page_num):
-                page_images = convert_from_bytes(
-                    pdf_content, dpi=300, first_page=page_num+1, last_page=page_num+1)
-                if page_images:
-                    page_image = page_images[0]
-                    print(page_image)
-                    return {"page": page_num, "data": process_page(page_image)}
-            
-            # Use a ThreadPoolExecutor to process multiple pages in parallel
+            partial_process_single_page = partial(
+                process_single_page, pdf_content=pdf_content, scaling_factor=scaling_factor)
+
             with ThreadPoolExecutor() as executor:
                 all_pages_data = list(executor.map(
-                    process_single_page, range(len(pdf_reader.pages))))
+                    partial_process_single_page, range(len(pdf_reader.pages))))
 
             memo_object[memo_key] = all_pages_data
-            
+
             return jsonify({"success": True, "data": all_pages_data})
 
         else:

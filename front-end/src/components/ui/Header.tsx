@@ -11,6 +11,7 @@ const Header: FC = () => {
   return (
     <header
       className={`relative shadow-lg z-30 flex justify-between items-center w-full text-xl h-10`}
+      id='header'
       style={{
         backgroundColor: isDarkTheme ? dark_primary : light_secondary,
       }}

@@ -1,5 +1,11 @@
 import "react-pdf/dist/esm/Page/TextLayer.css";
-import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { pdfjs, Document, Page } from "react-pdf";
 import { StyleSheet } from "@react-pdf/renderer";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
@@ -82,8 +88,9 @@ const FileViewer: React.FC = () => {
       const container = event.target as HTMLDivElement;
       const pageHeight = pdfDimensions.height;
 
-      const scrolledPages = Math.floor((container.scrollTop + pageHeight / 4) / pageHeight) + 1;
-      const containerElement = document.getElementById("hellllo");
+      const scrolledPages =
+        Math.floor((container.scrollTop + pageHeight / 4) / pageHeight) + 1;
+      const containerElement = document.getElementById("pdf-container");
       if (containerElement) setScrollTop?.(containerElement?.scrollTop);
       setCurrentPage?.(scrolledPages);
     },
@@ -94,7 +101,9 @@ const FileViewer: React.FC = () => {
 
   useEffect(() => {
     const containerElement = document.getElementById("pdf-container");
-    const { width = 0 } = containerElement ? containerElement.getBoundingClientRect() : {};
+    const { width = 0 } = containerElement
+      ? containerElement.getBoundingClientRect()
+      : {};
     setElWidth(width);
   }, []);
 
@@ -123,15 +132,21 @@ const FileViewer: React.FC = () => {
 
   return (
     <div
-      className={`${savedZoom >= 1 ? "justify-start" : "justify-center"} flex overflow-auto lg:h-[88%]`}
+      className={`${
+        savedZoom >= 1 ? "justify-start" : "justify-center"
+      } flex overflow-auto lg:h-[88%]`}
       id='pdf-container'
-      style={wrapperStyle}
+      style={{ ...wrapperStyle, scrollBehavior: "smooth" }}
       onScroll={debouncedScroll}
     >
-      <Document file={file instanceof Blob ? file : undefined} onLoadSuccess={onDocumentLoadSuccess} loading=''>
+      <Document
+        file={file instanceof Blob ? file : undefined}
+        onLoadSuccess={onDocumentLoadSuccess}
+        loading=''
+      >
         {Array.from(new Array(pageCount), (el, index) => (
           <div
-            id='hellllo'
+            id='pdf-page'
             key={`wrapper_${index}`}
             style={{ height: pdfDimensions.height, ...styles.page }}
             data-page-number={index}

@@ -1,20 +1,41 @@
 import { createContext, useEffect, useReducer } from "react";
 import axios from "axios";
 import { apiURL } from "../utils/consts";
-import { IAction, IContextProps, ID, IEyeTracker, File, IUserInfo, IUserSettings } from "types/AppTypes";
+import {
+  IAction,
+  IContextProps,
+  ID,
+  IEyeTracker,
+  File,
+  IUserInfo,
+  IUserSettings,
+} from "types/AppTypes";
 import React from "react";
-import { initEyeTracker, initFile, initPdfDimensions, initSettings, initUserInfo } from "utils/initData";
+import {
+  initEyeTracker,
+  initFile,
+  initPdfDimensions,
+  initSettings,
+  initUserInfo,
+} from "utils/initData";
+import usePrevious from "hooks/usePrevious";
 
 const selectedDocID = localStorage.getItem("selectedDocID") || "";
 
 const userInfoFromStorage = localStorage.getItem("userInfo");
-const userInfo = userInfoFromStorage ? JSON.parse(userInfoFromStorage) : initUserInfo;
+const userInfo = userInfoFromStorage
+  ? JSON.parse(userInfoFromStorage)
+  : initUserInfo;
 
 const userSettingsFromStorage = localStorage.getItem("userSettingsUi");
-const userSettingsUi = userSettingsFromStorage ? JSON.parse(userSettingsFromStorage) : initSettings;
+const userSettingsUi = userSettingsFromStorage
+  ? JSON.parse(userSettingsFromStorage)
+  : initSettings;
 
 const eyeTrackerFromStorage = localStorage.getItem("eyeTracker");
-const selectedEyeTracker = eyeTrackerFromStorage ? JSON.parse(eyeTrackerFromStorage) : initEyeTracker;
+const selectedEyeTracker = eyeTrackerFromStorage
+  ? JSON.parse(eyeTrackerFromStorage)
+  : initEyeTracker;
 
 const initialState: IContextProps = {
   file: initFile,
@@ -34,8 +55,11 @@ const initialState: IContextProps = {
   shouldSubscribe: false,
   calibrationProcess: null,
   wordPositions: [],
+  scaledWordDimensionsPerPage: {
+    pageNum: 0,
+    wordCoords: { left: 0, top: 0, width: 0, height: 0 },
+  },
   logout: () => {},
-  // will accumulate eye data just for test
 };
 
 const reducer = (state: IContextProps, action: IAction): IContextProps => {
@@ -95,7 +119,10 @@ const reducer = (state: IContextProps, action: IAction): IContextProps => {
         userInfo: action.payload,
       };
     case "SET_USER_SETTINGS_UI":
-      localStorage.setItem("userSettingsUi", JSON.stringify({ ...state.userSettingsUi, ...action.payload }));
+      localStorage.setItem(
+        "userSettingsUi",
+        JSON.stringify({ ...state.userSettingsUi, ...action.payload })
+      );
       return {
         ...state,
         userSettingsUi: { ...state.userSettingsUi, ...action.payload },
@@ -170,8 +197,13 @@ const reducer = (state: IContextProps, action: IAction): IContextProps => {
 
 export const Context = createContext<IContextProps>(initialState);
 
-export const ContextProvider = ({ children }: { children: React.ReactNode }) => {
+export const ContextProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const prevZoom = usePrevious(state.userSettingsApi.zoom);
   console.log({ state });
 
   // -------------------- DOCUMENT ACTIONS -----------------------
@@ -248,6 +280,13 @@ export const ContextProvider = ({ children }: { children: React.ReactNode }) => 
     dispatch({ type: "SET_WORD_POSITIONS", payload: wordPositions });
   };
 
+  const setScaledWordDimensionPerPage = (
+    pageNum: number,
+    dimensions: { left: number; top: number; width: number; height: number }
+  ) => {
+    dispatch({ type: "SET_WORD_DIMENSIONS", payload: { pageNum, dimensions } });
+  };
+
   const setScrollTop = (scrollTop: number) => {
     dispatch({ type: "SCROLL", payload: scrollTop });
   };
@@ -271,21 +310,29 @@ export const ContextProvider = ({ children }: { children: React.ReactNode }) => 
           const fileBlob = new Blob([response.data], {
             type: response.data.type,
           });
-
           loadFile(fileBlob);
-          setLoading(false);
         })
         .catch((error) => {
           alert("Failed to load file.");
+        })
+        .finally(() => {
           setLoading(false);
         });
     }
-  }, [state.file, state.file?.size, state.selectedDocID, state.userInfo.userID]);
+  }, [
+    state.file,
+    state.file?.size,
+    state.selectedDocID,
+    state.userInfo.userID,
+  ]);
 
   useEffect(() => {
-    if (state.userInfo.isLoggedIn && state.userInfo.userID && state.selectedDocID) {
+    if (
+      prevZoom !== state.userSettingsApi.zoom &&
+      state.userInfo.userID &&
+      state.selectedDocID
+    ) {
       setLoading(true);
-
       axios
         .get(`${apiURL}/words-positions`, {
           params: {
@@ -296,14 +343,20 @@ export const ContextProvider = ({ children }: { children: React.ReactNode }) => 
         .then((response) => {
           console.log({ response });
           setWordPositions(response.data.data);
-          setLoading(false);
         })
         .catch((error) => {
           alert("Failed to get words positions.");
+        })
+        .finally(() => {
           setLoading(false);
         });
     }
-  }, [state.selectedDocID, state.userInfo.isLoggedIn, state.userInfo.userID]);
+  }, [
+    prevZoom,
+    state.selectedDocID,
+    state.userInfo.userID,
+    state.userSettingsApi.zoom,
+  ]);
 
   const contextValue = {
     file: state.file,
@@ -344,6 +397,8 @@ export const ContextProvider = ({ children }: { children: React.ReactNode }) => 
     setCalibrationProcess,
     wordPositions: state.wordPositions,
     setWordPositions,
+    scaledWordDimensionsPerPage: state.scaledWordDimensionsPerPage,
+    setScaledWordDimensionPerPage,
   };
 
   return <Context.Provider value={contextValue}>{children}</Context.Provider>;

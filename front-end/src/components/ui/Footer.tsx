@@ -1,8 +1,20 @@
-import React, { useContext, useEffect, useMemo, useState, ChangeEvent } from "react";
+import React, {
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  ChangeEvent,
+} from "react";
 import { Context } from "../../context/Context";
 import { BiSolidLeftArrow } from "react-icons/bi";
 import { BiSolidRightArrow } from "react-icons/bi";
-import { dark_primary, dark_secondary, light_primary, light_secondary, shadowLgTop } from "../../utils/consts";
+import {
+  dark_primary,
+  dark_secondary,
+  light_primary,
+  light_secondary,
+  shadowLgTop,
+} from "../../utils/consts";
 import { getBgPrimary, getFontColorSecondary } from "../../utils/functions";
 import Button from "./Button";
 
@@ -64,6 +76,7 @@ const Footer = () => {
   return (
     <footer
       className={`z-10 w-full flex items-center justify-center px-4 absolute bottom-0 h-12`}
+      id='footer'
       style={{
         ...(isDarkTheme
           ? {
@@ -87,7 +100,10 @@ const Footer = () => {
           <BiSolidLeftArrow />
         </Button>
 
-        <span className='mx-2 text-sm' style={{ color: getFontColorSecondary(isDarkTheme) }}>
+        <span
+          className='mx-2 text-sm'
+          style={{ color: getFontColorSecondary(isDarkTheme) }}
+        >
           Page
           <input
             className='slider text-gray-900 p-1 h-7 rounded  w-10 my-3 mx-1 active:scale-95 transform transition focus:outline-none'

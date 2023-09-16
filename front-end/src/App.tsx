@@ -7,11 +7,11 @@ import Header from "./components/ui/Header";
 import useEyeTracking from "./hooks/useEyeTracking";
 import CalibrationOverlay from "components/CalibrationOverlay";
 import CircleMover from "components/CircleMover";
-import { useEyeTrackingData } from "context/EyeTrackingContext";
 import TestBox from "components/ui/TextBox";
 
 const App: React.FC = () => {
   const context = useContext(Context);
+  const { loading, isMenuOpen, file } = context;
   // const { eyeData } = useEyeTrackingData();
 
   const toggleFullScreen = () => {
@@ -24,7 +24,9 @@ const App: React.FC = () => {
   const exitFullscreen = () => {
     if (document.fullscreenElement) {
       document.exitFullscreen().catch((err) => {
-        console.log(`Error attempting to disable full-screen mode: ${err.message} (${err.name})`);
+        console.log(
+          `Error attempting to disable full-screen mode: ${err.message} (${err.name})`
+        );
       });
     }
   };
@@ -74,7 +76,7 @@ const App: React.FC = () => {
         ))}
       </div> */}
       <CircleMover />
-      <TestBox />
+      {!loading && !isMenuOpen && file?.size !== 0 && <TestBox />}
       {}
       {!isLoggedIn && <UserProfile />}
       {isCalibrating && <CalibrationOverlay />}

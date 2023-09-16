@@ -16,6 +16,7 @@ export interface IContextProps {
   calibrationProcess: Record<string, any> | null;
   shouldSubscribe: boolean;
   wordPositions: { data: IWordPositions[]; page: number }[];
+  scaledWordDimensionsPerPage: IScaledWordCoords;
   loadFile?: (file?: File) => void;
   setSelectedDocID?: (id: ID) => void;
   setCurrentPage?: (pageNumber: number) => void;
@@ -35,6 +36,12 @@ export interface IContextProps {
   setIsCalibrating?: (isCalibrating: boolean) => void;
   setCalibrationProcess?: (payload: Record<string, any> | null) => void;
   setShouldSubscribe?: (shouldSubscribe: boolean) => void;
+  setScaledWordDimensionsPerPage?: (payload: IScaledWordCoords) => void;
+}
+
+interface IScaledWordCoords {
+  pageNum: number;
+  wordCoords: { left: number; top: number; width: number; height: number };
 }
 
 interface IWordPositions {
@@ -93,7 +100,12 @@ export interface Document {
   uploadDate: string;
 }
 
-export type ConnectionStatus = "error" | "searching" | "connected" | "selection" | "";
+export type ConnectionStatus =
+  | "error"
+  | "searching"
+  | "connected"
+  | "selection"
+  | "";
 
 export interface GazeData {
   left_gaze_point_on_display_area: [number, number];
