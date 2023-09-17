@@ -192,6 +192,7 @@ def get_documents():
 
 memo_object = {}
 
+
 @app.route('/api/words-positions', methods=['GET'])
 def get_position_of_words():
     try:
@@ -244,6 +245,8 @@ def get_position_of_words():
         print(traceback.format_exc())
         return jsonify({"success": False, "message": "An error occurred"})
 
+# ---------------------- Eye tracker ----------------------------
+
 
 @app.route('/api/search', methods=['POST'])
 def search_eye_tracker():
@@ -286,7 +289,7 @@ def get_eye_tracker():
 
     return jsonify({"message": message}), 200
 
-# User profile
+# -----------------------------User profile------------------------------------
 
 
 @app.route('/api/create-profile', methods=['POST'])
@@ -347,7 +350,7 @@ def login():
         'userID': user[0]
     }), 200
 
-# Settings
+# ----------------------------- Settings -------------------------------
 
 
 @app.route('/api/settings', methods=['POST'])

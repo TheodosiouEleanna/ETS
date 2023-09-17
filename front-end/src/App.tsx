@@ -7,7 +7,7 @@ import Header from "./components/ui/Header";
 import useEyeTracking from "./hooks/useEyeTracking";
 import CalibrationOverlay from "components/CalibrationOverlay";
 import CircleMover from "components/CircleMover";
-import TestBox from "components/ui/TextBox";
+import TextBox from "components/ui/TextBox";
 
 const App: React.FC = () => {
   const context = useContext(Context);
@@ -75,7 +75,7 @@ const App: React.FC = () => {
         ))}
       </div> */}
       <CircleMover />
-      {!loading && !isMenuOpen && file?.size !== 0 && <TestBox />}
+      {!loading && !isMenuOpen && file?.size !== 0 && <TextBox />}
       {}
       {!isLoggedIn && <UserProfile />}
       {isCalibrating && <CalibrationOverlay />}

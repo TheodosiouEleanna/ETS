@@ -4,6 +4,7 @@ import React, {
   useReducer,
   ReactNode,
   useEffect,
+  useState,
 } from "react";
 import {
   IContextProps,
@@ -63,11 +64,12 @@ export const WordPositionsProvider: React.FC<WordPositionsProviderProps> = ({
     wordPositionsReducer,
     initialWordPositionsState
   );
+  const [hasRunOnce, setHasRunOnce] = useState(false);
   const { userInfo, userSettingsApi, selectedDocID } =
     useContext<IContextProps>(Context);
 
   const prevZoom = usePrevious(userSettingsApi.zoom);
-
+  const prevSelectedDocID = usePrevious(selectedDocID);
   const setWordsLoading = (wordsLoading: boolean) => {
     dispatch({ type: "SET_WORD_LOADING", payload: wordsLoading });
   };
@@ -91,7 +93,8 @@ export const WordPositionsProvider: React.FC<WordPositionsProviderProps> = ({
   useEffect(() => {
     if (
       userInfo.userID &&
-      (prevZoom !== userSettingsApi.zoom || selectedDocID)
+      // !hasRunOnce &&
+      (selectedDocID || userSettingsApi.zoom !== prevZoom)
     ) {
       setWordsLoading(true);
       axios
@@ -111,8 +114,15 @@ export const WordPositionsProvider: React.FC<WordPositionsProviderProps> = ({
         .finally(() => {
           setWordsLoading(false);
         });
+      // setHasRunOnce(true);
     }
-  }, [prevZoom, selectedDocID, userInfo.userID, userSettingsApi.zoom]);
+  }, [
+    hasRunOnce,
+    prevZoom,
+    selectedDocID,
+    userInfo.userID,
+    userSettingsApi.zoom,
+  ]);
 
   const contextValue = {
     wordsLoading: state.wordsLoading,

@@ -58,7 +58,7 @@ const MainContent: React.FC = () => {
               }
         }
       >
-        {loading && wordsLoading && (
+        {(loading || wordsLoading) && (
           <div
             className={`h-full flex items-center`}
             style={{ color: getFontColorSecondary(isDarkTheme) }}
@@ -66,8 +66,8 @@ const MainContent: React.FC = () => {
             Loading Pdf Document...
           </div>
         )}
-        {file?.size !== 0 && !loading && <FileViewer />}
-        {file?.size === 0 && !loading && (
+        {file?.size !== 0 && !loading && !wordsLoading && <FileViewer />}
+        {file?.size === 0 && !loading && !wordsLoading && (
           <div className='flex flex-col items-center w-[40%] h-full mt-10'>
             <div
               className={`flex flex-col pt-20 items-center w-full h-full border border-[${light_secondary}] shadow rounded`}

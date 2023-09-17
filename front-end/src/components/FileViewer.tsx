@@ -137,7 +137,7 @@ const FileViewer: React.FC = () => {
       } flex overflow-auto lg:h-[88%]`}
       id='pdf-container'
       style={{ ...wrapperStyle, scrollBehavior: "smooth" }}
-      onScroll={debouncedScroll}
+      onScroll={handleScroll}
     >
       <Document
         file={file instanceof Blob ? file : undefined}
