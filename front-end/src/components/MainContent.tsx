@@ -2,15 +2,23 @@ import React, { useEffect, useContext } from "react";
 import { Context } from "../context/Context";
 import FileViewer from "./FileViewer";
 import axios from "axios";
-import { apiURL, dark_secondary, light_primary, light_secondary } from "../utils/consts";
+import {
+  apiURL,
+  dark_secondary,
+  light_primary,
+  light_secondary,
+} from "../utils/consts";
 import { getFontColorSecondary } from "../utils/functions";
 import { IContextProps } from "types/AppTypes";
 import { useSnackbar } from "hooks/useSnackbar";
 import Snackbar from "./ui/Snackbar";
+import { useWordPositions } from "hooks/useWordPositions";
 
 const MainContent: React.FC = () => {
-  const { file, loading, userSettingsApi, setUserSettingsApi, userInfo } = useContext<IContextProps>(Context);
+  const { file, loading, userSettingsApi, setUserSettingsApi, userInfo } =
+    useContext<IContextProps>(Context);
   const { snackbarData } = useSnackbar();
+  const { wordsLoading } = useWordPositions();
 
   const { userID } = userInfo;
   const isDarkTheme = userSettingsApi.theme === "dark";
@@ -50,8 +58,11 @@ const MainContent: React.FC = () => {
               }
         }
       >
-        {loading && (
-          <div className={`h-full flex items-center`} style={{ color: getFontColorSecondary(isDarkTheme) }}>
+        {loading && wordsLoading && (
+          <div
+            className={`h-full flex items-center`}
+            style={{ color: getFontColorSecondary(isDarkTheme) }}
+          >
             Loading Pdf Document...
           </div>
         )}
@@ -64,14 +75,19 @@ const MainContent: React.FC = () => {
                 backgroundColor: light_primary,
               }}
             >
-              <div className='font-bold mb-8'>Welcome to the Eye Tracking System</div>
+              <div className='font-bold mb-8'>
+                Welcome to the Eye Tracking System
+              </div>
               <div className=''>No PDF uploaded</div>
             </div>
           </div>
         )}
       </main>
       {snackbarData.open && (
-        <Snackbar message={snackbarData.message} status={snackbarData.status as "success" | "error" | "info"} />
+        <Snackbar
+          message={snackbarData.message}
+          status={snackbarData.status as "success" | "error" | "info"}
+        />
       )}
     </>
   );

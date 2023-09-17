@@ -1,25 +1,24 @@
 import io
-import sqlite3
-import re
-import json
-from flask import Flask, make_response, request, jsonify, Response
-from werkzeug.security import generate_password_hash, check_password_hash
 import uuid
-from werkzeug.utils import secure_filename
-from datetime import datetime
-from flask_cors import CORS
-import traceback
-import tobii_research as tr
-import websockets
+import json
+
 import asyncio
+import sqlite3
 import traceback
-from pdf2image import convert_from_bytes
-import pytesseract
+
+from flask_cors import CORS
 from PyPDF2 import PdfReader
-from concurrent.futures import ThreadPoolExecutor
-from PIL import Image
-from config import load_config
 from functools import partial
+from datetime import datetime
+from config import load_config
+from werkzeug.utils import secure_filename
+from concurrent.futures import ThreadPoolExecutor
+from flask import Flask, request, jsonify, Response
+from werkzeug.security import generate_password_hash, check_password_hash
+
+# our utils
+from functions import _build_cors_preflight_response, send_request, process_single_page
+
 
 app = Flask(__name__)
 CORS(app, resources={
@@ -30,35 +29,6 @@ sqLiteDatabase = 'ETSsqLiteDB'
 config_data = load_config()
 listening_port = config_data['ETSUIConfig']['ListeningPort']
 ETSDVM_address = config_data['ETSUIConfig']['ETSDVMport']
-
-# --------------------- FUNCTIONS ---------------------------
-# Maybe move them in a separate file
-
-
-def get_host_and_port(address):
-    # Keep IPv4 only..
-    hostname = re.search(r'\b(?:\d{1,3}\.){3}\d{1,3}\b|\blocalhost\b', address)
-    port = re.search(r':(\d+)', address)
-    return hostname.group(), int(port.group(1))
-
-
-def _build_cors_preflight_response():
-    response = make_response()
-    response.headers.add("Access-Control-Allow-Origin",
-                         "http://localhost:3000")
-    response.headers.add("Access-Control-Allow-Headers",
-                         "Content-Type,Authorization")
-    response.headers.add("Access-Control-Allow-Methods", "POST")
-    return response
-
-
-async def send_request(request_data):
-    server_host, server_port = get_host_and_port(ETSDVM_address)
-    async with websockets.connect(f"ws://{server_host}:{server_port}") as websocket:
-        # Send the data over the WebSocket connection
-        await websocket.send(request_data)
-        response_data = await websocket.recv()  # Wait to receive the response
-        return response_data
 
 
 def upload_file(file, user_id):
@@ -100,7 +70,8 @@ def upload_file(file, user_id):
     return jsonify(response), 200
 
 # ---------------------- API ROUTES ---------------------------------------
-# Files
+
+# --------------------------- Files --------------------------------
 
 
 @app.route('/api/get_file', methods=['GET'])
@@ -164,7 +135,6 @@ def delete_file():
 
 def remove_file(doc_id, user_id):
     # Logic to remove the file metadata from the database based on doc_id and user_id
-    # Logic to delete the actual file from the file system
 
     conn = sqlite3.connect(sqLiteDatabase)
     c = conn.cursor()
@@ -218,61 +188,9 @@ def get_documents():
         return jsonify({"error": str(e)}), 500
 
 
-def process_page(page_image):
-    words_with_positions = []
-    data = pytesseract.image_to_data(
-        page_image, output_type=pytesseract.Output.DICT)
-    # print(data)
-    words = data['text']
-    confidences = data['conf']
-    boxes = zip(data['left'], data['top'], data['width'], data['height'])
-
-    for word, confidence, box in zip(words, confidences, boxes):
-        if int(confidence) > 30:
-            words_with_positions.append(
-                {"word": word, "confidence": confidence, "box": box})
-
-    return words_with_positions
-
-
-def resize_pil_image(image, scaling_factor):
-    original_width, original_height = image.size
-    new_width = int(original_width * scaling_factor)
-    new_height = int(original_height * scaling_factor)
-
-    resized_image = image.resize((new_width, new_height), Image.ANTIALIAS)
-
-    return resized_image
-
-
-def process_single_page(page_num, pdf_content=None, scaling_factor=1.0, ):
-    final_scale_factor_width = scaling_factor * 1.1613269613269613
-    final_scale_factor_height = scaling_factor * 1.1616161616161617
-    page_images = convert_from_bytes(
-        pdf_content, first_page=page_num + 1, last_page=page_num + 1
-    )
-
-    if page_images:
-        original_image = page_images[0]
-
-        if scaling_factor != 1:
-            scaled_image = original_image.resize(
-                (int(original_image.width * final_scale_factor_width),
-                 int(original_image.height * final_scale_factor_height)),
-                Image.ANTIALIAS
-            )
-
-            processed_image = scaled_image
-            print(page_num, 'SCALED IMAGEEEEEE', scaled_image)
-        else:
-            processed_image = original_image
-
-        return {"page": page_num, "data": process_page(processed_image)}
-
+# --------------------------- Words positions --------------------------------
 
 memo_object = {}
-previous_zoom = 0
-
 
 @app.route('/api/words-positions', methods=['GET'])
 def get_position_of_words():
@@ -291,7 +209,6 @@ def get_position_of_words():
         settings_row = c.fetchone()
         if settings_row:
             scaling_factor = settings_row['zoomLevel'] / 1.0
-            previous_zoom = settings_row['zoomLevel']
         else:
             scaling_factor = 1.0  # default value
         print(scaling_factor)

@@ -1,27 +1,26 @@
 import { Context } from "context/Context";
+import { useWordPositions } from "hooks/useWordPositions";
 import React, { useState, useContext, useEffect } from "react";
 import { IContextProps, IWordPositions } from "types/AppTypes";
 import { calculateScaledPositions } from "utils/functions";
 
-const TestBox = () => {
-  const {
-    scrollTop,
-    wordPositions,
-    currentPage,
-    userSettingsApi,
-    setScaledWordDimensionsPerPage,
-  } = useContext<IContextProps>(Context);
+const wordPadding = 5;
+
+const TextBox = () => {
+  const { scrollTop, currentPage, userSettingsApi } =
+    useContext<IContextProps>(Context);
   const [currentPageData, setCurrentPageData] = useState<{
     data: IWordPositions[];
     page: number;
   }>();
+
+  const { wordPositions, setScaledWordDimensionsPerPage } = useWordPositions();
 
   useEffect(() => {
     if (wordPositions && wordPositions.length) {
       setCurrentPageData(wordPositions[currentPage - 1]);
     }
   }, [currentPage, wordPositions]);
-  console.log({ currentPageData });
 
   return (
     <>
@@ -52,14 +51,13 @@ const TestBox = () => {
                   left: xPrime,
                   top: yPrime,
                   position: "absolute",
-                  width: wPrime,
-                  height: hPrime,
+                  width: wPrime + wordPadding,
+                  height: hPrime + wordPadding,
                   border: "2px solid red",
                   zIndex: 999,
-                  // padding: 3,
                 }}
               >
-                {word}
+                {/* {word} */}
               </div>
             );
           }
@@ -69,4 +67,4 @@ const TestBox = () => {
   );
 };
 
-export default TestBox;
+export default TextBox;

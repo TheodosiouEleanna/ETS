@@ -12,7 +12,6 @@ import TestBox from "components/ui/TextBox";
 const App: React.FC = () => {
   const context = useContext(Context);
   const { loading, isMenuOpen, file } = context;
-  // const { eyeData } = useEyeTrackingData();
 
   const toggleFullScreen = () => {
     const elem = document.documentElement;

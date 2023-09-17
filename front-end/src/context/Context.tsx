@@ -54,11 +54,6 @@ const initialState: IContextProps = {
   isCalibrating: false,
   shouldSubscribe: false,
   calibrationProcess: null,
-  wordPositions: [],
-  scaledWordDimensionsPerPage: {
-    pageNum: 0,
-    wordCoords: { left: 0, top: 0, width: 0, height: 0 },
-  },
   logout: () => {},
 };
 
@@ -174,11 +169,6 @@ const reducer = (state: IContextProps, action: IAction): IContextProps => {
         };
       }
       return state;
-    case "SET_WORD_POSITIONS":
-      return {
-        ...state,
-        wordPositions: action.payload,
-      };
     case "SET_SHOULD_SUBSCRIBE":
       return {
         ...state,
@@ -203,7 +193,7 @@ export const ContextProvider = ({
   children: React.ReactNode;
 }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const prevZoom = usePrevious(state.userSettingsApi.zoom);
+
   console.log({ state });
 
   // -------------------- DOCUMENT ACTIONS -----------------------
@@ -276,17 +266,6 @@ export const ContextProvider = ({
     dispatch({ type: "SET_SHOULD_SUBSCRIBE", payload: shouldSubscribe });
   };
 
-  const setWordPositions = (wordPositions: { [name: string]: any }[]) => {
-    dispatch({ type: "SET_WORD_POSITIONS", payload: wordPositions });
-  };
-
-  const setScaledWordDimensionPerPage = (
-    pageNum: number,
-    dimensions: { left: number; top: number; width: number; height: number }
-  ) => {
-    dispatch({ type: "SET_WORD_DIMENSIONS", payload: { pageNum, dimensions } });
-  };
-
   const setScrollTop = (scrollTop: number) => {
     dispatch({ type: "SCROLL", payload: scrollTop });
   };
@@ -326,38 +305,6 @@ export const ContextProvider = ({
     state.userInfo.userID,
   ]);
 
-  useEffect(() => {
-    if (
-      prevZoom !== state.userSettingsApi.zoom &&
-      state.userInfo.userID &&
-      state.selectedDocID
-    ) {
-      setLoading(true);
-      axios
-        .get(`${apiURL}/words-positions`, {
-          params: {
-            docID: state.selectedDocID,
-            userID: state.userInfo.userID,
-          },
-        })
-        .then((response) => {
-          console.log({ response });
-          setWordPositions(response.data.data);
-        })
-        .catch((error) => {
-          alert("Failed to get words positions.");
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    }
-  }, [
-    prevZoom,
-    state.selectedDocID,
-    state.userInfo.userID,
-    state.userSettingsApi.zoom,
-  ]);
-
   const contextValue = {
     file: state.file,
     selectedDocID: state.selectedDocID,
@@ -395,10 +342,6 @@ export const ContextProvider = ({
     setShouldSubscribe,
     calibrationProcess: state.calibrationProcess,
     setCalibrationProcess,
-    wordPositions: state.wordPositions,
-    setWordPositions,
-    scaledWordDimensionsPerPage: state.scaledWordDimensionsPerPage,
-    setScaledWordDimensionPerPage,
   };
 
   return <Context.Provider value={contextValue}>{children}</Context.Provider>;

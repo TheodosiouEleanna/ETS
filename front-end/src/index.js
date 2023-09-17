@@ -5,15 +5,18 @@ import "./index.css";
 import { ContextProvider } from "./context/Context";
 import { SnackbarProvider } from "./context/SnackbarContext";
 import { EyeTrackingProvider } from "./context/EyeTrackingContext";
+import { WordPositionsProvider } from "./context/WordPositionsContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   // <React.StrictMode>
   <ContextProvider>
     <SnackbarProvider>
-      <EyeTrackingProvider>
-        <App />
-      </EyeTrackingProvider>
+      <WordPositionsProvider>
+        <EyeTrackingProvider>
+          <App />
+        </EyeTrackingProvider>
+      </WordPositionsProvider>
     </SnackbarProvider>
   </ContextProvider>
   // </React.StrictMode>
