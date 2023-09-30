@@ -37,7 +37,6 @@ const Connection: React.FC<ConnectionProps> = ({
     isCalibrating,
     setIsCalibrating,
     selectedEyeTracker,
-    setShouldSubscribe,
     setSelectedEyeTracker,
     setIsEyeTrackerConnected,
   } = useContext<IContextProps>(Context);
@@ -75,7 +74,7 @@ const Connection: React.FC<ConnectionProps> = ({
       .then((response) => {
         setConnectionStatus("connected");
         setIsEyeTrackerConnected?.(true);
-        setIsCalibrating?.(true);
+        // setIsCalibrating?.(true);
         triggerSnackbar({
           message: response.data.message,
           status: "success",
