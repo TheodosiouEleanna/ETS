@@ -18,7 +18,6 @@ import {
   initSettings,
   initUserInfo,
 } from "utils/initData";
-import usePrevious from "hooks/usePrevious";
 
 const selectedDocID = localStorage.getItem("selectedDocID") || "";
 
