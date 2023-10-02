@@ -14,7 +14,8 @@ module.exports = {
         lightHoverColor: "#F3F4F6",
       },
       boxShadow: {
-        white: "0 1px 1px 0 rgba(255, 255, 255, 0.1), 0 1px 2px 0 rgba(255, 255, 255, 0.06)",
+        white:
+          "0 1px 1px 0 rgba(255, 255, 255, 0.1), 0 1px 2px 0 rgba(255, 255, 255, 0.06)",
       },
       extend: {
         zIndex: {
@@ -27,5 +28,5 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [require("daisyui")],
 };
