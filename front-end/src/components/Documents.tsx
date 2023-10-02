@@ -11,29 +11,32 @@ import { Document, IContextProps, ID } from "types/AppTypes";
 import Dialog from "./ui/Dialog";
 
 interface DocumentsProps {
+  docID:ID;
+  setDocID: React.Dispatch<React.SetStateAction<ID>>;
   onConfirm: (id: ID) => void;
 }
 
-const Documents: React.FC<DocumentsProps> = ({ onConfirm }) => {
+const Documents: React.FC<DocumentsProps> = ({ docID, setDocID, onConfirm }) => {
   const [documents, setDocuments] = useState<Document[]>();
   const [loading, setLoading] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [error, setError] = useState(null);
   const { userInfo, selectedDocID, setSelectedDocID, userSettingsApi } = useContext<IContextProps>(Context);
+  
 
   const { userID } = userInfo;
   const isDarkTheme = userSettingsApi.theme === "dark";
 
-  const handleDocumentClick = (docID: ID) => {
-    if (selectedDocID === docID) {
-      setSelectedDocID?.("");
+  const handleDocumentClick = (docId: ID) => {
+    if (docId === docID) {
+      setDocID("");
     } else {
-      setSelectedDocID?.(docID);
+      setDocID(docId);
     }
   };
 
   const onDoubleClick = (id: ID) => {
-    setSelectedDocID?.(id);
+    setDocID(id);
     onConfirm(id);
   };
 
@@ -129,14 +132,14 @@ const Documents: React.FC<DocumentsProps> = ({ onConfirm }) => {
               className='flex items-center justify-center h-6 w-6  cursor-pointer m-1'
               style={{ color: getFontColorSecondary(isDarkTheme) }}
             >
-              {selectedDocID === doc.docID ? <FaCheckSquare /> : <FaRegSquare />}
+              {docID === doc.docID ? <FaCheckSquare /> : <FaRegSquare />}
             </div>
             <div
               key={doc.docID}
               className={`grid grid-cols-7 text-left border-b-2 border-slate-100 top-0 hover:bg-[${getBgSecondary(
                 isDarkTheme
               )}] transition-colors duration-200 text-sm w-full bg-[${
-                selectedDocID === doc.docID ? `${getBgSecondary(isDarkTheme)}` : ""
+                docID === doc.docID ? `${getBgSecondary(isDarkTheme)}` : ""
               }]`}
               onDoubleClick={() => onDoubleClick(doc.docID)}
             >

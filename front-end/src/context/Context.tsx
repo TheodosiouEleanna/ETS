@@ -45,7 +45,7 @@ const initialState: IContextProps = {
   loading: false,
   pdfDimensions: initPdfDimensions,
   userInfo,
-  userSettingsApi: initSettings,
+  userSettingsApi: userSettingsUi,
   userSettingsUi,
   isMenuOpen: false,
   selectedEyeTracker,

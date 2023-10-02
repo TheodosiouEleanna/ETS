@@ -4,11 +4,7 @@ export const initUserInfo = {
   username: "",
 };
 
-export const initSettings = {
-  language: "el",
-  theme: "light",
-  zoom: 0.52,
-};
+export const initSettings = {};
 
 export const initEyeTracker = {
   device_name: "",

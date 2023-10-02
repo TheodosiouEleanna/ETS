@@ -6,6 +6,7 @@ import { useEyeTrackingData } from "context/EyeTrackingContext";
 
 const useEyeTracking = (): void => {
   const {
+    userInfo,
     isCalibrating,
     selectedEyeTracker,
     setCalibrationProcess,
@@ -122,6 +123,7 @@ const useEyeTracking = (): void => {
         const messageData = {
           action: "startTracking",
           address,
+          userID: userInfo.userID
         };
         socketRef.current.send(JSON.stringify(messageData));
       }

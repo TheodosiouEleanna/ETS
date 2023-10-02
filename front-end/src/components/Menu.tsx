@@ -28,6 +28,7 @@ function Menu({ onCloseMenu }: MenuProps) {
     setIsMenuOpen,
     userSettingsUi,
     userSettingsApi,
+    setSelectedDocID,
     setUserSettingsApi,
   } = useContext<IContextProps>(Context);
   const { zoom, theme, language } = userSettingsUi;
@@ -35,6 +36,7 @@ function Menu({ onCloseMenu }: MenuProps) {
   const [selectedOption, setSelectedOption] = useState("settings");
   const [loadingMenu, setLoadingMenu] = useState(false);
   const { triggerSnackbar } = useSnackbar();
+  const [docID, setDocID] = useState<ID>(selectedDocID)
 
   const settingsHaveChanges = useMemo(
     () => !isEqual(userSettingsUi, userSettingsApi),
@@ -43,7 +45,7 @@ function Menu({ onCloseMenu }: MenuProps) {
 
   const shouldDisableConfirm =
     ((selectedOption === "documents" || selectedOption === "upload") &&
-      selectedDocID === "") ||
+    docID === "") ||
     (selectedOption === "settings" && !settingsHaveChanges);
 
   const isDarkTheme = userSettingsApi.theme === "dark";
@@ -51,6 +53,7 @@ function Menu({ onCloseMenu }: MenuProps) {
   const onConfirm = (id: ID) => {
     setLoadingMenu(true);
     setLoading?.(true);
+    setSelectedDocID?.(docID)
     if (selectedOption === "settings") {
       if (!settingsHaveChanges) {
       } else {
@@ -86,7 +89,7 @@ function Menu({ onCloseMenu }: MenuProps) {
       axios
         .get(`${apiURL}/get_file`, {
           params: {
-            docID: id || selectedDocID,
+            docID: id || docID,
             userID,
           },
           responseType: "blob",
@@ -118,7 +121,7 @@ function Menu({ onCloseMenu }: MenuProps) {
       case "vocabulary":
         return <Vocabulary />;
       case "documents":
-        return <Documents onConfirm={onConfirm} />;
+        return <Documents docID={docID} setDocID={setDocID} onConfirm={onConfirm} />;
       case "upload":
         return <FileUpload />;
       default:
