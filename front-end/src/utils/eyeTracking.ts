@@ -53,54 +53,87 @@ import { GazeData } from "types/AppTypes";
 //   document.body.appendChild(point);
 // };
 
-export const getGazePointCoordinates = (
-  data: string
-): { pointX: number; pointY: number } => {
-  if (!data.includes("NaN")) {
-    const parsedData: GazeData = JSON.parse(data);
-    const { left_gaze_point_on_display_area } = parsedData;
-    const { right_gaze_point_on_display_area } = parsedData;
+export const getGazePointCoordinates = (data: GazeData) => {
+  const screenWidth = window.screen.width;
+  const screenHeight = window.screen.height;
+  const resolution = [screenWidth, screenHeight]
+  console.log({resolution});
+    let averageX = 0;
+    let averageY = 0;
 
-    const averageX =
-      (left_gaze_point_on_display_area[0] +
-        right_gaze_point_on_display_area[0]) /
-      2;
-    const averageY =
-      (left_gaze_point_on_display_area[1] +
-        right_gaze_point_on_display_area[1]) /
-      2;
-    return { pointX: averageX, pointY: averageY };
-  }
-  return { pointX: 0, pointY: 0 };
+    if (data.left_gaze_point_validity && data.right_gaze_point_validity) {
+      averageX = parseFloat(
+        ((data.left_gaze_point_on_display_area[0] + 
+        data.right_gaze_point_on_display_area[0]) / 2).toFixed(2)
+      );
+
+      averageY = parseFloat(
+        ((data.left_gaze_point_on_display_area[1] + 
+        data.right_gaze_point_on_display_area[1]) / 2).toFixed(2)
+      );
+
+    } else if (data.left_gaze_point_validity) {
+      averageX= data.left_gaze_point_on_display_area[0];
+      averageY = data.left_gaze_point_on_display_area[1];
+
+    } else if (data.right_gaze_point_validity) {
+      averageX = data.right_gaze_point_on_display_area[0];
+      averageY = data.right_gaze_point_on_display_area[1];
+    }
+
+    if (data.left_gaze_point_validity || data.right_gaze_point_validity) {
+      averageX = Math.min(Math.max(0, Math.round(averageX * resolution[0])), resolution[0]);
+      averageY = Math.min(Math.max(0, Math.round(averageY * resolution[1])), resolution[1]);
+    }
+
+
+    console.log(data);
+    
+    return { pointX: averageX, pointY: averageY};
 };
-
 // This is for batches of gaze data and makes the circle smoother.
-export const getAverageGazePointCoordinates2 = (
-  dataArray: string[]
-): { pointX: number; pointY: number } => {
+export const getAverageGazePointCoordinates2 = (dataArray: GazeData[]) => {
   let totalX = 0;
   let totalY = 0;
   let count = 0;
 
-  dataArray.forEach((data) => {
-    if (!data.includes("NaN")) {
-      const parsedData: GazeData = JSON.parse(data);
-      const { left_gaze_point_on_display_area } = parsedData;
-      const { right_gaze_point_on_display_area } = parsedData;
+  const screenWidth = window.screen.width;
+  const screenHeight = window.screen.height;
+  const resolution = [screenWidth, screenHeight]
 
-      const averageX =
-        (left_gaze_point_on_display_area[0] +
-          right_gaze_point_on_display_area[0]) /
-        2;
-      const averageY =
-        (left_gaze_point_on_display_area[1] +
-          right_gaze_point_on_display_area[1]) /
-        2;
+  dataArray.forEach((data) => {
+    let averageX = 0;
+    let averageY = 0;
+      if (data.left_gaze_point_validity && data.right_gaze_point_validity) {
+        averageX = parseFloat(
+          ((data.left_gaze_point_on_display_area[0] + 
+          data.right_gaze_point_on_display_area[0]) / 2).toFixed(2)
+        );
+
+        averageY = parseFloat(
+          ((data.left_gaze_point_on_display_area[1] + 
+          data.right_gaze_point_on_display_area[1]) / 2).toFixed(2)
+        );
+
+      } else if (data.left_gaze_point_validity) {
+        averageX = data.left_gaze_point_on_display_area[0];
+        averageY = data.left_gaze_point_on_display_area[1];
+      } else if (data.right_gaze_point_validity) {
+        averageX = data.right_gaze_point_on_display_area[0];
+        averageY = data.right_gaze_point_on_display_area[1];
+      }
+
+      if (data.left_gaze_point_validity || data.right_gaze_point_validity) {
+        averageX = Math.min(Math.max(0, Math.round(averageX * resolution[0])), resolution[0]);
+        averageY = Math.min(Math.max(0, Math.round(averageY * resolution[1])), resolution[1]);
+      }
+
+
+      console.log(data);
 
       totalX += averageX;
       totalY += averageY;
       count++;
-    }
   });
 
   return count > 0

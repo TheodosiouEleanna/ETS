@@ -9,24 +9,18 @@ const CircleMover: React.FC = () => {
     y: 0,
   });
 
-  const width = document.documentElement.scrollWidth;
-  const height = document.documentElement.scrollHeight;
-
   useEffect(() => {
-    const recentData = eyeData.slice(-5); // get the last 10 data points
-    const { pointX, pointY } = getAverageGazePointCoordinates2(recentData);
 
-    // ! This if is for single data gaze point creation
-    // if (eyeData.length) {
-    // const recentData = eyeData[eyeData.length - 1];
-    // const { pointX, pointY } = getGazePointCoordinates(recentData);
-    // if (recentData.length === 0) return;
-
-    // const { x, y } = scalePointToEdges(pointX, pointY);
-    // console.log({ x, y });
-
-    setAvgPosition({ x: pointX, y: pointY });
-    // }
+      const recentData = eyeData.slice(-5); // get the last 5 data points
+      const { pointX, pointY } = getAverageGazePointCoordinates2(recentData);
+  
+      // ! This if is for single data gaze point creation
+      // const recentData = eyeData[eyeData.length - 1];
+      // const { pointX, pointY } = getGazePointCoordinates(recentData);
+      // if (recentData.length === 0) return;
+  
+      setAvgPosition({ x: pointX, y: pointY });
+ 
   }, [eyeData]);
 
   return (
@@ -34,8 +28,8 @@ const CircleMover: React.FC = () => {
       className='circle'
       style={{
         opacity: 0.3,
-        left: `${avgPosition.x * width}px`,
-        top: `${avgPosition.y * height}px`,
+        left: `${avgPosition.x}px`,
+        top: `${avgPosition.y}px`,
         position: "absolute",
         width: "25px",
         height: "25px",

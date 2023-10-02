@@ -57,33 +57,35 @@ const useEyeTracking = (): void => {
 
   useEffect(() => {
     if (isEyeTrackerConnected) {
-      if (socketRef.current) {
+      if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
         socketRef.current.onmessage = (event) => {
           const { data } = event;
-          const parsedData = JSON.parse(data);
-          const { action } = parsedData;
-
-          if (!isEmpty(data)) {
-            if (isCalibrating && action === "calibrationResult") {
-              setCalibrationProcess?.({
-                ...parsedData,
-                goToNextPoint: parsedData.message.includes("success"),
-              });
-            } else if (isCalibrating && action === "startCalibration") {
-              setCalibrationProcess?.(parsedData);
-            } else if (parsedData.action && parsedData.action === "eyeData") {
-              try {
-                accumulateData?.(parsedData.payload);
-              } catch (error) {
-                console.error("Error parsing JSON:", error);
+          if (!data.includes("NaN")) {
+            const parsedData = JSON.parse(data);
+            const { action } = parsedData;
+            
+            if (!isEmpty(data)) {
+              if (isCalibrating && action === "calibrationResult") {
+                setCalibrationProcess?.({
+                  ...parsedData,
+                  goToNextPoint: parsedData.message.includes("success"),
+                });
+              } else if (isCalibrating && action === "startCalibration") {
+                setCalibrationProcess?.(parsedData);
+              } else if (parsedData.action && parsedData.action === "eyeData") {
+                try {                  
+                  accumulateData?.(parsedData.payload);
+                } catch (error) {
+                  console.error("Error parsing JSON:", error);
+                }
               }
             }
           }
-        };
+          };
+        }
       }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [
     isEyeTrackerConnected,
     isCalibrating,
     address,
@@ -128,9 +130,20 @@ const useEyeTracking = (): void => {
 
   useEffect(() => {
     if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+      if (!shouldSubscribe) {
+        const messageData = {
+          action: "stopTracking",
+          address,
+        };
+        socketRef.current.send(JSON.stringify(messageData));
+      }
+    }
+  }, [address, shouldSubscribe]);
+
+  useEffect(() => {
+    if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
       if (!shouldSubscribe && !isEyeTrackerConnected) {
         socketRef.current.close();
-        window.location.reload();
         localStorage.removeItem("eyeTracker");
       }
     }
