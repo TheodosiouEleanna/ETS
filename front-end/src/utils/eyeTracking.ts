@@ -56,40 +56,49 @@ import { GazeData } from "types/AppTypes";
 export const getGazePointCoordinates = (data: GazeData) => {
   const screenWidth = window.screen.width;
   const screenHeight = window.screen.height;
-  const resolution = [screenWidth, screenHeight]
-  console.log({resolution});
-    let averageX = 0;
-    let averageY = 0;
+  const resolution = [screenWidth, screenHeight];
+  console.log({ resolution });
+  let averageX = 0;
+  let averageY = 0;
 
-    if (data.left_gaze_point_validity && data.right_gaze_point_validity) {
-      averageX = parseFloat(
-        ((data.left_gaze_point_on_display_area[0] + 
-        data.right_gaze_point_on_display_area[0]) / 2).toFixed(2)
-      );
+  if (data.left_gaze_point_validity && data.right_gaze_point_validity) {
+    averageX = parseFloat(
+      (
+        (data.left_gaze_point_on_display_area[0] +
+          data.right_gaze_point_on_display_area[0]) /
+        2
+      ).toFixed(2)
+    );
 
-      averageY = parseFloat(
-        ((data.left_gaze_point_on_display_area[1] + 
-        data.right_gaze_point_on_display_area[1]) / 2).toFixed(2)
-      );
+    averageY = parseFloat(
+      (
+        (data.left_gaze_point_on_display_area[1] +
+          data.right_gaze_point_on_display_area[1]) /
+        2
+      ).toFixed(2)
+    );
+  } else if (data.left_gaze_point_validity) {
+    averageX = data.left_gaze_point_on_display_area[0];
+    averageY = data.left_gaze_point_on_display_area[1];
+  } else if (data.right_gaze_point_validity) {
+    averageX = data.right_gaze_point_on_display_area[0];
+    averageY = data.right_gaze_point_on_display_area[1];
+  }
 
-    } else if (data.left_gaze_point_validity) {
-      averageX= data.left_gaze_point_on_display_area[0];
-      averageY = data.left_gaze_point_on_display_area[1];
+  if (data.left_gaze_point_validity || data.right_gaze_point_validity) {
+    averageX = Math.min(
+      Math.max(0, Math.round(averageX * resolution[0])),
+      resolution[0]
+    );
+    averageY = Math.min(
+      Math.max(0, Math.round(averageY * resolution[1])),
+      resolution[1]
+    );
+  }
 
-    } else if (data.right_gaze_point_validity) {
-      averageX = data.right_gaze_point_on_display_area[0];
-      averageY = data.right_gaze_point_on_display_area[1];
-    }
+  console.log(data);
 
-    if (data.left_gaze_point_validity || data.right_gaze_point_validity) {
-      averageX = Math.min(Math.max(0, Math.round(averageX * resolution[0])), resolution[0]);
-      averageY = Math.min(Math.max(0, Math.round(averageY * resolution[1])), resolution[1]);
-    }
-
-
-    console.log(data);
-    
-    return { pointX: averageX, pointY: averageY};
+  return { pointX: averageX, pointY: averageY };
 };
 // This is for batches of gaze data and makes the circle smoother.
 export const getAverageGazePointCoordinates2 = (dataArray: GazeData[]) => {
@@ -99,44 +108,75 @@ export const getAverageGazePointCoordinates2 = (dataArray: GazeData[]) => {
 
   const screenWidth = window.screen.width;
   const screenHeight = window.screen.height;
-  const resolution = [screenWidth, screenHeight]
+  const resolution = [screenWidth, screenHeight];
 
   dataArray.forEach((data) => {
     let averageX = 0;
     let averageY = 0;
-      if (data.left_gaze_point_validity && data.right_gaze_point_validity) {
-        averageX = parseFloat(
-          ((data.left_gaze_point_on_display_area[0] + 
-          data.right_gaze_point_on_display_area[0]) / 2).toFixed(2)
-        );
+    if (data.left_gaze_point_validity && data.right_gaze_point_validity) {
+      averageX = parseFloat(
+        (
+          (data.left_gaze_point_on_display_area[0] +
+            data.right_gaze_point_on_display_area[0]) /
+          2
+        ).toFixed(2)
+      );
 
-        averageY = parseFloat(
-          ((data.left_gaze_point_on_display_area[1] + 
-          data.right_gaze_point_on_display_area[1]) / 2).toFixed(2)
-        );
+      averageY = parseFloat(
+        (
+          (data.left_gaze_point_on_display_area[1] +
+            data.right_gaze_point_on_display_area[1]) /
+          2
+        ).toFixed(2)
+      );
+    } else if (data.left_gaze_point_validity) {
+      averageX = data.left_gaze_point_on_display_area[0];
+      averageY = data.left_gaze_point_on_display_area[1];
+    } else if (data.right_gaze_point_validity) {
+      averageX = data.right_gaze_point_on_display_area[0];
+      averageY = data.right_gaze_point_on_display_area[1];
+    }
 
-      } else if (data.left_gaze_point_validity) {
-        averageX = data.left_gaze_point_on_display_area[0];
-        averageY = data.left_gaze_point_on_display_area[1];
-      } else if (data.right_gaze_point_validity) {
-        averageX = data.right_gaze_point_on_display_area[0];
-        averageY = data.right_gaze_point_on_display_area[1];
-      }
+    if (data.left_gaze_point_validity || data.right_gaze_point_validity) {
+      averageX = Math.min(
+        Math.max(0, Math.round(averageX * resolution[0])),
+        resolution[0]
+      );
+      averageY = Math.min(
+        Math.max(0, Math.round(averageY * resolution[1])),
+        resolution[1]
+      );
+    }
 
-      if (data.left_gaze_point_validity || data.right_gaze_point_validity) {
-        averageX = Math.min(Math.max(0, Math.round(averageX * resolution[0])), resolution[0]);
-        averageY = Math.min(Math.max(0, Math.round(averageY * resolution[1])), resolution[1]);
-      }
+    console.log(data);
 
-
-      console.log(data);
-
-      totalX += averageX;
-      totalY += averageY;
-      count++;
+    totalX += averageX;
+    totalY += averageY;
+    count++;
   });
 
   return count > 0
     ? { pointX: totalX / count, pointY: totalY / count }
     : { pointX: 0, pointY: 0 };
+};
+
+export const validateEyeData = (
+  eyeData: GazeData[],
+  bounds: {
+    left: number;
+    top: number;
+    right: number;
+    bottom: number;
+  }
+) => {
+  const { left, top, right, bottom } = bounds;
+  for (const dato of eyeData) {
+    const { pointX, pointY } = getGazePointCoordinates(dato);
+    console.log("Average gaze point", pointX, pointY);
+    console.log("Tis leksis", left, top, right, bottom);
+    // console.log('Average gaze point + 0.1', pointX + 0.1, pointY + 0.1)
+    if (pointX < left || pointX > right || pointY < top || pointY > bottom)
+      return false;
+  }
+  return true;
 };

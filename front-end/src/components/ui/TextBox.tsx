@@ -1,136 +1,122 @@
+import { translate } from "@vitalets/google-translate-api";
 import TranslationPopup from "components/TranslationPopup";
 import { Context } from "context/Context";
 import { useEyeTrackingData } from "context/EyeTrackingContext";
-import useCurrentPageData from "hooks/useCurrentPageData";
 import { useWordPositions } from "hooks/useWordPositions";
 import React, { useContext, useEffect, useState } from "react";
-import { GazeData, IContextProps, IWordPositions } from "types/AppTypes";
-import { getGazePointCoordinates } from "utils/eyeTracking";
+import { IContextProps, IWordPositions } from "types/AppTypes";
+import { validateEyeData } from "utils/eyeTracking";
 import { calculateScaledPositions } from "utils/functions";
 
 const wordPadding = 10;
 
-const validateEyeData = (
-  eyeData: GazeData[],
-  bounds: {
-    left: number;
-    top: number;
-    right: number;
-    bottom: number;
-  }
-) => {
-  const { left, top, right, bottom } = bounds;
-  for (const dato of eyeData) {
-    const { pointX, pointY } = getGazePointCoordinates(dato);
-    console.log("Average gaze point", pointX, pointY);
-    console.log("Tis leksis", left, top, right, bottom);
-    // console.log('Average gaze point + 0.1', pointX + 0.1, pointY + 0.1)
-    if (pointX < left || pointX > right || pointY < top || pointY > bottom)
-      return false;
-  }
-  return true;
-};
-
 const TextBox = () => {
+  const { eyeData } = useEyeTrackingData();
   const { scrollTop, currentPage, userSettingsApi } =
     useContext<IContextProps>(Context);
-  const [currPageData, setCurrentPageData] = useState<{
+
+  const testWord = "Infrastructure";
+  const {
+    wordPositions,
+    scaledWordDimensionsPerPage,
+    setScaledWordDimensionsPerPage,
+  } = useWordPositions();
+  const { wordCoords = { left: 0, top: 0, width: 0, height: 0 } } =
+    scaledWordDimensionsPerPage;
+  const { left, top, width, height } = wordCoords;
+
+  const element = document.getElementById("pdf-page");
+
+  const [currentPageData, setCurrentPageData] = useState<{
     data: IWordPositions[];
     page: number;
   }>();
   const [shouldTranslate, setShouldTranslate] = useState<boolean>(false);
-  const { eyeData } = useEyeTrackingData();
-  const { wordPositions, setScaledWordDimensionsPerPage } = useWordPositions();
+  const [translation, setTranslation] = useState<string>("");
 
-  // useEffect(() => {
-  //   if (wordPositions && wordPositions.length) {
-  //     setCurrentPageData(wordPositions[currentPage - 1]);
-  //   }
-  // }, [currentPage, wordPositions]);
+  console.log({ wordPositions, currentPageData, scaledWordDimensionsPerPage });
 
-  // return (
-  //   <>
-  //     {currentPageData &&
-  // currentPageData.data.map((wordData, index) => {
-  //   if (wordData && wordData.box) {
-  //     const { box, word } = wordData;
-  //     const { xPrime, yPrime, wPrime, hPrime } = calculateScaledPositions(
-  //       box,
-  //       scrollTop,
-  //       currentPage,
-  //       userSettingsApi.zoom
-  //     );
-  //     setScaledWordDimensionsPerPage?.({
-  //       pageNum: currentPage,
-  //       wordCoords: {
-  //         left: xPrime,
-  //         top: yPrime,
-  //         width: wPrime,
-  //         height: hPrime,
-  //       },
-  //     });
-  //     return (
-  //       <div
-  //         key={index}
-  //         style={{
-  //           opacity: 0.3,
-  //           left: xPrime,
-  //           top: yPrime,
-  //           position: "absolute",
-  //           width: wPrime + wordPadding,
-  //           height: hPrime + wordPadding,
-  //           border: "2px solid red",
-  //           zIndex: 999,
-  //         }}
-  //       >
-  //         {/* {word} */}
-  //       </div>
-  //     );
-  //   }
-  //   return null;
-  // })
-  //       ''
-  //       }
-  //   </>
-  // );
-  const currentPageData = useCurrentPageData(wordPositions, currentPage);
+  useEffect(() => {
+    if (wordPositions && wordPositions.length) {
+      setCurrentPageData(wordPositions[currentPage - 1]);
+    }
+  }, [currentPage, wordPositions]);
 
-  // if (!currentPageData) return null;
+  useEffect(() => {
+    if (!element) return;
 
-  const testWord = "Document";
-  const wordData = currentPageData?.data.find((word) => word.word === testWord);
-  // if (!wordData || !wordData.box) return null;
+    if (currentPageData && currentPageData?.data.length) {
+      const wordData = currentPageData?.data.find(
+        (word) => word.word === testWord
+      );
 
-  const { xPrime, yPrime, wPrime, hPrime } = calculateScaledPositions(
-    wordData?.box || [0, 0, 0, 0],
-    scrollTop,
+      if (wordData && wordData.box) {
+        const { box } = wordData;
+        const { xPrime, yPrime, wPrime, hPrime } = calculateScaledPositions(
+          box,
+          element,
+          scrollTop,
+          currentPage,
+          userSettingsApi.zoom
+        );
+
+        setScaledWordDimensionsPerPage?.({
+          pageNum: currentPage + 1,
+          wordCoords: {
+            left: xPrime,
+            top: yPrime,
+            width: wPrime,
+            height: hPrime,
+          },
+        });
+      }
+    }
+  }, [
+    element,
     currentPage,
-    userSettingsApi.zoom
-  );
+    currentPageData,
+    currentPageData?.data.length,
+    scrollTop,
+    userSettingsApi.zoom,
+  ]);
 
   useEffect(() => {
     const validationResult = validateEyeData(eyeData.slice(-300), {
-      left: xPrime - wordPadding / 2,
-      top: yPrime - wordPadding / 2,
-      right: xPrime + wPrime,
-      bottom: yPrime + hPrime,
+      left: left - wordPadding / 2,
+      top: top - wordPadding / 2,
+      right: left + width,
+      bottom: top + height,
     });
     console.log({ validationResult });
 
     if (validationResult) {
       setShouldTranslate(validationResult);
     }
-  }, [eyeData, hPrime, wPrime, xPrime, yPrime]);
+  }, [eyeData, height, left, scaledWordDimensionsPerPage, top, width]);
+
+  useEffect(() => {
+    if (testWord && shouldTranslate) {
+      translate(testWord, { from: "en", to: "gr" })
+        .then((res) => {
+          console.log("translation res ", res.text);
+
+          setTranslation(res.text);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }
+  }, [shouldTranslate]);
 
   return (
     <>
       <div
         style={{
-          left: xPrime - wordPadding / 2,
-          top: yPrime - wordPadding / 2,
+          left: left - wordPadding / 2,
+          top: top - wordPadding / 2,
           position: "absolute",
-          width: wPrime + wordPadding,
-          height: hPrime + wordPadding,
+          width: width + wordPadding,
+          height: height + wordPadding,
           border: "2px solid red",
           zIndex: 999,
         }}
@@ -139,8 +125,8 @@ const TextBox = () => {
           {shouldTranslate && (
             <TranslationPopup
               text={testWord}
-              translation={testWord}
-              offset={wPrime + wordPadding}
+              translation={translation}
+              offset={width + wordPadding}
               setShouldTranslate={setShouldTranslate}
             />
           )}

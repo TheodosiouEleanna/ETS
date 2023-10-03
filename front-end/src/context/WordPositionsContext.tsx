@@ -80,12 +80,12 @@ export const WordPositionsProvider: React.FC<WordPositionsProviderProps> = ({
 
   const setScaledWordDimensionsPerPage = ({
     pageNum,
-    dimensions,
+    wordCoords,
   }: {
     pageNum: number;
-    dimensions: { left: number; top: number; width: number; height: number };
+    wordCoords: { left: number; top: number; width: number; height: number };
   }) => {
-    dispatch({ type: "SET_WORD_DIMENSIONS", payload: { pageNum, dimensions } });
+    dispatch({ type: "SET_WORD_DIMENSIONS", payload: { pageNum, wordCoords } });
   };
 
   useEffect(() => {
@@ -94,7 +94,8 @@ export const WordPositionsProvider: React.FC<WordPositionsProviderProps> = ({
       prevZoom &&
       (selectedDocID !== prevDoc ||
         userSettingsApi.zoom !== prevZoom ||
-        performance.navigation.type === performance.navigation.TYPE_RELOAD)
+        performance.navigation.type === performance.navigation.TYPE_RELOAD ||
+        performance.navigation.type === performance.navigation.TYPE_NAVIGATE)
     ) {
       setWordsLoading(true);
       axios
