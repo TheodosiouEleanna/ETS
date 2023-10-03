@@ -90,8 +90,11 @@ export const WordPositionsProvider: React.FC<WordPositionsProviderProps> = ({
 
   useEffect(() => {
     if (
-      userInfo.userID && prevZoom && 
-      (selectedDocID !== prevDoc || userSettingsApi.zoom !== prevZoom || performance.navigation.type === performance.navigation.TYPE_RELOAD)
+      userInfo.userID &&
+      prevZoom &&
+      (selectedDocID !== prevDoc ||
+        userSettingsApi.zoom !== prevZoom ||
+        performance.navigation.type === performance.navigation.TYPE_RELOAD)
     ) {
       setWordsLoading(true);
       axios
@@ -112,10 +115,10 @@ export const WordPositionsProvider: React.FC<WordPositionsProviderProps> = ({
           setWordsLoading(false);
         });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [prevDoc, prevZoom, userInfo.userID]);
 
-  console.log({prevZoom: !!prevZoom, orevDoc: !!prevDoc, or: selectedDocID !== prevDoc || userSettingsApi.zoom !== prevZoom || performance.navigation.type === performance.navigation.TYPE_RELOAD, userID: userInfo.userID, zoom: userSettingsApi.zoom})
+  // console.log({prevZoom: !!prevZoom, orevDoc: !!prevDoc, or: selectedDocID !== prevDoc || userSettingsApi.zoom !== prevZoom || performance.navigation.type === performance.navigation.TYPE_RELOAD, userID: userInfo.userID, zoom: userSettingsApi.zoom})
 
   const contextValue = {
     wordsLoading: state.wordsLoading,

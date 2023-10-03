@@ -4,7 +4,6 @@ import { useEyeTrackingData } from "context/EyeTrackingContext";
 import useCurrentPageData from "hooks/useCurrentPageData";
 import { useWordPositions } from "hooks/useWordPositions";
 import React, { useContext, useEffect, useState } from "react";
-import { MdOutlineSupervisorAccount } from "react-icons/md";
 import { GazeData, IContextProps, IWordPositions } from "types/AppTypes";
 import { getGazePointCoordinates } from "utils/eyeTracking";
 import { calculateScaledPositions } from "utils/functions";
@@ -119,7 +118,6 @@ const TextBox = () => {
     console.log({ validationResult });
 
     if (validationResult) {
-      console.log({ testWord });
       setShouldTranslate(validationResult);
     }
   }, [eyeData, hPrime, wPrime, xPrime, yPrime]);

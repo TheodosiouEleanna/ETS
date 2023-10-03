@@ -6,7 +6,6 @@ import { IContextProps } from "types/AppTypes";
 import {
   getBgPrimary,
   getBgSecondary,
-  getBgSecondaryReverse,
   getFontColorPrimary,
 } from "utils/functions";
 
@@ -24,7 +23,6 @@ const TranslationPopup: React.FC<TranslationPopupProps> = ({
   setShouldTranslate,
 }) => {
   const { userSettingsApi } = useContext<IContextProps>(Context);
-  console.log({ offset });
   const left = offset - 40;
 
   const onClose = () => {

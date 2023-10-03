@@ -39,13 +39,18 @@ const useEyeTracking = (): void => {
 
       socketRef.current.onclose = () => {
         console.log("WebSocket connection closed.");
+        setShouldOpenConnection(true);
+        socketRef.current = null;
       };
 
       socketRef.current.onerror = (error) => {
         console.error("WebSocket encountered an error: ", error);
+        setShouldOpenConnection(true);
+        socketRef.current = null;
       };
     }
   }, [address, isCalibrating]);
+  console.log("shouldOpenConnection", shouldOpenConnection);
 
   useEffect(() => {
     if (shouldOpenConnection) {
@@ -58,13 +63,16 @@ const useEyeTracking = (): void => {
 
   useEffect(() => {
     if (isEyeTrackerConnected) {
-      if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+      if (
+        socketRef.current &&
+        socketRef.current.readyState === WebSocket.OPEN
+      ) {
         socketRef.current.onmessage = (event) => {
           const { data } = event;
           if (!data.includes("NaN")) {
             const parsedData = JSON.parse(data);
             const { action } = parsedData;
-            
+
             if (!isEmpty(data)) {
               if (isCalibrating && action === "calibrationResult") {
                 setCalibrationProcess?.({
@@ -74,7 +82,7 @@ const useEyeTracking = (): void => {
               } else if (isCalibrating && action === "startCalibration") {
                 setCalibrationProcess?.(parsedData);
               } else if (parsedData.action && parsedData.action === "eyeData") {
-                try {                  
+                try {
                   accumulateData?.(parsedData.payload);
                 } catch (error) {
                   console.error("Error parsing JSON:", error);
@@ -82,11 +90,11 @@ const useEyeTracking = (): void => {
               }
             }
           }
-          };
-        }
+        };
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
     isEyeTrackerConnected,
     isCalibrating,
     address,
@@ -99,6 +107,7 @@ const useEyeTracking = (): void => {
     return () => {
       console.log("Stopping tracking and closing WebSocket.");
       if (socketRef.current) {
+        setShouldOpenConnection(true);
         socketRef.current.close();
         socketRef.current = null;
       }
@@ -123,12 +132,12 @@ const useEyeTracking = (): void => {
         const messageData = {
           action: "startTracking",
           address,
-          userID: userInfo.userID
+          userID: userInfo.userID,
         };
         socketRef.current.send(JSON.stringify(messageData));
       }
     }
-  }, [address, shouldSubscribe]);
+  }, [address, shouldSubscribe, userInfo.userID, shouldOpenConnection]);
 
   useEffect(() => {
     if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
