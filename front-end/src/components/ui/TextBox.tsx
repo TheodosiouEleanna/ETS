@@ -99,7 +99,7 @@ const TextBox = () => {
       if (testWord && shouldTranslate) {
         try {
           const response = await fetch(
-            `http://localhost:5001/translate_a/single?client=at&dt=t&dt=rm&dj=1&sl=en&tl=gr&q=${testWord}`,
+            `http://localhost:5001/translate_a/single?client=at&dt=t&dt=rm&dj=1&sl=en&tl=el&q=${testWord}`,
             {
               method: "GET",
               headers: {
@@ -110,7 +110,7 @@ const TextBox = () => {
 
           if (response.ok) {
             const data = await response.json();
-            setTranslation(data.text); // Adjust according to actual API response structure
+            setTranslation(data.sentences[0].trans);
           } else {
             console.error("Failed to fetch translation");
           }
