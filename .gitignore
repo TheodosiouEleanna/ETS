@@ -33,3 +33,5 @@ docker-compose.yml
 
 /front-end/Dockerfile
 /back-end/Dockerfile
+
+/proxy-server/node_modules
