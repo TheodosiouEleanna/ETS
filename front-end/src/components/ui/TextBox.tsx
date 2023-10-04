@@ -3,7 +3,7 @@ import TranslationPopup from "components/TranslationPopup";
 import { Context } from "context/Context";
 import { useEyeTrackingData } from "context/EyeTrackingContext";
 import { useWordPositions } from "hooks/useWordPositions";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { IContextProps, IWordPositions } from "types/AppTypes";
 import { validateEyeData } from "utils/eyeTracking";
 import { calculateScaledPositions } from "utils/functions";
@@ -25,7 +25,7 @@ const TextBox = () => {
     scaledWordDimensionsPerPage;
   const { left, top, width, height } = wordCoords;
 
-  const element = document.getElementById("pdf-page");
+  const element = useMemo(() => document.getElementById("pdf-page"), []);
 
   const [currentPageData, setCurrentPageData] = useState<{
     data: IWordPositions[];
@@ -95,17 +95,31 @@ const TextBox = () => {
   }, [eyeData, height, left, scaledWordDimensionsPerPage, top, width]);
 
   useEffect(() => {
-    if (testWord && shouldTranslate) {
-      translate(testWord, { from: "en", to: "gr" })
-        .then((res) => {
-          console.log("translation res ", res.text);
+    const fetchTranslation = async () => {
+      if (testWord && shouldTranslate) {
+        try {
+          const response = await fetch(
+            `http://localhost:5001/translate_a/single?client=at&dt=t&dt=rm&dj=1&sl=en&tl=gr&q=${testWord}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
 
-          setTranslation(res.text);
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-    }
+          if (response.ok) {
+            const data = await response.json();
+            setTranslation(data.text); // Adjust according to actual API response structure
+          } else {
+            console.error("Failed to fetch translation");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      }
+    };
+    fetchTranslation();
   }, [shouldTranslate]);
 
   return (

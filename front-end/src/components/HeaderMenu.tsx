@@ -9,7 +9,6 @@ import React, {
 import { MdCastConnected, MdDensityMedium } from "react-icons/md";
 import { BsFillPersonFill } from "react-icons/bs";
 import { AiOutlineDisconnect } from "react-icons/ai";
-import { CgCalibrate } from "react-icons/cg";
 import Profile from "./Profile";
 import Menu from "./Menu";
 import { Context } from "../context/Context";

@@ -82,7 +82,7 @@ export const getSize = () => {
 };
 
 export const saveToFile = (data: Record<string, any>, filename: string) => {
-  const serializedData = JSON.stringify(data, null, 1); // Indent with 2 spaces for readability
+  const serializedData = JSON.stringify(data, null, 1);
   const blob = new Blob([serializedData], { type: "text/plain" });
   const url = window.URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -105,10 +105,10 @@ export const calculateScaledPositions = (
   scale: number
 ): { xPrime: number; yPrime: number; wPrime: number; hPrime: number } => {
   const [x, y, w, h] = box;
-  debugger;
+
   const pdfContainer = document.getElementById("pdf-container");
 
-  const header = document.getElementById("header"); // replace with actual id or query selector
+  const header = document.getElementById("header");
   const footer = document.getElementById("footer");
 
   if (pdfContainer && element && header && footer) {
