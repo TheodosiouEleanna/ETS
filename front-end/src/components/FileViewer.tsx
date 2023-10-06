@@ -37,6 +37,7 @@ const FileViewer: React.FC = () => {
     setPageCount,
     pdfDimensions,
     setPdfDimensions,
+    setPageMounted,
   } = useContext(Context);
   const isElectron = /Electron/.test(navigator.userAgent);
   const [elWidth, setElWidth] = useState<number>();
@@ -56,6 +57,10 @@ const FileViewer: React.FC = () => {
     console.log("doc load success");
     setPageCount?.(pdf.numPages);
     setLoading?.(false);
+    setTimeout(() => {
+      setPageMounted?.();
+      // Wait for the canvas to render because the width is (2) not correct for a split second
+    }, 200);
     triggerSnackbar({
       message: "Document loaded successfully!",
       status: "success",

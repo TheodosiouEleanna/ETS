@@ -1,4 +1,4 @@
-import { GazeData } from "types/AppTypes";
+import { GazeData, IScaledWordCoords, IWordPositions } from "types/AppTypes";
 
 // export const normalizeCoordinates = (x, y) => {
 //   const screenWidth = window.screen.width;
@@ -57,7 +57,6 @@ export const getGazePointCoordinates = (data: GazeData) => {
   const screenWidth = window.screen.width;
   const screenHeight = window.screen.height;
   const resolution = [screenWidth, screenHeight];
-  console.log({ resolution });
   let averageX = 0;
   let averageY = 0;
 
@@ -95,8 +94,6 @@ export const getGazePointCoordinates = (data: GazeData) => {
       resolution[1]
     );
   }
-
-  console.log(data);
 
   return { pointX: averageX, pointY: averageY };
 };
@@ -148,8 +145,6 @@ export const getAverageGazePointCoordinates2 = (dataArray: GazeData[]) => {
       );
     }
 
-    console.log(data);
-
     totalX += averageX;
     totalY += averageY;
     count++;
@@ -179,4 +174,49 @@ export const validateEyeData = (
       return false;
   }
   return true;
+};
+
+// left: left - wordPadding / 2,
+//     top: top - wordPadding / 2,
+//     right: left + width,
+//     bottom: top + height,
+
+const isPointInsideBox = (
+  x: number,
+  y: number,
+  {
+    left,
+    top,
+    right,
+    bottom,
+  }: { left: number; top: number; right: number; bottom: number }
+) => {
+  return x >= left && x <= right && y >= top && y <= bottom;
+};
+
+export const validateEyeData2 = (
+  eyeData: GazeData[],
+  wordPositions: IScaledWordCoords[],
+  wordPadding = 10
+) => {
+  const relevantEyeData = eyeData.slice(-300); // Last 300 eye-tracking points
+
+  for (let wordData of wordPositions) {
+    const { left, top, width, height } = wordData.wordCoords;
+
+    const allPointsInside = relevantEyeData.every((rel) => {
+      const { pointX, pointY } = getGazePointCoordinates(rel);
+      return isPointInsideBox(pointX, pointY, {
+        left: left - wordPadding / 2,
+        top: top - wordPadding / 2,
+        right: left + width,
+        bottom: top + height,
+      });
+    });
+
+    if (allPointsInside) {
+      return wordData;
+    }
+  }
+  return { word: "", wordCoords: { left: 0, top: 0, width: 0, height: 0 } };
 };

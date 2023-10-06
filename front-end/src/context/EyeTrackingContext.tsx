@@ -1,4 +1,10 @@
-import React, { createContext, useState, useContext, ReactNode, useEffect } from "react";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  ReactNode,
+  useEffect,
+} from "react";
 import { GazeData } from "types/AppTypes";
 
 interface EyeTrackingContextProps {
@@ -18,18 +24,16 @@ export const EyeTrackingProvider: React.FC<EyeTrackingProviderProps> = ({
   children,
 }) => {
   const [eyeData, setEyeData] = useState<GazeData[]>([]);
-  console.log({ eyeData });
 
   const accumulateData = (newData: GazeData) => {
     setEyeData((prevData) => [...prevData, newData]);
   };
 
-  useEffect(()=> {
-    if(eyeData.length > 2100){
-      setEyeData(prevData =>  prevData.slice(1500))
-     
+  useEffect(() => {
+    if (eyeData.length > 2100) {
+      setEyeData((prevData) => prevData.slice(1500));
     }
-  }, [eyeData])
+  }, [eyeData]);
 
   return (
     <EyeTrackingContext.Provider value={{ eyeData, accumulateData }}>

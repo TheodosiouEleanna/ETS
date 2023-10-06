@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import {
   IContextProps,
+  IScaledWordCoords,
   IWordPositions,
   IWordPositionsAction,
   IWordPositionsState,
@@ -23,10 +24,7 @@ interface WordPositionsProviderProps {
 const initialWordPositionsState: IWordPositionsState = {
   wordsLoading: false,
   wordPositions: [],
-  scaledWordDimensionsPerPage: {
-    pageNum: 0,
-    wordCoords: { left: 0, top: 0, width: 0, height: 0 },
-  },
+  wordsScreenPositions: [],
 };
 
 const wordPositionsReducer = (
@@ -44,10 +42,10 @@ const wordPositionsReducer = (
         ...state,
         wordPositions: action.payload,
       };
-    case "SET_WORD_DIMENSIONS":
+    case "SET_WORDS_SCREEN_POSITIONS":
       return {
         ...state,
-        scaledWordDimensionsPerPage: action.payload,
+        wordsScreenPositions: action.payload,
       };
     default:
       return state;
@@ -63,6 +61,9 @@ export const WordPositionsProvider: React.FC<WordPositionsProviderProps> = ({
     wordPositionsReducer,
     initialWordPositionsState
   );
+
+  console.log({ wordState: state });
+
   const { userInfo, userSettingsApi, selectedDocID } =
     useContext<IContextProps>(Context);
 
@@ -78,14 +79,13 @@ export const WordPositionsProvider: React.FC<WordPositionsProviderProps> = ({
     dispatch({ type: "SET_WORD_POSITIONS", payload: wordPositions });
   };
 
-  const setScaledWordDimensionsPerPage = ({
-    pageNum,
-    wordCoords,
-  }: {
-    pageNum: number;
-    wordCoords: { left: number; top: number; width: number; height: number };
-  }) => {
-    dispatch({ type: "SET_WORD_DIMENSIONS", payload: { pageNum, wordCoords } });
+  const setWordsScreenPositions = (
+    wordsScreenPositions: IScaledWordCoords[]
+  ) => {
+    dispatch({
+      type: "SET_WORDS_SCREEN_POSITIONS",
+      payload: wordsScreenPositions,
+    });
   };
 
   useEffect(() => {
@@ -106,7 +106,6 @@ export const WordPositionsProvider: React.FC<WordPositionsProviderProps> = ({
           },
         })
         .then((response) => {
-          console.log({ response });
           setWordPositions(response.data.data);
         })
         .catch((error) => {
@@ -119,14 +118,12 @@ export const WordPositionsProvider: React.FC<WordPositionsProviderProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [prevDoc, prevZoom, userInfo.userID]);
 
-  // console.log({prevZoom: !!prevZoom, orevDoc: !!prevDoc, or: selectedDocID !== prevDoc || userSettingsApi.zoom !== prevZoom || performance.navigation.type === performance.navigation.TYPE_RELOAD, userID: userInfo.userID, zoom: userSettingsApi.zoom})
-
   const contextValue = {
     wordsLoading: state.wordsLoading,
     wordPositions: state.wordPositions,
-    scaledWordDimensionsPerPage: state.scaledWordDimensionsPerPage,
+    wordsScreenPositions: state.wordsScreenPositions,
     setWordPositions,
-    setScaledWordDimensionsPerPage,
+    setWordsScreenPositions,
   };
 
   return (

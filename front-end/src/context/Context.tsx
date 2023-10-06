@@ -53,6 +53,7 @@ const initialState: IContextProps = {
   isCalibrating: false,
   shouldSubscribe: false,
   calibrationProcess: null,
+  pageMounted: false,
   logout: () => {},
 };
 
@@ -173,6 +174,9 @@ const reducer = (state: IContextProps, action: IAction): IContextProps => {
         ...state,
         shouldSubscribe: action.payload,
       };
+
+    case "SET_ELEMENT_MOUNTED":
+      return { ...state, pageMounted: true };
     case "LOGOUT":
       localStorage.removeItem("userInfo");
       return {
@@ -269,6 +273,10 @@ export const ContextProvider = ({
     dispatch({ type: "SCROLL", payload: scrollTop });
   };
 
+  const setPageMounted = () => {
+    dispatch({ type: "SET_ELEMENT_MOUNTED" });
+  };
+
   const logout = () => {
     dispatch({ type: "LOGOUT" });
   };
@@ -341,6 +349,8 @@ export const ContextProvider = ({
     setShouldSubscribe,
     calibrationProcess: state.calibrationProcess,
     setCalibrationProcess,
+    pageMounted: state.pageMounted,
+    setPageMounted,
   };
 
   return <Context.Provider value={contextValue}>{children}</Context.Provider>;

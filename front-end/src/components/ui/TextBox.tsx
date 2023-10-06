@@ -1,40 +1,39 @@
-import { translate } from "@vitalets/google-translate-api";
 import TranslationPopup from "components/TranslationPopup";
 import { Context } from "context/Context";
 import { useEyeTrackingData } from "context/EyeTrackingContext";
 import { useWordPositions } from "hooks/useWordPositions";
 import React, { useContext, useEffect, useMemo, useState } from "react";
-import { IContextProps, IWordPositions } from "types/AppTypes";
-import { validateEyeData } from "utils/eyeTracking";
-import { calculateScaledPositions } from "utils/functions";
+import {
+  IContextProps,
+  IScaledWordCoords,
+  IWordPositions,
+} from "types/AppTypes";
+import { validateEyeData2 } from "utils/eyeTracking";
+import { calculateScaledPositions, debounce } from "utils/functions";
 
 const wordPadding = 10;
 
+const testWord = "comprehending";
+
 const TextBox = () => {
   const { eyeData } = useEyeTrackingData();
-  const { scrollTop, currentPage, userSettingsApi } =
+  const { pageMounted, scrollTop, currentPage, userSettingsApi } =
     useContext<IContextProps>(Context);
 
-  const testWord = "Infrastructure";
-  const {
-    wordPositions,
-    scaledWordDimensionsPerPage,
-    setScaledWordDimensionsPerPage,
-  } = useWordPositions();
-  const { wordCoords = { left: 0, top: 0, width: 0, height: 0 } } =
-    scaledWordDimensionsPerPage;
-  const { left, top, width, height } = wordCoords;
-
-  const element = useMemo(() => document.getElementById("pdf-page"), []);
+  const { wordPositions } = useWordPositions();
 
   const [currentPageData, setCurrentPageData] = useState<{
     data: IWordPositions[];
     page: number;
   }>();
+
+  const [currentWord, setCurrentWord] = useState<IScaledWordCoords>();
+  const [wordsScreenPositions, setWordsScreenPositions] =
+    useState<IScaledWordCoords[]>();
   const [shouldTranslate, setShouldTranslate] = useState<boolean>(false);
   const [translation, setTranslation] = useState<string>("");
 
-  console.log({ wordPositions, currentPageData, scaledWordDimensionsPerPage });
+  // console.log({ wordPositions, currentPageData });
 
   useEffect(() => {
     if (wordPositions && wordPositions.length) {
@@ -42,64 +41,65 @@ const TextBox = () => {
     }
   }, [currentPage, wordPositions]);
 
-  useEffect(() => {
-    if (!element) return;
-
-    if (currentPageData && currentPageData?.data.length) {
-      const wordData = currentPageData?.data.find(
-        (word) => word.word === testWord
-      );
-
-      if (wordData && wordData.box) {
-        const { box } = wordData;
+  const finalPositions = useMemo(() => {
+    if (pageMounted && currentPageData && currentPageData?.data.length) {
+      const screenPositions = currentPageData.data.map((w) => {
+        const { box, word } = w;
         const { xPrime, yPrime, wPrime, hPrime } = calculateScaledPositions(
           box,
-          element,
           scrollTop,
           currentPage,
           userSettingsApi.zoom
         );
-
-        setScaledWordDimensionsPerPage?.({
-          pageNum: currentPage + 1,
+        return {
+          word,
           wordCoords: {
             left: xPrime,
             top: yPrime,
             width: wPrime,
             height: hPrime,
           },
-        });
-      }
+        };
+      });
+      return screenPositions;
     }
+    return [];
   }, [
-    element,
     currentPage,
     currentPageData,
-    currentPageData?.data.length,
+    pageMounted,
     scrollTop,
     userSettingsApi.zoom,
   ]);
 
   useEffect(() => {
-    const validationResult = validateEyeData(eyeData.slice(-300), {
-      left: left - wordPadding / 2,
-      top: top - wordPadding / 2,
-      right: left + width,
-      bottom: top + height,
-    });
-    console.log({ validationResult });
+    if (finalPositions) setWordsScreenPositions(finalPositions);
+  }, [finalPositions]);
+  console.log({ wordsScreenPositions });
 
-    if (validationResult) {
-      setShouldTranslate(validationResult);
+  useEffect(() => {
+    if (
+      pageMounted &&
+      wordsScreenPositions &&
+      wordsScreenPositions.length &&
+      eyeData.length > 300
+    ) {
+      const detectedWord = validateEyeData2(eyeData, wordsScreenPositions);
+      console.log({ detectedWord: detectedWord.word });
+
+      if (detectedWord.word) {
+        setCurrentWord(detectedWord);
+        setShouldTranslate(true);
+      }
     }
-  }, [eyeData, height, left, scaledWordDimensionsPerPage, top, width]);
+  }, [pageMounted, eyeData, currentPageData, wordsScreenPositions]);
 
   useEffect(() => {
     const fetchTranslation = async () => {
-      if (testWord && shouldTranslate) {
+      if (currentWord && shouldTranslate) {
         try {
           const response = await fetch(
-            `http://localhost:5001/translate_a/single?client=at&dt=t&dt=rm&dj=1&sl=en&tl=el&q=${testWord}`,
+            `http://localhost:5002/translate_a/single?client=at&dt=t&dt=rm&dj=1&sl=en&tl=el&q=${testWord}`,
             {
               method: "GET",
               headers: {
@@ -120,27 +120,16 @@ const TextBox = () => {
       }
     };
     fetchTranslation();
-  }, [shouldTranslate]);
+  }, [currentWord, shouldTranslate]);
 
   return (
     <>
-      <div
-        style={{
-          left: left - wordPadding / 2,
-          top: top - wordPadding / 2,
-          position: "absolute",
-          width: width + wordPadding,
-          height: height + wordPadding,
-          border: "2px solid red",
-          zIndex: 999,
-        }}
-      >
+      <div>
         <div className='relative'>
           {shouldTranslate && (
             <TranslationPopup
-              text={testWord}
               translation={translation}
-              offset={width + wordPadding}
+              offset={(currentWord?.wordCoords.width || 0) + wordPadding}
               setShouldTranslate={setShouldTranslate}
             />
           )}

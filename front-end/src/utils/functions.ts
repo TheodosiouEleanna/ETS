@@ -99,15 +99,13 @@ export const saveToFile = (data: Record<string, any>, filename: string) => {
 
 export const calculateScaledPositions = (
   box: number[],
-  element: HTMLElement | null,
   scrollTop: number,
   currentPage: number,
   scale: number
 ): { xPrime: number; yPrime: number; wPrime: number; hPrime: number } => {
   const [x, y, w, h] = box;
-
   const pdfContainer = document.getElementById("pdf-container");
-
+  const element = document.getElementById("pdf-page");
   const header = document.getElementById("header");
   const footer = document.getElementById("footer");
 

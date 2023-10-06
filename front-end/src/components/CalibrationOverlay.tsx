@@ -30,13 +30,6 @@ const CalibrationOverlay: FunctionComponent = () => {
   const [calibrationFailed, setCalibrationFailed] = useState(false);
   const [key, setKey] = useState(Math.random());
   const isDarkTheme = userSettingsApi.theme === "dark";
-  console.log({
-    calibrationFailed,
-    isCalibrating,
-    showInitialScreen,
-    currentIndex,
-    shouldGoToNextPoint: calibrationProcess?.goToNextPoint,
-  });
 
   const onCalibrationExitClick = () => {
     setIsCalibrating?.(false);

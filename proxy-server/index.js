@@ -4,23 +4,29 @@ const cors = require("cors");
 
 const app = express();
 
-app.use(cors());
+app.use("/translate_a", cors()); // Apply CORS middleware specifically to your proxy route
 
 app.use(
-  "/",
+  "/translate_a",
   createProxyMiddleware({
-    target: "https://translate.google.com", // target host
-    changeOrigin: true, // needed for virtual hosted sites
+    target: "https://translate.google.com",
+    changeOrigin: true,
     onProxyRes: function (proxyRes, req, res) {
-      proxyRes.headers["Access-Control-Allow-Origin"] = "*"; // Add this line to set the CORS header
+      console.log("Proxy Response:", proxyRes.statusCode); // Log status code
+    },
+    onProxyReq: function (proxyReq, req, res) {
+      console.log("Proxy Request to:", proxyReq.path);
+    },
+    onError: function (err, req, res) {
+      console.error("Proxy Error:", err);
     },
     pathRewrite: {
-      "^/": "/", // rewrite path
+      "^/translate_a": "/translate_a", // Correct path rewriting
     },
   })
 );
 
-const PORT = 5001;
+const PORT = 5002;
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });

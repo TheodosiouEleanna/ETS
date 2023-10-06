@@ -50,7 +50,6 @@ const useEyeTracking = (): void => {
       };
     }
   }, [address, isCalibrating]);
-  console.log("shouldOpenConnection", shouldOpenConnection);
 
   useEffect(() => {
     if (shouldOpenConnection) {

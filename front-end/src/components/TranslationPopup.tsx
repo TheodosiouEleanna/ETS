@@ -10,14 +10,12 @@ import {
 } from "utils/functions";
 
 interface TranslationPopupProps {
-  text: string;
   offset: number;
   translation: string;
   setShouldTranslate: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const TranslationPopup: React.FC<TranslationPopupProps> = ({
-  text,
   offset,
   translation,
   setShouldTranslate,
@@ -37,14 +35,13 @@ const TranslationPopup: React.FC<TranslationPopupProps> = ({
           isDarkTheme
         )}] opacity-80 rotate-45 shadow-xl`}
         style={{
-          left: left,
+          left: left / 2,
           backgroundColor: getBgSecondary(isDarkTheme),
         }}
       ></div>
       <div
-        className={`flex flex-col z-10 absolute top-[-90px] left-[${left}px] w-36 h-20 rounded-lg animate-fadeIn shadow-xl`}
+        className={`flex flex-col z-10 absolute top-[-40px] left-[${left}px] w-36 h-[2rem] rounded-lg animate-fadeIn shadow-xl`}
         style={{
-          left: left - 30,
           backgroundColor: getBgSecondary(isDarkTheme),
           color: getFontColorPrimary(isDarkTheme),
         }}
@@ -53,9 +50,9 @@ const TranslationPopup: React.FC<TranslationPopupProps> = ({
           <RiCloseFill className='text-xl' />
         </Button>
 
-        <div className='text-sm w-full pl-3 py-1 font-bold bg-blue-400 rounded-t-lg'>
+        {/* <div className='text-sm w-full pl-3 py-1 font-bold bg-blue-400 rounded-t-lg'>
           {text}:
-        </div>
+        </div> */}
         <div className='text-sm pl-3 py-1'>{translation}</div>
       </div>
     </>
