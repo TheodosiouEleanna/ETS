@@ -60,6 +60,7 @@ const useEyeTracking = (): void => {
     }
   }, [initializeWebSocket, shouldOpenConnection]);
 
+  //----------------------------- Receive messages -----------------------------------------
   useEffect(() => {
     if (isEyeTrackerConnected) {
       if (
@@ -101,6 +102,7 @@ const useEyeTracking = (): void => {
     initializeWebSocket,
   ]);
 
+  //----------------------------- Send messages -----------------------------------------
   useEffect(() => {
     // This will run when the component unmounts
     return () => {
