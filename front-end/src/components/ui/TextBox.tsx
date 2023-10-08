@@ -107,24 +107,6 @@ const TextBox = () => {
   }, [pageMounted, eyeData, currentPageData, wordsScreenPositions]);
 
   useEffect(() => {
-    // const translateWord = async () => {
-    //   if (currentWord && shouldTranslate) {
-    //     try {
-    //       const response = await axios.post(
-    //         "http://localhost:5000/api/translate",
-    //         {
-    //           text: currentWord?.word,
-    //           src_lang: "en",
-    //           tgt_lang: "el",
-    //         }
-    //       );
-    //       setTranslation(response.data.translation);
-    //       setShouldTranslate(false);
-    //     } catch (error) {
-    //       console.error("There was an error translating the text!", error);
-    //     }
-    //   }
-    // };
     const translateWord = async () => {
       if (currentWord && shouldTranslate) {
         try {
@@ -136,12 +118,13 @@ const TextBox = () => {
               text: currentWord?.word,
             }
           );
-          setTranslation(response.data.translation);
+          setTranslation(response.data.translation.toLowerCase());
         } catch (error) {
           console.error("There was an error translating the text!", error);
         }
       }
     };
+    setTranslation("");
     translateWord();
   }, [currentWord, shouldTranslate]);
 
