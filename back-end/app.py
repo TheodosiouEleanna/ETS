@@ -14,6 +14,7 @@ from config import load_config
 from werkzeug.utils import secure_filename
 from concurrent.futures import ThreadPoolExecutor
 from flask import Flask, request, jsonify, Response
+from transformers import MarianMTModel, MarianTokenizer
 from werkzeug.security import generate_password_hash, check_password_hash
 
 # our utils
@@ -29,6 +30,21 @@ sqLiteDatabase = 'ETSsqLiteDB'
 config_data = load_config()
 listening_port = config_data['ETSUIConfig']['ListeningPort']
 ETSDVM_address = config_data['ETSUIConfig']['ETSDVMport']
+
+MODELS = {}
+
+
+def get_model(tgt_lang):
+    model_key = f'en-{tgt_lang}'
+
+    if model_key not in MODELS:
+        model_name = f'Helsinki-NLP/opus-mt-en-{tgt_lang}'
+        model = MarianMTModel.from_pretrained(
+            model_name)
+        tokenizer = MarianTokenizer.from_pretrained(model_name)
+        MODELS[model_key] = (model, tokenizer)
+
+    return MODELS[model_key]
 
 
 def upload_file(file, user_id):
@@ -70,6 +86,28 @@ def upload_file(file, user_id):
     return jsonify(response), 200
 
 # ---------------------- API ROUTES ---------------------------------------
+
+
+# --------------------------- Translation --------------------------------
+
+@app.route('/api/translate', methods=['POST'])
+def translate():
+    try:
+        data = request.json
+        text = data['text']
+        tgt_lang = data['tgt']
+
+        model, tokenizer = get_model(tgt_lang)
+
+        inputs = tokenizer(text, return_tensors="pt", padding=True)
+        outputs = model.generate(**inputs)
+        translation = tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+        return jsonify({'translation': translation})
+
+    except Exception as e:
+        print(e)  # Logging the error can help in diagnosing the issue
+        return jsonify({'error': 'Unable to translate text'}), 500
 
 # --------------------------- Files --------------------------------
 

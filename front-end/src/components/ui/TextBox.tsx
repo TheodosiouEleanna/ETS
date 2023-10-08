@@ -1,6 +1,8 @@
+import axios from "axios";
 import TranslationPopup from "components/TranslationPopup";
 import { Context } from "context/Context";
 import { useEyeTrackingData } from "context/EyeTrackingContext";
+import usePrevious from "hooks/usePrevious";
 import { useWordPositions } from "hooks/useWordPositions";
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import {
@@ -13,7 +15,17 @@ import { calculateScaledPositions, debounce } from "utils/functions";
 
 const wordPadding = 10;
 
-const testWord = "comprehending";
+const testWord = "complementary";
+
+const initWord = {
+  word: testWord,
+  wordCoords: {
+    left: 0,
+    top: 0,
+    width: 0,
+    height: 0,
+  },
+};
 
 const TextBox = () => {
   const { eyeData } = useEyeTrackingData();
@@ -33,8 +45,8 @@ const TextBox = () => {
   const [shouldTranslate, setShouldTranslate] = useState<boolean>(false);
   const [translation, setTranslation] = useState<string>("");
 
-  // console.log({ wordPositions, currentPageData });
-
+  const prevWord = usePrevious(currentWord?.word);
+  const isNewWord = currentWord?.word !== prevWord;
   useEffect(() => {
     if (wordPositions && wordPositions.length) {
       setCurrentPageData(wordPositions[currentPage - 1]);
@@ -95,47 +107,76 @@ const TextBox = () => {
   }, [pageMounted, eyeData, currentPageData, wordsScreenPositions]);
 
   useEffect(() => {
-    const fetchTranslation = async () => {
+    // const translateWord = async () => {
+    //   if (currentWord && shouldTranslate) {
+    //     try {
+    //       const response = await axios.post(
+    //         "http://localhost:5000/api/translate",
+    //         {
+    //           text: currentWord?.word,
+    //           src_lang: "en",
+    //           tgt_lang: "el",
+    //         }
+    //       );
+    //       setTranslation(response.data.translation);
+    //       setShouldTranslate(false);
+    //     } catch (error) {
+    //       console.error("There was an error translating the text!", error);
+    //     }
+    //   }
+    // };
+    const translateWord = async () => {
       if (currentWord && shouldTranslate) {
         try {
-          const response = await fetch(
-            `http://localhost:5002/translate_a/single?client=at&dt=t&dt=rm&dj=1&sl=en&tl=el&q=${testWord}`,
+          const response = await axios.post(
+            "http://localhost:5000/api/translate",
             {
-              method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-              },
+              src: "en",
+              tgt: "el",
+              text: currentWord?.word,
             }
           );
-
-          if (response.ok) {
-            const data = await response.json();
-            setTranslation(data.sentences[0].trans);
-          } else {
-            console.error("Failed to fetch translation");
-          }
+          setTranslation(response.data.translation);
         } catch (error) {
-          console.error("Error:", error);
+          console.error("There was an error translating the text!", error);
         }
       }
     };
-    fetchTranslation();
+    translateWord();
   }, [currentWord, shouldTranslate]);
 
+  useEffect(() => {
+    const wordForTransl = wordsScreenPositions?.find(
+      (w) => w.word === testWord
+    );
+    setShouldTranslate(true);
+    setCurrentWord(wordForTransl || initWord);
+  }, [isNewWord, wordsScreenPositions]);
+
+  console.log({ currentWord: currentWord?.word, isNewWord, shouldTranslate });
+
   return (
-    <>
-      <div>
-        <div className='relative'>
-          {shouldTranslate && (
-            <TranslationPopup
-              translation={translation}
-              offset={(currentWord?.wordCoords.width || 0) + wordPadding}
-              setShouldTranslate={setShouldTranslate}
-            />
-          )}
-        </div>
+    <div
+      style={{
+        position: "absolute",
+        left: (currentWord?.wordCoords.left || 0) - wordPadding / 2,
+        top: (currentWord?.wordCoords.top || 0) - wordPadding / 2,
+        width: (currentWord?.wordCoords.width || 0) + wordPadding,
+        height: (currentWord?.wordCoords.height || 0) + wordPadding,
+        border: shouldTranslate ? "2px solid red" : "2px solid transparent",
+        zIndex: 999,
+      }}
+    >
+      <div className='relative'>
+        {shouldTranslate && (
+          <TranslationPopup
+            translation={translation}
+            offset={(currentWord?.wordCoords.width || 0) + wordPadding}
+            setShouldTranslate={setShouldTranslate}
+          />
+        )}
       </div>
-    </>
+    </div>
   );
 };
 
