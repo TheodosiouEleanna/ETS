@@ -111,7 +111,9 @@ const TextBox = () => {
       if (currentWord && shouldTranslate) {
         try {
           const response = await fetch(
-            `http://localhost:5002/translate_a/single?client=at&dt=t&dt=rm&dj=1&sl=en&tl=el&q=${testWord}`,
+            `http://localhost:5002/translate_a/single?client=at&dt=t&dt=rm&dj=1&sl=en&tl=el&q=${
+              currentWord.word || testWord
+            }`,
             {
               method: "GET",
               headers: {
@@ -131,16 +133,17 @@ const TextBox = () => {
         }
       }
     };
+    setTranslation("");
     fetchTranslation();
   }, [currentWord, shouldTranslate]);
 
-  useEffect(() => {
-    const wordForTransl = wordsScreenPositions?.find(
-      (w) => w.word === testWord
-    );
-    setShouldTranslate(true);
-    setCurrentWord(wordForTransl || initWord);
-  }, [isNewWord, wordsScreenPositions]);
+  // useEffect(() => {
+  //   const wordForTransl = wordsScreenPositions?.find(
+  //     (w) => w.word === testWord
+  //   );
+  //   setShouldTranslate(true);
+  //   setCurrentWord(wordForTransl || initWord);
+  // }, [isNewWord, wordsScreenPositions]);
 
   console.log({ currentWord: currentWord?.word, isNewWord, shouldTranslate });
 
