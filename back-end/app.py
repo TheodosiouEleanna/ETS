@@ -1,11 +1,10 @@
 import io
 import uuid
 import json
-
+import torch
 import asyncio
 import sqlite3
 import traceback
-
 from flask_cors import CORS
 from PyPDF2 import PdfReader
 from functools import partial
@@ -37,10 +36,13 @@ MODELS = {}
 def get_model(tgt_lang):
     model_key = f'en-{tgt_lang}'
 
+    # Check if GPU/CUDA is available and set the device accordingly
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(device)
     if model_key not in MODELS:
         model_name = f'Helsinki-NLP/opus-mt-en-{tgt_lang}'
-        model = MarianMTModel.from_pretrained(
-            model_name)
+        # Load model and tokenizer and move the model to GPU if available
+        model = MarianMTModel.from_pretrained(model_name).to(device)
         tokenizer = MarianTokenizer.from_pretrained(model_name)
         MODELS[model_key] = (model, tokenizer)
 
@@ -99,7 +101,10 @@ def translate():
 
         model, tokenizer = get_model(tgt_lang)
 
-        inputs = tokenizer(text, return_tensors="pt", padding=True)
+        # Ensuring the input tensors are on the same device as the model
+        inputs = tokenizer(text, return_tensors="pt",
+                           padding=True).to(model.device)
+
         outputs = model.generate(**inputs)
         translation = tokenizer.decode(outputs[0], skip_special_tokens=True)
 
@@ -108,7 +113,6 @@ def translate():
     except Exception as e:
         print(e)  # Logging the error can help in diagnosing the issue
         return jsonify({'error': 'Unable to translate text'}), 500
-
 # --------------------------- Files --------------------------------
 
 

@@ -145,13 +145,13 @@ const TextBox = () => {
     translateWord();
   }, [currentWord, shouldTranslate]);
 
-  useEffect(() => {
-    const wordForTransl = wordsScreenPositions?.find(
-      (w) => w.word === testWord
-    );
-    setShouldTranslate(true);
-    setCurrentWord(wordForTransl || initWord);
-  }, [isNewWord, wordsScreenPositions]);
+  // useEffect(() => {
+  //   const wordForTransl = wordsScreenPositions?.find(
+  //     (w) => w.word === testWord
+  //   );
+  //   setShouldTranslate(true);
+  //   setCurrentWord(wordForTransl || initWord);
+  // }, [isNewWord, wordsScreenPositions]);
 
   console.log({ currentWord: currentWord?.word, isNewWord, shouldTranslate });
 
@@ -160,11 +160,11 @@ const TextBox = () => {
       style={{
         position: "absolute",
         left: (currentWord?.wordCoords.left || 0) - wordPadding / 2,
-        top: (currentWord?.wordCoords.top || 0) - wordPadding / 2,
+        top: currentWord?.wordCoords.top || 0,
         width: (currentWord?.wordCoords.width || 0) + wordPadding,
         height: (currentWord?.wordCoords.height || 0) + wordPadding,
-        border: shouldTranslate ? "2px solid red" : "2px solid transparent",
-        zIndex: 999,
+        // border: shouldTranslate ? "2px solid red" : "2px solid transparent",
+        zIndex: 40,
       }}
     >
       <div className='relative'>
