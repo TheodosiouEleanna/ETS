@@ -107,51 +107,40 @@ const TextBox = () => {
   }, [pageMounted, eyeData, currentPageData, wordsScreenPositions]);
 
   useEffect(() => {
-    // const translateWord = async () => {
-    //   if (currentWord && shouldTranslate) {
-    //     try {
-    //       const response = await axios.post(
-    //         "http://localhost:5000/api/translate",
-    //         {
-    //           text: currentWord?.word,
-    //           src_lang: "en",
-    //           tgt_lang: "el",
-    //         }
-    //       );
-    //       setTranslation(response.data.translation);
-    //       setShouldTranslate(false);
-    //     } catch (error) {
-    //       console.error("There was an error translating the text!", error);
-    //     }
-    //   }
-    // };
-    const translateWord = async () => {
+    const fetchTranslation = async () => {
       if (currentWord && shouldTranslate) {
         try {
-          const response = await axios.post(
-            "http://localhost:5000/api/translate",
+          const response = await fetch(
+            `http://localhost:5002/translate_a/single?client=at&dt=t&dt=rm&dj=1&sl=en&tl=el&q=${testWord}`,
             {
-              src: "en",
-              tgt: "el",
-              text: currentWord?.word,
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
             }
           );
-          setTranslation(response.data.translation);
+
+          if (response.ok) {
+            const data = await response.json();
+            setTranslation(data.sentences[0].trans);
+          } else {
+            console.error("Failed to fetch translation");
+          }
         } catch (error) {
-          console.error("There was an error translating the text!", error);
+          console.error("Error:", error);
         }
       }
     };
-    translateWord();
+    fetchTranslation();
   }, [currentWord, shouldTranslate]);
 
-  // useEffect(() => {
-  //   const wordForTransl = wordsScreenPositions?.find(
-  //     (w) => w.word === testWord
-  //   );
-  //   setShouldTranslate(true);
-  //   setCurrentWord(wordForTransl || initWord);
-  // }, [isNewWord, wordsScreenPositions]);
+  useEffect(() => {
+    const wordForTransl = wordsScreenPositions?.find(
+      (w) => w.word === testWord
+    );
+    setShouldTranslate(true);
+    setCurrentWord(wordForTransl || initWord);
+  }, [isNewWord, wordsScreenPositions]);
 
   console.log({ currentWord: currentWord?.word, isNewWord, shouldTranslate });
 
