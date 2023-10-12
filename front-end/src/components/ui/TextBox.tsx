@@ -111,29 +111,32 @@ const TextBox = () => {
       if (currentWord && shouldTranslate) {
         try {
           const response = await fetch(
-            `http://localhost:5002/translate_a/single?client=at&dt=t&dt=rm&dj=1&sl=en&tl=el&q=${
-              currentWord.word || testWord
-            }`,
+            `https://translation.googleapis.com/language/translate/v2?key=${apiKey}&source=en&target=el&q=${currentWord.word}`,
+
             {
               method: "GET",
               headers: {
                 "Content-Type": "application/json",
+                Accept: "application/json",
               },
             }
           );
 
           if (response.ok) {
             const data = await response.json();
-            setTranslation(data.sentences[0].trans);
+            setTranslation(data.data.translations[0].translatedText);
           } else {
-            console.error("Failed to fetch translation");
+            const errorData = await response.json();
+            console.error(
+              "Failed to fetch translation:",
+              errorData.error.message
+            );
           }
         } catch (error) {
           console.error("Error:", error);
         }
       }
     };
-    setTranslation("");
     fetchTranslation();
   }, [currentWord, shouldTranslate]);
 
@@ -143,7 +146,7 @@ const TextBox = () => {
   //   );
   //   setShouldTranslate(true);
   //   setCurrentWord(wordForTransl || initWord);
-  // }, [isNewWord, wordsScreenPositions]);
+  // }, [isNewWord]);
 
   console.log({ currentWord: currentWord?.word, isNewWord, shouldTranslate });
 
