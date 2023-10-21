@@ -68,9 +68,14 @@ const useEyeTracking = (): void => {
         socketRef.current.readyState === WebSocket.OPEN
       ) {
         socketRef.current.onmessage = (event) => {
+          // const currentTime = new Date();
           const { data } = event;
           if (!data.includes("NaN")) {
             const parsedData = JSON.parse(data);
+            // let milli = currentTime.getMilliseconds();
+            // let f_milli = String(milli).padStart(3, "0");
+            // parsedData.js_tmp = `${currentTime.getHours()}:${currentTime.getMinutes()}:${currentTime.getSeconds()}.${f_milli}`;
+            // console.log(parsedData);
             const { action } = parsedData;
 
             if (!isEmpty(data)) {

@@ -13,8 +13,8 @@ import {
 import { validateEyeData2 } from "utils/eyeTracking";
 import { calculateScaledPositions, debounce } from "utils/functions";
 
-const wordPadding = 10;
-
+const wordPadding = 15;
+const apiKey = "AIzaSyAX5ypZhaH0PNJfya3tSGVfQLN49_o3u3U";
 const testWord = "complementary";
 
 const initWord = {
