@@ -117,13 +117,27 @@ export type ConnectionStatus =
   | "";
 
 export interface GazeData {
+  _id: ID;
+  _index: string;
+  _score: number;
+  device_time_stamp: any;
+  left_gaze_origin_in_trackbox_coordinate_system: any;
+  left_gaze_origin_in_user_coordinate_system: any;
+  left_gaze_origin_validity: any;
+  left_gaze_point_in_user_coordinate_system: any;
   left_gaze_point_on_display_area: [number, number];
+  left_gaze_point_validity: any;
+  left_pupil_diameter: any;
+  left_pupil_validity: any;
+  right_gaze_origin_in_trackbox_coordinate_system: any;
+  right_gaze_origin_in_user_coordinate_system: any;
+  right_gaze_origin_validity: any;
+  right_gaze_point_in_user_coordinate_system: any;
   right_gaze_point_on_display_area: [number, number];
   right_gaze_point_validity: any;
-  left_gaze_point_validity: any;
-  left_gaze_point_in_user_coordinate_system: any;
-  right_gaze_point_in_user_coordinate_system: any;
-  // Todo: add other fields
+  right_pupil_diameter: any;
+  right_pupil_validity: any;
+  system_time_stamp: any;
 }
 export interface CalibrationPoint {
   x: number;

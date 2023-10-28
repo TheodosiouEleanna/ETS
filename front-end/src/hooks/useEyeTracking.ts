@@ -2,7 +2,8 @@ import { useContext, useEffect, useRef, useCallback, useState } from "react";
 import { Context } from "../context/Context";
 import { isEmpty } from "lodash";
 import { IContextProps } from "types/AppTypes";
-import { useEyeTrackingData } from "context/EyeTrackingContext";
+// import { useEyeTrackingData } from "context/EyeTrackingContext";
+import useEyeTrackingStore from "store/store";
 
 const useEyeTracking = (): void => {
   const {
@@ -13,7 +14,8 @@ const useEyeTracking = (): void => {
     isEyeTrackerConnected,
     shouldSubscribe,
   } = useContext<IContextProps>(Context);
-  const { accumulateData } = useEyeTrackingData();
+  // const { accumulateData } = useEyeTrackingData();
+  const { accumulateData } = useEyeTrackingStore();
   const { address } = selectedEyeTracker;
   const [shouldOpenConnection, setShouldOpenConnection] = useState(true);
   const socketRef = useRef<WebSocket | null>(null);

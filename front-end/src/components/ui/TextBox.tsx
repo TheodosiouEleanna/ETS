@@ -1,7 +1,7 @@
 import axios from "axios";
 import TranslationPopup from "components/TranslationPopup";
 import { Context } from "context/Context";
-import { useEyeTrackingData } from "context/EyeTrackingContext";
+// import { useEyeTrackingData } from "context/EyeTrackingContext";
 import usePrevious from "hooks/usePrevious";
 import { useWordPositions } from "hooks/useWordPositions";
 import React, { useContext, useEffect, useMemo, useState } from "react";
@@ -11,7 +11,8 @@ import {
   IWordPositions,
 } from "types/AppTypes";
 import { validateEyeData2 } from "utils/eyeTracking";
-import { calculateScaledPositions, debounce } from "utils/functions";
+import { calculateScaledPositions } from "utils/functions";
+import useEyeTrackingStore from "store/store";
 
 const wordPadding = 15;
 const apiKey = "AIzaSyAX5ypZhaH0PNJfya3tSGVfQLN49_o3u3U";
@@ -28,7 +29,8 @@ const initWord = {
 };
 
 const TextBox = () => {
-  const { eyeData } = useEyeTrackingData();
+  // const { eyeData } = useEyeTrackingData();
+  const { eyeData } = useEyeTrackingStore();
   const { pageMounted, scrollTop, currentPage, userSettingsApi } =
     useContext<IContextProps>(Context);
 

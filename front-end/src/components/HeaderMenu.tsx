@@ -27,7 +27,9 @@ import Button from "./ui/Button";
 import { ConnectionStatus, IContextProps } from "types/AppTypes";
 import Dialog from "./ui/Dialog";
 import { apiURL, dark_secondary, light_secondary } from "utils/consts";
-import { useEyeTrackingData } from "context/EyeTrackingContext";
+// import { useEyeTrackingData } from "context/EyeTrackingContext";
+import useEyeTrackingStore from "store/store";
+import { BiFullscreen } from "react-icons/bi";
 
 const HeaderMenu: FC = () => {
   const {
@@ -43,7 +45,8 @@ const HeaderMenu: FC = () => {
     isEyeTrackerConnected,
     setIsEyeTrackerConnected,
   } = useContext<IContextProps>(Context);
-  const { eyeData } = useEyeTrackingData();
+  // const { eyeData } = useEyeTrackingData();
+  const { eyeData } = useEyeTrackingStore();
   const [showProfile, setShowProfile] = useState(false);
   const [connectionStatus, setConnectionStatus] =
     useState<ConnectionStatus>("");
@@ -129,6 +132,20 @@ const HeaderMenu: FC = () => {
   const onStartTracking = () => {
     setShouldSubscribe?.(true);
     setShowConnectionModal(false);
+  };
+
+  const onToggleFullscreen = () => {
+    const elem = document.documentElement;
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen();
+    }
+    if (document.fullscreenElement) {
+      document.exitFullscreen().catch((err) => {
+        console.log(
+          `Error attempting to disable full-screen mode: ${err.message} (${err.name})`
+        );
+      });
+    }
   };
 
   const onDownloadDataClick = () => {
@@ -264,6 +281,21 @@ const HeaderMenu: FC = () => {
       <div className='mr-4 flex space-x-8'>
         {showProfile && <Profile onClick={onClickLogout} />}
         <Tooltip
+          content='Fullscreen'
+          position='left'
+          color={isDarkTheme ? light_secondary : dark_secondary}
+        >
+          <Button
+            className={`py-2 px-2 rounded-full hover:scale-110 transform transition-transform duration-300 active:scale-95 focus:outline-none `}
+            onClick={onToggleFullscreen}
+          >
+            <BiFullscreen
+              className='text-xl text-blue-500'
+              color={isDarkTheme ? light_secondary : dark_secondary}
+            />
+          </Button>
+        </Tooltip>
+        <Tooltip
           content='Download Eye data'
           position='left'
           color={isDarkTheme ? light_secondary : dark_secondary}
@@ -275,7 +307,6 @@ const HeaderMenu: FC = () => {
             <FiDownload className='text-xl text-blue-500' />
           </Button>
         </Tooltip>
-
         <Tooltip
           content='Profile'
           position='left'
