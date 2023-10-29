@@ -2,7 +2,8 @@ import { useContext, useEffect, useRef, useCallback, useState } from "react";
 import { Context } from "../context/Context";
 import { isEmpty } from "lodash";
 import { IContextProps } from "types/AppTypes";
-import { useEyeTrackingData } from "context/EyeTrackingContext";
+// import { useEyeTrackingData } from "context/EyeTrackingContext";
+import useEyeTrackingStore from "store/store";
 
 const useEyeTracking = (): void => {
   const {
@@ -13,7 +14,8 @@ const useEyeTracking = (): void => {
     isEyeTrackerConnected,
     shouldSubscribe,
   } = useContext<IContextProps>(Context);
-  const { accumulateData } = useEyeTrackingData();
+  // const { accumulateData } = useEyeTrackingData();
+  const { accumulateData } = useEyeTrackingStore();
   const { address } = selectedEyeTracker;
   const [shouldOpenConnection, setShouldOpenConnection] = useState(true);
   const socketRef = useRef<WebSocket | null>(null);
@@ -68,9 +70,14 @@ const useEyeTracking = (): void => {
         socketRef.current.readyState === WebSocket.OPEN
       ) {
         socketRef.current.onmessage = (event) => {
+          // const currentTime = new Date();
           const { data } = event;
           if (!data.includes("NaN")) {
             const parsedData = JSON.parse(data);
+            // let milli = currentTime.getMilliseconds();
+            // let f_milli = String(milli).padStart(3, "0");
+            // parsedData.js_tmp = `${currentTime.getHours()}:${currentTime.getMinutes()}:${currentTime.getSeconds()}.${f_milli}`;
+            // console.log(parsedData);
             const { action } = parsedData;
 
             if (!isEmpty(data)) {

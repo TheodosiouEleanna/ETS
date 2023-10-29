@@ -1,6 +1,6 @@
 import Button from "components/ui/Button";
 import { Context } from "context/Context";
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { RiCloseFill } from "react-icons/ri";
 import { IContextProps } from "types/AppTypes";
 import {
@@ -22,10 +22,19 @@ const TranslationPopup: React.FC<TranslationPopupProps> = ({
 }) => {
   const { userSettingsApi } = useContext<IContextProps>(Context);
   const left = offset - 40;
+  const [translationHeight, setTranslationHeight] = useState<number>(0);
 
   const onClose = () => {
     setShouldTranslate(false);
   };
+
+  useEffect(() => {
+    const translationEl = document.getElementById("translation");
+    if (translationEl) {
+      const { height } = translationEl?.getBoundingClientRect();
+      setTranslationHeight(height);
+    }
+  }, [translation]);
 
   const isDarkTheme = userSettingsApi.theme === "dark";
   return (
@@ -40,20 +49,19 @@ const TranslationPopup: React.FC<TranslationPopupProps> = ({
         }}
       ></div>
       <div
-        className={`flex flex-col z-10 absolute top-[-40px] left-[${left}px] w-36 h-[2rem] rounded-lg animate-fadeIn shadow-xl`}
+        className={`flex flex-col z-10 absolute w-auto h-auto rounded-lg animate-fadeIn shadow-xl`}
         style={{
           backgroundColor: getBgSecondary(isDarkTheme),
           color: getFontColorPrimary(isDarkTheme),
+          top: `-${translationHeight + 10}px`,
         }}
       >
-        <Button className=' absolute right-0 top-0' onClick={onClose}>
+        <Button className='absolute right-0 top-0' onClick={onClose}>
           <RiCloseFill className='text-xl' />
         </Button>
-
-        {/* <div className='text-sm w-full pl-3 py-1 font-bold bg-blue-400 rounded-t-lg'>
-          {text}:
-        </div> */}
-        <div className='text-sm pl-3 py-1'>{translation}</div>
+        <div className='text-sm pl-3 py-1 pr-8' id='translation'>
+          {translation}
+        </div>
       </div>
     </>
   );

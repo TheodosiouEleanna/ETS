@@ -6,8 +6,9 @@ import Footer from "./components/ui/Footer";
 import Header from "./components/ui/Header";
 import useEyeTracking from "./hooks/useEyeTracking";
 import CalibrationOverlay from "components/CalibrationOverlay";
-import CircleMover from "components/CircleMover";
+// import CircleMover from "components/CircleMover";
 import TextBox from "components/ui/TextBox";
+import useMockData from "hooks/useMockData";
 
 const App: React.FC = () => {
   const context = useContext(Context);
@@ -38,6 +39,7 @@ const App: React.FC = () => {
   const { isLoggedIn } = userInfo;
 
   useEyeTracking();
+  // useMockData();
 
   useEffect(() => {
     if (isCalibrating) {
@@ -74,7 +76,7 @@ const App: React.FC = () => {
           </div>
         ))}
       </div> */}
-      <CircleMover />
+      {/* <CircleMover /> */}
       {!loading && !isMenuOpen && file?.size !== 0 && <TextBox />}
       {}
       {!isLoggedIn && <UserProfile />}

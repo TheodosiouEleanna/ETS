@@ -1,7 +1,7 @@
 import axios from "axios";
 import TranslationPopup from "components/TranslationPopup";
 import { Context } from "context/Context";
-import { useEyeTrackingData } from "context/EyeTrackingContext";
+// import { useEyeTrackingData } from "context/EyeTrackingContext";
 import usePrevious from "hooks/usePrevious";
 import { useWordPositions } from "hooks/useWordPositions";
 import React, { useContext, useEffect, useMemo, useState } from "react";
@@ -11,10 +11,11 @@ import {
   IWordPositions,
 } from "types/AppTypes";
 import { validateEyeData2 } from "utils/eyeTracking";
-import { calculateScaledPositions, debounce } from "utils/functions";
+import { calculateScaledPositions } from "utils/functions";
+import useEyeTrackingStore from "store/store";
 
-const wordPadding = 10;
-
+const wordPadding = 15;
+const apiKey = "AIzaSyAX5ypZhaH0PNJfya3tSGVfQLN49_o3u3U";
 const testWord = "complementary";
 
 const initWord = {
@@ -28,7 +29,8 @@ const initWord = {
 };
 
 const TextBox = () => {
-  const { eyeData } = useEyeTrackingData();
+  // const { eyeData } = useEyeTrackingData();
+  const { eyeData } = useEyeTrackingStore();
   const { pageMounted, scrollTop, currentPage, userSettingsApi } =
     useContext<IContextProps>(Context);
 
@@ -107,25 +109,37 @@ const TextBox = () => {
   }, [pageMounted, eyeData, currentPageData, wordsScreenPositions]);
 
   useEffect(() => {
-    const translateWord = async () => {
+    const fetchTranslation = async () => {
       if (currentWord && shouldTranslate) {
         try {
-          const response = await axios.post(
-            "http://localhost:5000/api/translate",
+          const response = await fetch(
+            `https://translation.googleapis.com/language/translate/v2?key=${apiKey}&source=en&target=el&q=${currentWord.word}`,
+
             {
-              src: "en",
-              tgt: "el",
-              text: currentWord?.word,
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+              },
             }
           );
-          setTranslation(response.data.translation.toLowerCase());
+
+          if (response.ok) {
+            const data = await response.json();
+            setTranslation(data.data.translations[0].translatedText);
+          } else {
+            const errorData = await response.json();
+            console.error(
+              "Failed to fetch translation:",
+              errorData.error.message
+            );
+          }
         } catch (error) {
-          console.error("There was an error translating the text!", error);
+          console.error("Error:", error);
         }
       }
     };
-    setTranslation("");
-    translateWord();
+    fetchTranslation();
   }, [currentWord, shouldTranslate]);
 
   // useEffect(() => {
@@ -134,7 +148,7 @@ const TextBox = () => {
   //   );
   //   setShouldTranslate(true);
   //   setCurrentWord(wordForTransl || initWord);
-  // }, [isNewWord, wordsScreenPositions]);
+  // }, [isNewWord]);
 
   console.log({ currentWord: currentWord?.word, isNewWord, shouldTranslate });
 

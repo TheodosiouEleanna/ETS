@@ -1,26 +1,26 @@
-import { useEyeTrackingData } from "context/EyeTrackingContext";
+// import { useEyeTrackingData } from "context/EyeTrackingContext";
 import React, { useState, useEffect } from "react";
+import useEyeTrackingStore from "store/store";
 import { getAverageGazePointCoordinates2 } from "utils/eyeTracking";
 
 const CircleMover: React.FC = () => {
-  const { eyeData } = useEyeTrackingData();
+  // const { eyeData } = useEyeTrackingData();
+  const { eyeData } = useEyeTrackingStore();
   const [avgPosition, setAvgPosition] = useState<{ x: number; y: number }>({
     x: 0,
     y: 0,
   });
 
   useEffect(() => {
+    const recentData = eyeData.slice(-5); // get the last 5 data points
+    const { pointX, pointY } = getAverageGazePointCoordinates2(recentData);
 
-      const recentData = eyeData.slice(-5); // get the last 5 data points
-      const { pointX, pointY } = getAverageGazePointCoordinates2(recentData);
-  
-      // ! This if is for single data gaze point creation
-      // const recentData = eyeData[eyeData.length - 1];
-      // const { pointX, pointY } = getGazePointCoordinates(recentData);
-      // if (recentData.length === 0) return;
-  
-      setAvgPosition({ x: pointX, y: pointY });
- 
+    // ! This if is for single data gaze point creation
+    // const recentData = eyeData[eyeData.length - 1];
+    // const { pointX, pointY } = getGazePointCoordinates(recentData);
+    // if (recentData.length === 0) return;
+
+    setAvgPosition({ x: pointX, y: pointY });
   }, [eyeData]);
 
   return (
