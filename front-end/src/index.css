@@ -65,5 +65,5 @@ input[type="number"] {
 
 .animate-fadeIn {
   animation-name: fadeIn;
-  animation-duration: 0.5s; /* You can adjust the duration as needed */
+  animation-duration: 0.3s; /* You can adjust the duration as needed */
 }
