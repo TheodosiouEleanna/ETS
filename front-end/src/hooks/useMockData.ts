@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import useEyeTrackingStore from "store/store";
 import { GazeData } from "types/AppTypes";
+import { testData } from "../utils/test.js";
+import { forEach } from "lodash";
 
 const sample: GazeData = {
   _id: 279902541957,
@@ -38,6 +40,27 @@ const useMockData = () => {
       clearInterval(intervalId);
     };
   }, [accumulateData]);
+
+  // useEffect(() => {
+  //   let intervalId: NodeJS.Timer;
+  //   let currentIndex = 0;
+
+  //   const sendTestData = () => {
+  //     if (currentIndex < testData.length) {
+  //       const dataPoint = testData[currentIndex];
+  //       if (!dataPoint.includes("NaN")) {
+  //         accumulateData(JSON.parse(dataPoint));
+  //         currentIndex++;
+  //       }
+  //     }
+  //   };
+
+  //   intervalId = setInterval(sendTestData, 1000 / 300);
+
+  //   return () => {
+  //     clearInterval(intervalId as any);
+  //   };
+  // }, [accumulateData]);
 };
 
 export default useMockData;

@@ -39,7 +39,7 @@ const App: React.FC = () => {
   const { isLoggedIn } = userInfo;
 
   useEyeTracking();
-  // useMockData();
+  useMockData();
 
   useEffect(() => {
     if (isCalibrating) {
