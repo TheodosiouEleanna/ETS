@@ -199,10 +199,18 @@ export const validateEyeData2 = (
   wordPositions: IScaledWordCoords[],
   wordPadding = 10
 ) => {
-  const relevantEyeData = eyeData.slice(-100); // Last 50 eye-tracking points
-  console.log("valid Eye data", relevantEyeData);
+  const baseGazePoints = 65;
+  const additionalGazePointsPerLetter = 10;
   for (let wordData of wordPositions) {
-    const { left, top, width, height } = wordData.wordCoords;
+    const { word, wordCoords } = wordData;
+    const { left, top, width, height } = wordCoords;
+
+    const gazePointsToConsider =
+      baseGazePoints + (word.length - 1) * additionalGazePointsPerLetter;
+
+    const relevantEyeData = eyeData.slice(
+      -Math.min(gazePointsToConsider, eyeData.length)
+    );
 
     const allPointsInside = relevantEyeData.every((rel) => {
       const { pointX, pointY } = getGazePointCoordinates(rel);

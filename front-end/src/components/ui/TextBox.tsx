@@ -162,10 +162,6 @@ const TextBox = () => {
         "translation pops",
         `${currentTime.getHours()}:${currentTime.getMinutes()}:${currentTime.getSeconds()}.${f_milli}`
       );
-    } else {
-      setTimeout(() => {
-        setShouldTranslate?.(false);
-      }, 250);
     }
   }, [setShouldTranslate, shouldTranslate]);
 
@@ -173,7 +169,9 @@ const TextBox = () => {
     if (scrollTop && prevScrollTop !== scrollTop) {
       setShouldTranslate?.(false);
     }
-  }, [prevScrollTop, scrollTop, setShouldTranslate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scrollTop, setShouldTranslate]);
+
   // useEffect(() => {
   //   const wordForTransl = wordsScreenPositions?.find(
   //     (w) => w.word === testWord

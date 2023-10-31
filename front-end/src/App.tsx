@@ -74,7 +74,7 @@ const App: React.FC = () => {
           </div>
         ))}
       </div> */}
-      <CircleMover />
+      {/* <CircleMover /> */}
       {!loading && !isMenuOpen && file?.size !== 0 && <TextBox />}
       {}
       {!isLoggedIn && <UserProfile />}
