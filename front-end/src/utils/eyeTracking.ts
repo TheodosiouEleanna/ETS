@@ -199,8 +199,8 @@ export const validateEyeData2 = (
   wordPositions: IScaledWordCoords[],
   wordPadding = 10
 ) => {
-  const relevantEyeData = eyeData.slice(-50); // Last 50 eye-tracking points
-
+  const relevantEyeData = eyeData.slice(-100); // Last 50 eye-tracking points
+  console.log("valid Eye data", relevantEyeData);
   for (let wordData of wordPositions) {
     const { left, top, width, height } = wordData.wordCoords;
 

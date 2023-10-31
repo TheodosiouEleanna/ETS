@@ -19,6 +19,13 @@ const CircleMover: React.FC = () => {
     // const recentData = eyeData[eyeData.length - 1];
     // const { pointX, pointY } = getGazePointCoordinates(recentData);
     // if (recentData.length === 0) return;
+    const currentTime = new Date();
+    let milli = currentTime.getMilliseconds();
+    let f_milli = String(milli).padStart(3, "0");
+    console.log(
+      "circle rendered!!!!!!!!",
+      `${currentTime.getHours()}:${currentTime.getMinutes()}:${currentTime.getSeconds()}.${f_milli}`
+    );
 
     setAvgPosition({ x: pointX, y: pointY });
   }, [eyeData]);

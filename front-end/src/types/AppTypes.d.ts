@@ -16,6 +16,7 @@ export interface IContextProps {
   calibrationProcess: Record<string, any> | null;
   shouldSubscribe: boolean;
   pageMounted: boolean;
+  shouldTranslate: boolean;
   loadFile?: (file?: File) => void;
   setSelectedDocID?: (id: ID) => void;
   setCurrentPage?: (pageNumber: number) => void;
@@ -36,6 +37,7 @@ export interface IContextProps {
   setCalibrationProcess?: (payload: Record<string, any> | null) => void;
   setShouldSubscribe?: (shouldSubscribe: boolean) => void;
   setPageMounted?: () => void;
+  setShouldTranslate?: (payload: boolean) => void;
 }
 
 interface ISingleScaledWordCoords {

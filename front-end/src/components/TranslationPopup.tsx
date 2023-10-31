@@ -12,7 +12,7 @@ import {
 interface TranslationPopupProps {
   offset: number;
   translation: string;
-  setShouldTranslate: React.Dispatch<React.SetStateAction<boolean>>;
+  setShouldTranslate?: (payload: boolean) => void;
 }
 
 const TranslationPopup: React.FC<TranslationPopupProps> = ({
@@ -25,7 +25,7 @@ const TranslationPopup: React.FC<TranslationPopupProps> = ({
   const [translationHeight, setTranslationHeight] = useState<number>(0);
 
   const onClose = () => {
-    setShouldTranslate(false);
+    setShouldTranslate?.(false);
   };
 
   useEffect(() => {
@@ -37,6 +37,17 @@ const TranslationPopup: React.FC<TranslationPopupProps> = ({
   }, [translation]);
 
   const isDarkTheme = userSettingsApi.theme === "dark";
+
+  useEffect(() => {
+    const currentTime = new Date();
+    let milli = currentTime.getMilliseconds();
+    let f_milli = String(milli).padStart(3, "0");
+    console.log(
+      "translation rendereed!!!!!!!!!!",
+      `${currentTime.getHours()}:${currentTime.getMinutes()}:${currentTime.getSeconds()}.${f_milli}`
+    );
+  }, []);
+
   return (
     <>
       <div
@@ -49,7 +60,7 @@ const TranslationPopup: React.FC<TranslationPopupProps> = ({
         }}
       ></div>
       <div
-        className={`flex flex-col z-10 absolute w-auto h-auto rounded-lg animate-fadeIn shadow-xl`}
+        className={`flex flex-col z-10 absolute w-auto h-auto rounded-lg  shadow-xl`}
         style={{
           backgroundColor: getBgSecondary(isDarkTheme),
           color: getFontColorPrimary(isDarkTheme),
@@ -60,7 +71,7 @@ const TranslationPopup: React.FC<TranslationPopupProps> = ({
           <RiCloseFill className='text-xl' />
         </Button>
         <div className='text-sm pl-3 py-1 pr-8' id='translation'>
-          {translation}
+          {translation.toLowerCase()}
         </div>
       </div>
     </>

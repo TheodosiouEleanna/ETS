@@ -11,9 +11,7 @@ root.render(
   <ContextProvider>
     <SnackbarProvider>
       <WordPositionsProvider>
-        {/* <EyeTrackingProvider> */}
         <App />
-        {/* </EyeTrackingProvider> */}
       </WordPositionsProvider>
     </SnackbarProvider>
   </ContextProvider>

@@ -54,6 +54,7 @@ const initialState: IContextProps = {
   shouldSubscribe: false,
   calibrationProcess: null,
   pageMounted: false,
+  shouldTranslate: false,
   logout: () => {},
 };
 
@@ -183,6 +184,8 @@ const reducer = (state: IContextProps, action: IAction): IContextProps => {
         ...state,
         userInfo: initUserInfo,
       };
+    case "SET_SHOULD_TRANSLATE":
+      return { ...state, shouldTranslate: action.payload };
     default:
       return state;
   }
@@ -277,6 +280,10 @@ export const ContextProvider = ({
     dispatch({ type: "SET_ELEMENT_MOUNTED" });
   };
 
+  const setShouldTranslate = (payload: boolean) => {
+    dispatch({ type: "SET_SHOULD_TRANSLATE", payload });
+  };
+
   const logout = () => {
     dispatch({ type: "LOGOUT" });
   };
@@ -351,6 +358,8 @@ export const ContextProvider = ({
     setCalibrationProcess,
     pageMounted: state.pageMounted,
     setPageMounted,
+    shouldTranslate: state.shouldTranslate,
+    setShouldTranslate,
   };
 
   return <Context.Provider value={contextValue}>{children}</Context.Provider>;

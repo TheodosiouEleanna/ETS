@@ -46,7 +46,7 @@ const HeaderMenu: FC = () => {
     setIsEyeTrackerConnected,
   } = useContext<IContextProps>(Context);
   // const { eyeData } = useEyeTrackingData();
-  const { eyeData } = useEyeTrackingStore();
+  // const { eyeData } = useEyeTrackingStore();
   const [showProfile, setShowProfile] = useState(false);
   const [connectionStatus, setConnectionStatus] =
     useState<ConnectionStatus>("");
@@ -149,7 +149,7 @@ const HeaderMenu: FC = () => {
   };
 
   const onDownloadDataClick = () => {
-    saveToFile(eyeData as Record<string, any>, "output.txt");
+    // saveToFile(eyeData as Record<string, any>, "output.txt");
   };
 
   const onCloseMenu = () => {

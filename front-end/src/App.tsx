@@ -9,6 +9,7 @@ import CalibrationOverlay from "components/CalibrationOverlay";
 // import CircleMover from "components/CircleMover";
 import TextBox from "components/ui/TextBox";
 import useMockData from "hooks/useMockData";
+import CircleMover from "components/CircleMover";
 
 const App: React.FC = () => {
   const context = useContext(Context);
@@ -37,9 +38,6 @@ const App: React.FC = () => {
 
   const { userInfo, isCalibrating } = context;
   const { isLoggedIn } = userInfo;
-
-  useEyeTracking();
-  useMockData();
 
   useEffect(() => {
     if (isCalibrating) {
@@ -76,7 +74,7 @@ const App: React.FC = () => {
           </div>
         ))}
       </div> */}
-      {/* <CircleMover /> */}
+      <CircleMover />
       {!loading && !isMenuOpen && file?.size !== 0 && <TextBox />}
       {}
       {!isLoggedIn && <UserProfile />}

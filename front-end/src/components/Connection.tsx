@@ -131,12 +131,12 @@ const Connection: React.FC<ConnectionProps> = ({
                   className={`bg-blue-500 flex justify-center items-center text-xl px-8 py-4 hover:scale-105 active:scale-95 transform transition focus:outline-none shadow-lg`}
                   onClick={onStartTracking}
                 ></Button>
-                <Button
+                {/* <Button
                   label='Recalibrate'
                   style={{ color: light_secondary }}
                   className={`bg-blue-500 flex justify-center items-center text-xl px-8 py-4 hover:scale-105 active:scale-95 transform transition focus:outline-none shadow-lg`}
                   onClick={onClickRecalibrate}
-                ></Button>
+                ></Button> */}
               </div>
             </div>
           </>

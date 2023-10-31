@@ -70,14 +70,20 @@ const useEyeTracking = (): void => {
         socketRef.current.readyState === WebSocket.OPEN
       ) {
         socketRef.current.onmessage = (event) => {
-          // const currentTime = new Date();
+          const currentTime = new Date();
           const { data } = event;
           if (!data.includes("NaN")) {
             const parsedData = JSON.parse(data);
-            // let milli = currentTime.getMilliseconds();
-            // let f_milli = String(milli).padStart(3, "0");
-            // parsedData.js_tmp = `${currentTime.getHours()}:${currentTime.getMinutes()}:${currentTime.getSeconds()}.${f_milli}`;
-            // console.log(parsedData);
+            let milli = currentTime.getMilliseconds();
+            let f_milli = String(milli).padStart(3, "0");
+            parsedData.js_tmp = `${currentTime.getHours()}:${currentTime.getMinutes()}:${currentTime.getSeconds()}.${f_milli}`;
+            console.log(
+              "data arrived",
+              "in js : ",
+              parsedData.js_tmp,
+              "in python : ",
+              parsedData.python_tmp
+            );
             const { action } = parsedData;
 
             if (!isEmpty(data)) {
@@ -137,6 +143,13 @@ const useEyeTracking = (): void => {
   useEffect(() => {
     if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
       if (shouldSubscribe) {
+        const currentTime = new Date();
+        let milli = currentTime.getMilliseconds();
+        let f_milli = String(milli).padStart(3, "0");
+        console.log(
+          "start Tracking",
+          `${currentTime.getHours()}:${currentTime.getMinutes()}:${currentTime.getSeconds()}.${f_milli}`
+        );
         const messageData = {
           action: "startTracking",
           address,

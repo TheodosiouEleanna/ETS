@@ -1,8 +1,6 @@
-import axios from "axios";
 import TranslationPopup from "components/TranslationPopup";
 import { Context } from "context/Context";
 // import { useEyeTrackingData } from "context/EyeTrackingContext";
-import usePrevious from "hooks/usePrevious";
 import { useWordPositions } from "hooks/useWordPositions";
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import {
@@ -13,26 +11,28 @@ import {
 import { validateEyeData2 } from "utils/eyeTracking";
 import { calculateScaledPositions } from "utils/functions";
 import useEyeTrackingStore from "store/store";
+import useEyeTracking from "../../hooks/useEyeTracking";
+import usePrevious from "hooks/usePrevious";
 
 const wordPadding = 15;
 const apiKey = "AIzaSyAX5ypZhaH0PNJfya3tSGVfQLN49_o3u3U";
 const testWord = "complementary";
 
-const initWord = {
-  word: testWord,
-  wordCoords: {
-    left: 0,
-    top: 0,
-    width: 0,
-    height: 0,
-  },
-};
-
 const TextBox = () => {
   // const { eyeData } = useEyeTrackingData();
   const { eyeData } = useEyeTrackingStore();
-  const { pageMounted, scrollTop, currentPage, userSettingsApi } =
-    useContext<IContextProps>(Context);
+  const {
+    pageMounted,
+    scrollTop,
+    currentPage,
+    userSettingsApi,
+    shouldTranslate,
+    setShouldTranslate,
+  } = useContext<IContextProps>(Context);
+  const prevScrollTop = usePrevious(scrollTop);
+
+  useEyeTracking();
+  // useMockData();
 
   const { wordPositions } = useWordPositions();
 
@@ -44,11 +44,8 @@ const TextBox = () => {
   const [currentWord, setCurrentWord] = useState<IScaledWordCoords>();
   const [wordsScreenPositions, setWordsScreenPositions] =
     useState<IScaledWordCoords[]>();
-  const [shouldTranslate, setShouldTranslate] = useState<boolean>(false);
   const [translation, setTranslation] = useState<string>("");
 
-  const prevWord = usePrevious(currentWord?.word);
-  const isNewWord = currentWord?.word !== prevWord;
   useEffect(() => {
     if (wordPositions && wordPositions.length) {
       setCurrentPageData(wordPositions[currentPage - 1]);
@@ -89,7 +86,6 @@ const TextBox = () => {
   useEffect(() => {
     if (finalPositions) setWordsScreenPositions(finalPositions);
   }, [finalPositions]);
-  console.log({ wordsScreenPositions });
 
   useEffect(() => {
     if (
@@ -99,14 +95,29 @@ const TextBox = () => {
       eyeData.length > 300
     ) {
       const detectedWord = validateEyeData2(eyeData, wordsScreenPositions);
+      const currentTime = new Date();
+      let milli = currentTime.getMilliseconds();
+      let f_milli = String(milli).padStart(3, "0");
+      console.log(
+        "word detected",
+        detectedWord.word,
+
+        `${currentTime.getHours()}:${currentTime.getMinutes()}:${currentTime.getSeconds()}.${f_milli}`
+      );
       console.log({ detectedWord: detectedWord.word });
 
       if (detectedWord.word) {
         setCurrentWord(detectedWord);
-        setShouldTranslate(true);
+        setShouldTranslate?.(true);
       }
     }
-  }, [pageMounted, eyeData, currentPageData, wordsScreenPositions]);
+  }, [
+    pageMounted,
+    eyeData,
+    currentPageData,
+    wordsScreenPositions,
+    setShouldTranslate,
+  ]);
 
   useEffect(() => {
     const fetchTranslation = async () => {
@@ -142,6 +153,27 @@ const TextBox = () => {
     fetchTranslation();
   }, [currentWord, shouldTranslate]);
 
+  useEffect(() => {
+    if (shouldTranslate) {
+      const currentTime = new Date();
+      let milli = currentTime.getMilliseconds();
+      let f_milli = String(milli).padStart(3, "0");
+      console.log(
+        "translation pops",
+        `${currentTime.getHours()}:${currentTime.getMinutes()}:${currentTime.getSeconds()}.${f_milli}`
+      );
+    } else {
+      setTimeout(() => {
+        setShouldTranslate?.(false);
+      }, 250);
+    }
+  }, [setShouldTranslate, shouldTranslate]);
+
+  useEffect(() => {
+    if (scrollTop && prevScrollTop !== scrollTop) {
+      setShouldTranslate?.(false);
+    }
+  }, [prevScrollTop, scrollTop, setShouldTranslate]);
   // useEffect(() => {
   //   const wordForTransl = wordsScreenPositions?.find(
   //     (w) => w.word === testWord
@@ -149,8 +181,6 @@ const TextBox = () => {
   //   setShouldTranslate(true);
   //   setCurrentWord(wordForTransl || initWord);
   // }, [isNewWord]);
-
-  console.log({ currentWord: currentWord?.word, isNewWord, shouldTranslate });
 
   return (
     <div
