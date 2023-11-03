@@ -199,7 +199,7 @@ export const validateEyeData2 = (
   wordPositions: IScaledWordCoords[],
   wordPadding = 10
 ) => {
-  const baseGazePoints = 65;
+  const baseGazePoints = 60;
   const additionalGazePointsPerLetter = 10;
   for (let wordData of wordPositions) {
     const { word, wordCoords } = wordData;
@@ -215,10 +215,10 @@ export const validateEyeData2 = (
     const allPointsInside = relevantEyeData.every((rel) => {
       const { pointX, pointY } = getGazePointCoordinates(rel);
       return isPointInsideBox(pointX, pointY, {
-        left: left - wordPadding / 2,
-        top: top - wordPadding / 2,
-        right: left + width,
-        bottom: top + height,
+        left: left - wordPadding,
+        top: top - 2 * wordPadding,
+        right: left + width + wordPadding,
+        bottom: top + height + 2 * wordPadding,
       });
     });
 

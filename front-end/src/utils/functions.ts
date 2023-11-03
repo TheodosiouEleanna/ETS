@@ -121,10 +121,10 @@ export const calculateScaledPositions = (
 
     const yRelativeToPage = y + (currentPage - 1) * canvasHeight;
 
-    const xPrime = x + horizontalMargin - 7;
-    const yPrime = yRelativeToPage - scrollTop + headerHeight;
-    const wPrime = w;
-    const hPrime = h;
+    const xPrime = x + horizontalMargin - 10;
+    const yPrime = yRelativeToPage - scrollTop + headerHeight - 10;
+    const wPrime = w + 15;
+    const hPrime = h + 15;
 
     return { xPrime, yPrime, wPrime, hPrime };
   }

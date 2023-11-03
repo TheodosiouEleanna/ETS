@@ -90,8 +90,10 @@ def resize_pil_image(image, scaling_factor):
 
 def process_single_page(page_num, pdf_content=None, scaling_factor=1.0, ):
     # Those multipliers are here because of different scaling in the server and the client side.
-    final_scale_factor_width = scaling_factor * 1.1613269613269613
-    final_scale_factor_height = scaling_factor * 1.1616161616161617
+    final_scale_factor_width = scaling_factor * 1.165
+    # final_scale_factor_width = scaling_factor * 1.1613269613269613
+    final_scale_factor_height = scaling_factor * 1.165
+    # final_scale_factor_height = scaling_factor * 1.1616161616161617
     page_images = convert_from_bytes(
         pdf_content, first_page=page_num + 1, last_page=page_num + 1
     )

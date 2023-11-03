@@ -116,17 +116,6 @@ const useEyeTracking = (): void => {
   ]);
 
   //----------------------------- Send messages -----------------------------------------
-  useEffect(() => {
-    // This will run when the component unmounts
-    return () => {
-      console.log("Stopping tracking and closing WebSocket.");
-      if (socketRef.current) {
-        setShouldOpenConnection(true);
-        socketRef.current.close();
-        socketRef.current = null;
-      }
-    };
-  }, []);
 
   useEffect(() => {
     if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
@@ -158,7 +147,7 @@ const useEyeTracking = (): void => {
         socketRef.current.send(JSON.stringify(messageData));
       }
     }
-  }, [address, shouldSubscribe, userInfo.userID, shouldOpenConnection]);
+  }, [address, shouldSubscribe, userInfo.userID]);
 
   useEffect(() => {
     if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {

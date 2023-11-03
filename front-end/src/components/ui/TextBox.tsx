@@ -14,7 +14,7 @@ import useEyeTrackingStore from "store/store";
 import useEyeTracking from "../../hooks/useEyeTracking";
 import usePrevious from "hooks/usePrevious";
 
-const wordPadding = 15;
+const wordPadding = 20;
 const apiKey = "AIzaSyAX5ypZhaH0PNJfya3tSGVfQLN49_o3u3U";
 const testWord = "complementary";
 
@@ -94,21 +94,42 @@ const TextBox = () => {
       wordsScreenPositions.length &&
       eyeData.length > 300
     ) {
-      const detectedWord = validateEyeData2(eyeData, wordsScreenPositions);
-      const currentTime = new Date();
-      let milli = currentTime.getMilliseconds();
-      let f_milli = String(milli).padStart(3, "0");
-      console.log(
-        "word detected",
-        detectedWord.word,
+      if (shouldTranslate) {
+        const detectedWord = validateEyeData2(eyeData, wordsScreenPositions);
+        const currentTime = new Date();
+        let milli = currentTime.getMilliseconds();
+        let f_milli = String(milli).padStart(3, "0");
+        console.log(
+          "word detected",
+          detectedWord.word,
 
-        `${currentTime.getHours()}:${currentTime.getMinutes()}:${currentTime.getSeconds()}.${f_milli}`
-      );
-      console.log({ detectedWord: detectedWord.word });
+          `${currentTime.getHours()}:${currentTime.getMinutes()}:${currentTime.getSeconds()}.${f_milli}`
+        );
+        console.log({ detectedWord: detectedWord.word });
 
-      if (detectedWord.word) {
-        setCurrentWord(detectedWord);
-        setShouldTranslate?.(true);
+        if (detectedWord.word) {
+          setCurrentWord(detectedWord);
+          setShouldTranslate?.(true);
+        }
+      } else {
+        setTimeout(() => {
+          const detectedWord = validateEyeData2(eyeData, wordsScreenPositions);
+          const currentTime = new Date();
+          let milli = currentTime.getMilliseconds();
+          let f_milli = String(milli).padStart(3, "0");
+          console.log(
+            "word detected",
+            detectedWord.word,
+
+            `${currentTime.getHours()}:${currentTime.getMinutes()}:${currentTime.getSeconds()}.${f_milli}`
+          );
+          console.log({ detectedWord: detectedWord.word });
+
+          if (detectedWord.word) {
+            setCurrentWord(detectedWord);
+            setShouldTranslate?.(true);
+          }
+        }, 300);
       }
     }
   }, [
@@ -117,10 +138,12 @@ const TextBox = () => {
     currentPageData,
     wordsScreenPositions,
     setShouldTranslate,
+    shouldTranslate,
   ]);
 
   useEffect(() => {
     const fetchTranslation = async () => {
+      setTranslation("");
       if (currentWord && shouldTranslate) {
         try {
           const response = await fetch(
@@ -180,28 +203,45 @@ const TextBox = () => {
   //   setCurrentWord(wordForTransl || initWord);
   // }, [isNewWord]);
 
+  console.log({ wordsScreenPositions });
   return (
-    <div
-      style={{
-        position: "absolute",
-        left: (currentWord?.wordCoords.left || 0) - wordPadding / 2,
-        top: currentWord?.wordCoords.top || 0,
-        width: (currentWord?.wordCoords.width || 0) + wordPadding,
-        height: (currentWord?.wordCoords.height || 0) + wordPadding,
-        // border: shouldTranslate ? "2px solid red" : "2px solid transparent",
-        zIndex: 40,
-      }}
-    >
-      <div className='relative'>
-        {shouldTranslate && (
-          <TranslationPopup
-            translation={translation}
-            offset={(currentWord?.wordCoords.width || 0) + wordPadding}
-            setShouldTranslate={setShouldTranslate}
-          />
-        )}
+    <>
+      {/* {wordsScreenPositions?.map((pos) => (
+        <div
+          style={{
+            position: "absolute",
+            left: pos?.wordCoords.left || 0,
+            top: pos?.wordCoords.top || 0,
+            width: pos?.wordCoords.width || 0,
+            height: pos?.wordCoords.height || 0,
+            border: "2px solid red",
+            zIndex: 40,
+          }}
+        >
+        </div>
+      ))} */}
+      <div
+        style={{
+          position: "absolute",
+          left: (currentWord?.wordCoords.left || 0) - wordPadding / 2,
+          top: currentWord?.wordCoords.top || 0 + wordPadding / 2,
+          width: (currentWord?.wordCoords.width || 0) + wordPadding,
+          height: (currentWord?.wordCoords.height || 0) + wordPadding,
+          // border: shouldTranslate ? "2px solid red" : "2px solid transparent",
+          zIndex: 40,
+        }}
+      >
+        <div className='relative'>
+          {shouldTranslate && (
+            <TranslationPopup
+              translation={translation}
+              offset={(currentWord?.wordCoords.width || 0) + wordPadding}
+              setShouldTranslate={setShouldTranslate}
+            />
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

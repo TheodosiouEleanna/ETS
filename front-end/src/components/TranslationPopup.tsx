@@ -51,7 +51,7 @@ const TranslationPopup: React.FC<TranslationPopupProps> = ({
   return (
     <>
       <div
-        className={`absolute -top-3 transform -translate-y-1/2 w-4 h-4 border border-[${getBgPrimary(
+        className={`absolute top-[1.2rem] transform -translate-y-1/2 w-4 h-4 border border-[${getBgPrimary(
           isDarkTheme
         )}] opacity-80 rotate-45 shadow-xl`}
         style={{
@@ -64,13 +64,17 @@ const TranslationPopup: React.FC<TranslationPopupProps> = ({
         style={{
           backgroundColor: getBgSecondary(isDarkTheme),
           color: getFontColorPrimary(isDarkTheme),
-          top: `-${translationHeight + 10}px`,
+          top: `-8px`,
+          left: "20px",
         }}
       >
         <Button className='absolute right-0 top-0' onClick={onClose}>
           <RiCloseFill className='text-xl' />
         </Button>
-        <div className='text-sm pl-3 py-1 pr-8' id='translation'>
+        <div
+          className='text-sm pl-3 py-1 pr-8 whitespace-nowrap'
+          id='translation'
+        >
           {translation.toLowerCase()}
         </div>
       </div>
