@@ -228,3 +228,19 @@ export const validateEyeData2 = (
   }
   return { word: "", wordCoords: { left: 0, top: 0, width: 0, height: 0 } };
 };
+
+export const validateHoldTranslation = (
+  dimensions: DOMRect,
+  data: GazeData[]
+) => {
+  const { left, top, width, height } = dimensions;
+  return data.every((d) => {
+    const { pointX, pointY } = getGazePointCoordinates(d);
+    return isPointInsideBox(pointX, pointY, {
+      left: left - 40,
+      top: top - 40,
+      right: left + width + 40,
+      bottom: top + height + 40,
+    });
+  });
+};

@@ -2,13 +2,13 @@ import TranslationPopup from "components/TranslationPopup";
 import { Context } from "context/Context";
 // import { useEyeTrackingData } from "context/EyeTrackingContext";
 import { useWordPositions } from "hooks/useWordPositions";
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import {
   IContextProps,
   IScaledWordCoords,
   IWordPositions,
 } from "types/AppTypes";
-import { validateEyeData2 } from "utils/eyeTracking";
+import { validateEyeData2, validateHoldTranslation } from "utils/eyeTracking";
 import { calculateScaledPositions } from "utils/functions";
 import useEyeTrackingStore from "store/store";
 import useEyeTracking from "../../hooks/useEyeTracking";
@@ -44,7 +44,9 @@ const TextBox = () => {
   const [currentWord, setCurrentWord] = useState<IScaledWordCoords>();
   const [wordsScreenPositions, setWordsScreenPositions] =
     useState<IScaledWordCoords[]>();
+  const observerRef = useRef<MutationObserver | null>(null);
   const [translation, setTranslation] = useState<string>("");
+  const [coolDown, setCoolDown] = useState<boolean>(false);
 
   useEffect(() => {
     if (wordPositions && wordPositions.length) {
@@ -88,48 +90,28 @@ const TextBox = () => {
   }, [finalPositions]);
 
   useEffect(() => {
+    if (coolDown) return;
     if (
       pageMounted &&
       wordsScreenPositions &&
       wordsScreenPositions.length &&
       eyeData.length > 300
     ) {
-      if (shouldTranslate) {
-        const detectedWord = validateEyeData2(eyeData, wordsScreenPositions);
-        const currentTime = new Date();
-        let milli = currentTime.getMilliseconds();
-        let f_milli = String(milli).padStart(3, "0");
-        console.log(
-          "word detected",
-          detectedWord.word,
+      const detectedWord = validateEyeData2(eyeData, wordsScreenPositions);
+      const currentTime = new Date();
+      let milli = currentTime.getMilliseconds();
+      let f_milli = String(milli).padStart(3, "0");
+      console.log(
+        "word detected",
+        detectedWord.word,
 
-          `${currentTime.getHours()}:${currentTime.getMinutes()}:${currentTime.getSeconds()}.${f_milli}`
-        );
-        console.log({ detectedWord: detectedWord.word });
+        `${currentTime.getHours()}:${currentTime.getMinutes()}:${currentTime.getSeconds()}.${f_milli}`
+      );
+      console.log({ detectedWord: detectedWord.word });
 
-        if (detectedWord.word) {
-          setCurrentWord(detectedWord);
-          setShouldTranslate?.(true);
-        }
-      } else {
-        setTimeout(() => {
-          const detectedWord = validateEyeData2(eyeData, wordsScreenPositions);
-          const currentTime = new Date();
-          let milli = currentTime.getMilliseconds();
-          let f_milli = String(milli).padStart(3, "0");
-          console.log(
-            "word detected",
-            detectedWord.word,
-
-            `${currentTime.getHours()}:${currentTime.getMinutes()}:${currentTime.getSeconds()}.${f_milli}`
-          );
-          console.log({ detectedWord: detectedWord.word });
-
-          if (detectedWord.word) {
-            setCurrentWord(detectedWord);
-            setShouldTranslate?.(true);
-          }
-        }, 300);
+      if (detectedWord.word) {
+        setCurrentWord(detectedWord);
+        setShouldTranslate?.(true);
       }
     }
   }, [
@@ -139,6 +121,7 @@ const TextBox = () => {
     wordsScreenPositions,
     setShouldTranslate,
     shouldTranslate,
+    coolDown,
   ]);
 
   useEffect(() => {
@@ -203,7 +186,24 @@ const TextBox = () => {
   //   setCurrentWord(wordForTransl || initWord);
   // }, [isNewWord]);
 
-  console.log({ wordsScreenPositions });
+  useEffect(() => {
+    const translationElement = document.getElementById("translation");
+    if (translationElement) {
+      const dimensions = translationElement.getBoundingClientRect();
+      const shouldHoldTranslation = validateHoldTranslation(
+        dimensions,
+        eyeData.slice(-200)
+      );
+      if (shouldHoldTranslation) {
+        setCoolDown(true);
+      } else {
+        setCoolDown(false);
+      }
+    }
+  }, [eyeData]);
+
+  console.log({ coolDown });
+
   return (
     <>
       {/* {wordsScreenPositions?.map((pos) => (

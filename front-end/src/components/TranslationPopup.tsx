@@ -51,6 +51,7 @@ const TranslationPopup: React.FC<TranslationPopupProps> = ({
   return (
     <>
       <div
+        id='translation'
         className={`absolute top-[1.2rem] transform -translate-y-1/2 w-4 h-4 border border-[${getBgPrimary(
           isDarkTheme
         )}] opacity-80 rotate-45 shadow-xl`}
@@ -64,7 +65,7 @@ const TranslationPopup: React.FC<TranslationPopupProps> = ({
         style={{
           backgroundColor: getBgSecondary(isDarkTheme),
           color: getFontColorPrimary(isDarkTheme),
-          top: `-8px`,
+          top: `-${translationHeight - 15}px`,
           left: "20px",
         }}
       >
