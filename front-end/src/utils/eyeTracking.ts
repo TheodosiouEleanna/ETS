@@ -215,10 +215,10 @@ export const validateEyeData2 = (
     const allPointsInside = relevantEyeData.every((rel) => {
       const { pointX, pointY } = getGazePointCoordinates(rel);
       return isPointInsideBox(pointX, pointY, {
-        left: left - wordPadding,
-        top: top - 2 * wordPadding,
-        right: left + width + wordPadding,
-        bottom: top + height + 2 * wordPadding,
+        left: left,
+        top: top,
+        right: left + width,
+        bottom: top + height,
       });
     });
 

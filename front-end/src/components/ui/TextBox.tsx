@@ -16,7 +16,7 @@ import usePrevious from "hooks/usePrevious";
 
 const wordPadding = 20;
 const apiKey = "AIzaSyAX5ypZhaH0PNJfya3tSGVfQLN49_o3u3U";
-const testWord = "complementary";
+const testWord = "pathological";
 
 const TextBox = () => {
   // const { eyeData } = useEyeTrackingData();
@@ -174,17 +174,18 @@ const TextBox = () => {
   useEffect(() => {
     if (scrollTop && prevScrollTop !== scrollTop) {
       setShouldTranslate?.(false);
+      setCoolDown(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [scrollTop, setShouldTranslate]);
+  }, [prevScrollTop, scrollTop, setShouldTranslate]);
 
+  // THIS IS FOR MOCKING THE TRANSLATION POPUP
   // useEffect(() => {
   //   const wordForTransl = wordsScreenPositions?.find(
   //     (w) => w.word === testWord
   //   );
-  //   setShouldTranslate(true);
-  //   setCurrentWord(wordForTransl || initWord);
-  // }, [isNewWord]);
+  //   setShouldTranslate?.(true);
+  //   setCurrentWord(wordForTransl);
+  // }, [setShouldTranslate, wordsScreenPositions]);
 
   useEffect(() => {
     const translationElement = document.getElementById("translation");
@@ -192,7 +193,7 @@ const TextBox = () => {
       const dimensions = translationElement.getBoundingClientRect();
       const shouldHoldTranslation = validateHoldTranslation(
         dimensions,
-        eyeData.slice(-200)
+        eyeData.slice(-400)
       );
       if (shouldHoldTranslation) {
         setCoolDown(true);
@@ -202,7 +203,7 @@ const TextBox = () => {
     }
   }, [eyeData]);
 
-  console.log({ coolDown });
+  console.log({ coolDown, shouldTranslate });
 
   return (
     <>
@@ -217,17 +218,15 @@ const TextBox = () => {
             border: "2px solid red",
             zIndex: 40,
           }}
-        >
-        </div>
+        ></div>
       ))} */}
       <div
         style={{
           position: "absolute",
-          left: (currentWord?.wordCoords.left || 0) - wordPadding / 2,
-          top: currentWord?.wordCoords.top || 0 + wordPadding / 2,
-          width: (currentWord?.wordCoords.width || 0) + wordPadding,
-          height: (currentWord?.wordCoords.height || 0) + wordPadding,
-          // border: shouldTranslate ? "2px solid red" : "2px solid transparent",
+          left: currentWord?.wordCoords.left || 0,
+          top: currentWord?.wordCoords.top || 0,
+          width: currentWord?.wordCoords.width || 0,
+          height: currentWord?.wordCoords.height || 0,
           zIndex: 40,
         }}
       >

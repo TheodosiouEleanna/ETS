@@ -115,16 +115,18 @@ export const calculateScaledPositions = (
     const { width: containerWidth } = pdfContainer.getBoundingClientRect();
     const { height: headerHeight } = header.getBoundingClientRect();
 
+    console.log({ canvasWidth, canvasHeight });
+
     const cWidth = canvasWidth;
 
     const horizontalMargin = scale < 1 ? (containerWidth - cWidth) / 2 : 0;
 
     const yRelativeToPage = y + (currentPage - 1) * canvasHeight;
 
-    const xPrime = x + horizontalMargin - 10;
-    const yPrime = yRelativeToPage - scrollTop + headerHeight - 10;
-    const wPrime = w + 15;
-    const hPrime = h + 15;
+    const xPrime = x + horizontalMargin - 5;
+    const yPrime = yRelativeToPage - scrollTop + headerHeight - 5;
+    const wPrime = w + 10;
+    const hPrime = h + 10;
 
     return { xPrime, yPrime, wPrime, hPrime };
   }

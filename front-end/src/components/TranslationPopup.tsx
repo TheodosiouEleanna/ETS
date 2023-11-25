@@ -22,19 +22,10 @@ const TranslationPopup: React.FC<TranslationPopupProps> = ({
 }) => {
   const { userSettingsApi } = useContext<IContextProps>(Context);
   const left = offset - 40;
-  const [translationHeight, setTranslationHeight] = useState<number>(0);
 
   const onClose = () => {
     setShouldTranslate?.(false);
   };
-
-  useEffect(() => {
-    const translationEl = document.getElementById("translation");
-    if (translationEl) {
-      const { height } = translationEl?.getBoundingClientRect();
-      setTranslationHeight(height);
-    }
-  }, [translation]);
 
   const isDarkTheme = userSettingsApi.theme === "dark";
 
@@ -52,11 +43,12 @@ const TranslationPopup: React.FC<TranslationPopupProps> = ({
     <>
       <div
         id='translation'
-        className={`absolute top-[1.2rem] transform -translate-y-1/2 w-4 h-4 border border-[${getBgPrimary(
+        className={`absolute transform -translate-y-1/2 w-4 h-4 border border-[${getBgPrimary(
           isDarkTheme
         )}] opacity-80 rotate-45 shadow-xl`}
         style={{
           left: left / 2,
+          top: -3,
           backgroundColor: getBgSecondary(isDarkTheme),
         }}
       ></div>
@@ -65,7 +57,7 @@ const TranslationPopup: React.FC<TranslationPopupProps> = ({
         style={{
           backgroundColor: getBgSecondary(isDarkTheme),
           color: getFontColorPrimary(isDarkTheme),
-          top: `-${translationHeight - 15}px`,
+          top: `-${30}px`,
           left: "20px",
         }}
       >
