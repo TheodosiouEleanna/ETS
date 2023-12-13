@@ -4,6 +4,7 @@ import React, {
   useReducer,
   ReactNode,
   useEffect,
+  useMemo,
 } from "react";
 import {
   IContextProps,
@@ -62,7 +63,24 @@ export const WordPositionsProvider: React.FC<WordPositionsProviderProps> = ({
     initialWordPositionsState
   );
 
-  console.log({ wordState: state });
+  const getEnumeratedWords = useMemo(() => {
+    let currentIndex = 0;
+
+    const words = state.wordPositions
+      ?.map(({ data }) => {
+        return data.map(({ word }) => {
+          currentIndex++;
+          return { [currentIndex]: word };
+        });
+      })
+      .flat();
+
+    return words.reduce((acc, value) => {
+      return { ...acc, ...value };
+    }, {});
+  }, [state.wordPositions]);
+
+  console.log({ wordState: state, getEnumeratedWords });
 
   const { userInfo, userSettingsApi, selectedDocID } =
     useContext<IContextProps>(Context);

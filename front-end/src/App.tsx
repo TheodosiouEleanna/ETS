@@ -39,6 +39,9 @@ const App: React.FC = () => {
   const { userInfo, isCalibrating } = context;
   const { isLoggedIn } = userInfo;
 
+  useEyeTracking();
+  // useMockData();
+
   useEffect(() => {
     if (isCalibrating) {
       toggleFullScreen();
